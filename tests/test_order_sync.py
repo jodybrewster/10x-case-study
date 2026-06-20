@@ -19,3 +19,10 @@ CUSTOMER = {"customer_id": "9001", "first_name": "Ana", "last_name": "Lopez", "p
 def test_matches_existing_account_by_email():
     crm = CRMClient([_account()], [], {})
     assert sync_order(crm, ORDER, CUSTOMER)["account_id"] == "001A000001"
+
+
+def test_unmatched_order_reuses_household_account():
+    """Orders shipped to a known household land on that household's account."""
+    crm = CRMClient([_account(primary_email="carlos@x.com", first_name="Carlos")], [], {})
+    order = dict(ORDER, order_email="ana.new@x.com")
+    assert sync_order(crm, order, CUSTOMER)["account_id"] == "001A000001"

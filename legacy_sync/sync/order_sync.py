@@ -1,5 +1,8 @@
 """Push e-commerce orders into the CRM as opportunities."""
 
+from .. import config
+
+
 def resolve_account(crm, order, customer):
     """Find the CRM account for an order.
 
@@ -13,6 +16,12 @@ def resolve_account(crm, order, customer):
     by_email = crm.find_by_email(order["order_email"])
     if by_email:
         return by_email[0]
+
+    if config.MATCH_FALLBACK_ADDRESS:
+        last_name = order["ship_name"].split()[-1]
+        by_address = crm.find_by_address(last_name, order["ship_zip"])
+        if by_address:
+            return by_address[0]
 
     return None
 
