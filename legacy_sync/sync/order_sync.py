@@ -38,4 +38,6 @@ def sync_order(crm, order, customer):
         })
     elif not account["ecom_customer_id"]:
         account["ecom_customer_id"] = order["customer_id"]
+
+    crm.update_contact_details(account["account_id"], email=order["order_email"], phone=customer["phone"])
     return account
