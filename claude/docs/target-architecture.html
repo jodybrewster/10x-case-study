@@ -1,0 +1,880 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Health | Target architecture</title>
+<style>
+  :root {
+      --neutral-code: #737373;
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000;
+    color-scheme: light;
+    --ink: #202427; --muted: #62686d;  --line: #dedede; --paper: #f5f5f5; --pale: #fbeaea;
+    --heading: #292d31; --link: #980000; --code-bg: #f3f3f3;
+    --brand-black: #111111;  --brand-grey: #f4f4f4;
+     --amber: #b97818; --amber-ink: #94550b;
+    --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); scroll-behavior: smooth; scroll-padding-top: 56px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; color: var(--ink); font: 15px/1.5 var(--sans); counter-reset: fig sym; }
+  a { color: var(--link); text-underline-offset: .18em; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--brand-red); outline-offset: 3px; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line);
+    overflow-x: auto; white-space: nowrap; padding: 11px max(16px, calc((100vw - 1120px) / 2)); font-size: 13px; }
+  nav a { color: var(--muted); text-decoration: none; margin-right: 20px; }
+  nav a:hover { color: var(--ink); }
+  main { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: .58in .62in .5in; background: #fff;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, .08); }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 12px;
+    border-bottom: 3px solid var(--brand-red); color: var(--muted); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; }
+  .wordmark { color: var(--brand-black); font: 700 14px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+  header { max-width: 720px; margin: 0 0 34px; }
+  .eyebrow { margin: 30px 0 9px; color: var(--brand-red); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 37px; font-weight: 580; line-height: 1.06; letter-spacing: -.045em; }
+  header p:not(.eyebrow) { margin: 13px 0 0; color: var(--muted); }
+  header h1 + p { font-size: 17px; line-height: 1.4; }
+  section { display: grid; grid-template-columns: 168px minmax(0, 1fr); column-gap: 34px; padding: 20px 0 26px;
+    border-top: 1px solid var(--line); }
+  section > h2 { grid-column: 1; grid-row: 1 / span 200; align-self: start; position: sticky; top: 60px; margin: 0;
+    color: var(--heading); font-size: 17px; font-weight: 580; line-height: 1.25; letter-spacing: -.018em; }
+  section > :not(h2) { grid-column: 2; }
+  section > .diagram { grid-column: 1 / -1; }
+  h3 { margin: 26px 0 7px; color: var(--heading); font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+  section > h2 + h3, section > h2 + p { margin-top: 0; }
+  p, li { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  ul { margin: 0 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  code { padding: 1px 5px; border-radius: 3px; background: var(--code-bg); font: 12.5px/1.4 var(--mono); overflow-wrap: break-word; }
+  td code { white-space: nowrap; }
+  pre.cmd { max-width: 70ch; padding: 13px 15px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 var(--mono); }
+  .scroll { overflow-x: auto; margin: 10px 0 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { border-bottom: 2px solid var(--brand-red); color: var(--heading); font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+  td:first-child { min-width: 9em; font-weight: 600; }
+  td.num, th.num { padding-right: 20px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 18px; margin: 16px 0 8px; }
+  .tile { padding-top: 9px; border-top: 3px solid var(--brand-red); }
+  .tile b { display: block; font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tile span { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.38; }
+  figure { margin: 0; }
+  .diagram { margin: 14px 0 8px; padding: 18px 16px 14px; overflow-x: auto; border: 1px solid var(--line); background: #fff; counter-increment: fig; }
+  .diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .diagram pre { margin: 0; min-width: 640px; font: 12px var(--mono); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 2px 0; color: var(--muted); font-size: 12.5px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 7px; border-radius: 2px; background: #fff; border: 2px solid var(--ink); vertical-align: -2px; box-sizing: border-box; }
+  .legend .code::before { background: var(--neutral-pale); border-color: var(--neutral-code); }
+  .legend .new::before { background: var(--neutral-pale); }
+  .legend .ext::before { background: #fff3dc; border-color: var(--amber); }
+  .legend .risk::before { background: var(--brand-red-pale); border-color: var(--brand-red); }
+  .legend .step::before { border-color: #737373; }
+  .legend .person::before { background: var(--neutral-pale); border-color: #737373; border-radius: 5px; }
+  .caption { max-width: 84ch; margin: 0 0 22px; color: var(--muted); font-size: 12.5px; }
+  .diagram + .caption::before { content: "Figure " counter(fig) ". "; color: var(--ink); font-weight: 650; }
+  .symptom { counter-increment: sym; display: grid; grid-template-columns: 34px 1fr; column-gap: 10px; padding: 15px 0 6px; border-top: 1px solid var(--line); }
+  .symptom::before { content: counter(sym); color: var(--brand-red); font-size: 24px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .symptom h3 { grid-column: 2; margin: 2px 0 8px; }
+  .symptom dl { grid-column: 2; display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin: 0; }
+  .symptom dt { padding-top: 1px; color: var(--muted); font-size: 12.5px; }
+  .symptom dd { max-width: 74ch; margin: 0; }
+  .tag { font-weight: 650; white-space: nowrap; }
+  .tag::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 2px; background: currentColor; }
+  .known { color: var(--ink); } .inferred { color: var(--amber-ink); } .unknown { color: var(--brand-red); }
+  .note { max-width: 70ch; margin: 16px 0; padding: 14px 18px; border-left: 4px solid var(--brand-red); background: var(--pale); }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { padding: 10px 0; font-weight: 600; cursor: pointer; }
+  details .scroll { margin: 2px 0 16px; }
+  .foot { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+  @media (max-width: 780px) {
+    main { width: 100%; margin: 0; padding: 26px 20px; box-shadow: none; }
+    h1 { font-size: 32px; }
+    section { display: block; }
+    section > h2 { position: static; margin-bottom: 12px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .symptom dl { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { size: letter; margin: .5in; }
+    html, body { background: #fff; }
+    nav { display: none; }
+    main { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    section > h2 { position: static; }
+    .diagram, .symptom, tr { break-inside: avoid; }
+    .diagram { overflow: visible; }
+    details > .scroll { display: block; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#summary">Summary</a>
+  <a href="#principles">Principles</a>
+  <a href="#topology">Topology</a>
+  <a href="#model">Data model</a>
+  <a href="#matching">Matching and uncertainty</a>
+  <a href="#review">Human review</a>
+  <a href="#systems">How each system uses it</a>
+  <a href="#phi">Health information</a>
+  <a href="#leave">What stays as it is</a>
+  <a href="#questions">Open questions</a>
+  <a href="#astra-6-adversarial-review">Astra 6 adversarial review</a>
+  <a href="#fable-5-2-adversarial-review">Fable 5.2 adversarial review</a>
+  <a href="current-system.html">Current system</a>
+  <a href="build-spec.html">Build specification</a>
+  <a href="rollout.html">90-day rollout</a>
+  <a href="executive-summary.html">Executive summary</a>
+  <a href="solution-design.html">Solution design</a>
+  <a href="worked-examples.html">Worked examples</a>
+</nav>
+<main>
+<div class="topline"><span class="wordmark" aria-label="Lumen Health">LUMEN HEALTH</span><span>Solution architect case study</span></div>
+<header>
+  <p class="eyebrow">Target architecture</p>
+  <h1>Target architecture: one customer identity across four systems</h1>
+  <p>Lumen Health case study. The design that replaces the guesswork in <code>legacy-sync</code>, written against the findings in <a href="current-system.html">how legacy-sync works today</a>.</p>
+  <p>Every design choice below answers a failure in the current system. Where the brief leaves something open, the assumption is written down in the last section.</p>
+</header>
+
+<section id="summary">
+<h2>Summary</h2>
+<p>A small identity service sits between the commercial systems and the clinical systems. It gives every real person one opaque <code>person_key</code> and links each record in e-commerce, the CRM, the portal and the EHR to that key with a confidence score and the evidence behind it. Links the service is sure of are made automatically. Uncertain ones go to a review queue for a person to decide. Nothing is ever guessed from a surname and a zip code again.</p>
+<p>Each kit carries three roles, buyer, registrant and patient, so a gift or a family purchase no longer has to be forced onto one CRM account. A kit registration is accepted the moment the customer submits it: the service creates a provisional person and resolves it afterwards. Contact details keep their history instead of being overwritten, consent is recorded per channel and the strictest setting survives a merge. The CRM and marketing receive the key, the stage of each kit and consent. Nothing clinical crosses to them.</p>
+<div class="tiles">
+  <div class="tile"><b>One key</b><span>per person, added beside every system's own IDs, never replacing them</span></div>
+  <div class="tile"><b>Three roles</b><span>per kit: buyer, registrant, patient, which may be three people</span></div>
+  <div class="tile"><b>Zero waits</b><span>registration never depends on identity or the CRM</span></div>
+  <div class="tile"><b>Every link</b><span>carries a confidence, its evidence and can be undone</span></div>
+  <div class="tile"><b>Review, not guess</b><span>uncertain pairs go to a queue with reason codes</span></div>
+  <div class="tile"><b>Minimum necessary</b><span>outside the health-data boundary: key, contact, consent, stage</span></div>
+</div>
+</section>
+
+<section id="principles">
+<h2>Principles</h2>
+<p>Each principle is paired with the current-system failure it answers.</p>
+<div class="scroll"><table>
+<tr><th>Principle</th><th>What it means</th><th>Answers</th></tr>
+<tr><td>One key, many records</td><td>The person key is added alongside every system's native ID. No system gives up its own identifier and no record is deleted to create identity.</td><td>The CRM account standing in for the person, which the CRM replacement would have broken</td></tr>
+<tr><td>Evidence, not guesses</td><td>A link exists only with a recorded reason: which fields agreed, which disagreed and a match score. Any link can be reversed.</td><td>Surname-and-zip matching, first match wins, no record of why</td></tr>
+<tr><td>Uncertain means a person decides</td><td>Pairs between the thresholds wait in a review queue. Until decided, both records stay separate people.</td><td>Relatives filed on each other's accounts</td></tr>
+<tr><td>Roles, not one slot</td><td>A kit has a buyer, a registrant and a patient. A household is a relationship between people, never a reason to treat them as one.</td><td>Gift purchases that have to be moved and then fail</td></tr>
+<tr><td>Registration never waits</td><td>The portal accepts first. Identity resolution runs afterwards on a provisional person.</td><td>Duplicate-rule and identity-conflict rejections, inactive-owner failures</td></tr>
+<tr><td>Contact details have history</td><td>Every observed email and phone is kept with its source and time. A preferred value is chosen, never overwritten by the latest order.</td><td>Emails flipping between relatives</td></tr>
+<tr><td>Consent per channel address</td><td>Opt-outs attach to a phone number or an email address and to the person. When people merge, the strictest setting wins.</td><td>Opt-outs lost on merge</td></tr>
+<tr><td>Minimum necessary</td><td>Systems outside the health-data boundary receive the key, contact details, consent and a kit stage. Test names and results stay inside.</td><td>Health detail spread across sales and marketing records</td></tr>
+<tr><td>Append-only audit</td><td>Every link, unlink, merge, split and read of identity data is an event with an actor and a reason.</td><td>No way today to see how an account came to hold a purchase</td></tr>
+</table></div>
+</section>
+
+<section id="topology">
+<h2>Topology</h2>
+<p>The identity service is a small, separately deployed component with four parts: a resolve API that systems call, a matcher, a review queue and an append-only event log, over one store. It is not inside the CRM, because the CRM is being replaced. It is not inside the portal, because the portal must never wait on it.</p>
+<figure class="diagram" data-svg="t-topology">
+<svg viewBox="0 0 1100 620" role="img" aria-label="Target topology: an identity service between the commercial and clinical systems, holding the person key, links, evidence, review queue and audit log" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="390" y="165" width="320" height="300" rx="10" fill="none" stroke="#737373" stroke-opacity="0.6" stroke-dasharray="6 5"/>
+<text x="404" y="183" font-size="12.5" font-weight="700" fill="#62686d">Identity service, new</text>
+<rect x="450" y="16" width="200" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="550.0" y="36.0" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Customer or gift recipient</tspan></text>
+<path d="M40,139 v66 a95.0,9 0 0 0 190,0 v-66" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="135.0" cy="139" rx="95.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="135.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="15" font-weight="700" fill="#202427">E-commerce</tspan><tspan x="135.0" dy="17" font-size="12.5" fill="#62686d">unchanged</tspan></text>
+<path d="M40,309 v78 a100.0,9 0 0 0 200,0 v-78" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="140.0" cy="309" rx="100.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="140.0" y="335.5" text-anchor="middle" dominant-baseline="middle"><tspan x="140.0" dy="0" font-size="15" font-weight="700" fill="#202427">CRM</tspan><tspan x="140.0" dy="17" font-size="12.5" fill="#62686d">today&#x27;s and its replacement,</tspan><tspan x="140.0" dy="17" font-size="12.5" fill="#62686d">person_key on each account</tspan></text>
+<rect x="40" y="470" width="200" height="56" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="140.0" y="489.5" text-anchor="middle" dominant-baseline="middle"><tspan x="140.0" dy="0" font-size="15" font-weight="700" fill="#202427">Marketing platform</tspan><tspan x="140.0" dy="17" font-size="12.5" fill="#62686d">person_key, kit stage, consent</tspan></text>
+<rect x="410" y="205" width="130" height="50" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="475.0" y="230.0" text-anchor="middle" dominant-baseline="middle"><tspan x="475.0" dy="0" font-size="15" font-weight="700" fill="#202427">Resolve API</tspan></text>
+<rect x="570" y="205" width="120" height="50" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="630.0" y="230.0" text-anchor="middle" dominant-baseline="middle"><tspan x="630.0" dy="0" font-size="15" font-weight="700" fill="#202427">Matcher</tspan></text>
+<rect x="410" y="275" width="130" height="50" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="475.0" y="300.0" text-anchor="middle" dominant-baseline="middle"><tspan x="475.0" dy="0" font-size="15" font-weight="700" fill="#202427">Review queue</tspan></text>
+<rect x="570" y="275" width="120" height="50" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="630.0" y="300.0" text-anchor="middle" dominant-baseline="middle"><tspan x="630.0" dy="0" font-size="15" font-weight="700" fill="#202427">Event log</tspan></text>
+<path d="M430,354 v78 a120.0,9 0 0 0 240,0 v-78" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<ellipse cx="550.0" cy="354" rx="120.0" ry="9" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="550.0" y="380.5" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="15" font-weight="700" fill="#202427">Identity store</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">person, source_record, identifier,</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">relationship, kit_role, consent</tspan></text>
+<path d="M870,139 v66 a95.0,9 0 0 0 190,0 v-66" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="965.0" cy="139" rx="95.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="965.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="965.0" dy="0" font-size="15" font-weight="700" fill="#202427">Member portal</tspan><tspan x="965.0" dy="17" font-size="12.5" fill="#62686d">accepts first, resolves after</tspan></text>
+<path d="M870,309 v66 a90.0,9 0 0 0 180,0 v-66" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<ellipse cx="960.0" cy="309" rx="90.0" ry="9" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="960.0" y="329.5" text-anchor="middle" dominant-baseline="middle"><tspan x="960.0" dy="0" font-size="15" font-weight="700" fill="#202427">EHR</tspan><tspan x="960.0" dy="17" font-size="12.5" fill="#62686d">chart carries person_key</tspan><tspan x="960.0" dy="17" font-size="12.5" fill="#62686d">as an external identifier</tspan></text>
+<rect x="860" y="480" width="200" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="960.0" y="500.0" text-anchor="middle" dominant-baseline="middle"><tspan x="960.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Lab partner, unchanged</tspan></text>
+<rect x="430" y="520" width="170" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="515.0" y="540.0" text-anchor="middle" dominant-baseline="middle"><tspan x="515.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Support decides</tspan></text>
+<path d="M450,36.0 L135,36 L135.0,130" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="143" y="85.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="143" dy="0" font-size="11.5" fill="#62686d" font-weight="600">buys</tspan></text>
+<path d="M650,36.0 L965,36 L965.0,130" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="973" y="85.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="973" dy="0" font-size="11.5" fill="#62686d" font-weight="600">registers a kit</tspan></text>
+<path d="M230,162.0 L330,162 L330,220 L410,220.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="330" y="93.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="330" dy="0" font-size="11.5" fill="#202427" font-weight="600">order event: customer_id,</tspan><tspan x="330" dy="17" font-size="11.5" fill="#202427" font-weight="600">email, ship-to, gift flag</tspan></text>
+<path d="M410,240.0 L310,240 L310,330 L240,330.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="300" y="268.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11.5" fill="#202427" font-weight="600">opportunity on the buyer&#x27;s person,</tspan><tspan x="300" dy="17" font-size="11.5" fill="#202427" font-weight="600">recipient as a role, no email rewrite</tspan></text>
+<path d="M240,366.0 L350,366 L350,395 L430,398.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="360" y="420.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="360" dy="0" font-size="11.5" fill="#202427" font-weight="600">rep edits, consent changes</tspan></text>
+<path d="M490.0,441 L490,475 L240,475 L240,488.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="360" y="493.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="360" dy="0" font-size="11.5" fill="#202427" font-weight="600">person_key, kit stage,</tspan><tspan x="360" dy="17" font-size="11.5" fill="#202427" font-weight="600">channel consent, nothing clinical</tspan></text>
+<path d="M870,162.0 L475,152 L475.0,205" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="660" y="111.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="660" dy="0" font-size="11.5" fill="#202427" font-weight="600">registration event,</tspan><tspan x="660" dy="17" font-size="11.5" fill="#202427" font-weight="600">after the portal has accepted it</tspan></text>
+<path d="M540,240.0 L800,240 L800,330 L870,324.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="810" y="268.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="810" dy="0" font-size="11.5" fill="#202427" font-weight="600">person_key written to the chart,</tspan><tspan x="810" dy="17" font-size="11.5" fill="#202427" font-weight="600">chart_id linked back</tspan></text>
+<path d="M1005.0,214 L1000.0,300" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="994.5" y="257.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="994.5" dy="0" font-size="11.5" fill="#94550b" font-weight="600">chart, unchanged</tspan></text>
+<path d="M960.0,480 L960.0,384" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="968.0" y="432.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="968.0" dy="0" font-size="11.5" fill="#94550b" font-weight="600">result by kit barcode</tspan></text>
+<path d="M870,360.0 L760,348 L760,400 L670,398.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="760" y="455.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11.5" fill="#202427" font-weight="600">result event, status only</tspan></text>
+<path d="M515.0,520 L515,500 L515,441" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="523" y="480.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="523" dy="0" font-size="11.5" fill="#62686d" font-weight="600">decisions</tspan></text>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="new">New or changed component</span><span class="ext">Described, no code in the repo</span><span class="person">Person</span></div></figure>
+<p class="caption">Blue components are new or changed. E-commerce, the portal, the EHR and the lab keep their current behaviour; each gains a field for the person key and an event to the identity service.</p>
+<h3>What moves on each hop</h3>
+<div class="scroll"><table>
+<tr><th>Hop</th><th>Payload</th><th>Mode</th><th>Replaces</th></tr>
+<tr><td>E-commerce to identity</td><td>Order event: customer ID, order ID, email, name, phone, shipping name and address, gift flag, kit barcode when shipped</td><td>Webhook or polled feed, asynchronous, idempotent on order ID</td><td>The order sync's three lookups</td></tr>
+<tr><td>Identity to CRM</td><td>Person key on the account, opportunity on the buyer's account, recipient recorded as a role, preferred contact details with provenance</td><td>Asynchronous, retried, idempotent on order ID</td><td><code>update_contact_details</code> and the duplicate-rule create path</td></tr>
+<tr><td>CRM to identity</td><td>Rep edits to contact details, consent changes, support decisions</td><td>Change events</td><td>Hand merges with <code>merge_accounts</code></td></tr>
+<tr><td>Portal to identity</td><td>Registration event after the portal has stored it: kit barcode, email, name, birthdate, phone, registration ID</td><td>Asynchronous. The portal never waits for a reply</td><td><code>register_kit</code> running inside the request</td></tr>
+<tr><td>Identity to portal</td><td>Person key for the registrant, later corrections</td><td>Asynchronous callback or nightly reconcile</td><td>Nothing today</td></tr>
+<tr><td>Identity to EHR</td><td>Person key written as an external identifier on the chart. Chart ID read back</td><td>Asynchronous, through the EHR's identifier API or a nightly file</td><td>Nothing today. The chart is still created by the portal flow</td></tr>
+<tr><td>EHR to identity</td><td>Result event: kit barcode, chart ID and status, without result values</td><td>Asynchronous</td><td>Nothing today. Stage is derived from this</td></tr>
+<tr><td>Identity to marketing</td><td>Person key, kit stage per person, channel consent</td><td>Asynchronous, batched</td><td><code>stage_for_account</code></td></tr>
+<tr><td>Support to identity</td><td>Review decisions, merges, splits, role corrections</td><td>Review UI calling the API</td><td>Detective work in the CRM</td></tr>
+</table></div>
+</section>
+
+<section id="model">
+<h2>Data model</h2>
+<figure class="diagram" data-svg="t-model">
+<svg viewBox="0 0 1040 640" role="img" aria-label="Target data model: a person with linked source records, identifiers with provenance, relationships, kit roles, consent per channel, a review queue and an append-only event log" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="40" y="30" width="240" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,56 V36 a6,6 0 0 1 6,-6 H274 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="160.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">person</text>
+<text x="50" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">person_key</text>
+<text x="270" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="242" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">opaque, never reused</text>
+<text x="50" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">status</text>
+<text x="270" y="84.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">active or merged</text>
+<text x="50" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">merged_into</text>
+<text x="270" y="103.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="242" y="103.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">nullable</text>
+<text x="50" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">created_at</text>
+<rect x="340" y="30" width="300" height="159" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M340,56 V36 a6,6 0 0 1 6,-6 H634 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="490.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">source_record</text>
+<text x="350" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">system, record_id</text>
+<text x="630" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="350" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">person_key</text>
+<text x="630" y="84.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="350" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">confidence</text>
+<text x="630" y="103.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">0 to 1</text>
+<text x="350" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">method</text>
+<text x="630" y="122.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">rule, score, human</text>
+<text x="350" y="141.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">evidence</text>
+<text x="630" y="141.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">which fields agreed</text>
+<text x="350" y="160.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">status</text>
+<text x="630" y="160.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">linked, review, rejected</text>
+<text x="350" y="179.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">linked_at</text>
+<rect x="340" y="250" width="300" height="140" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M340,276 V256 a6,6 0 0 1 6,-6 H634 a6,6 0 0 1 6,6 V276 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="490.0" y="264.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">identifier</text>
+<text x="350" y="285.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">identifier_id</text>
+<text x="630" y="285.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="350" y="304.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">person_key</text>
+<text x="630" y="304.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="350" y="323.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">type</text>
+<text x="630" y="323.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">email, phone, dob, name, address</text>
+<text x="350" y="342.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">value_normalized</text>
+<text x="350" y="361.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">source_system, observed_at</text>
+<text x="630" y="361.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">history kept</text>
+<text x="350" y="380.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">preferred</text>
+<text x="630" y="380.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">chosen, never overwritten</text>
+<rect x="40" y="250" width="240" height="83" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,276 V256 a6,6 0 0 1 6,-6 H274 a6,6 0 0 1 6,6 V276 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="160.0" y="264.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">relationship</text>
+<text x="50" y="285.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">person_a, person_b</text>
+<text x="270" y="285.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="50" y="304.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">type</text>
+<text x="270" y="304.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">household, guardian, gift</text>
+<text x="50" y="323.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">evidence</text>
+<rect x="700" y="30" width="300" height="140" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M700,56 V36 a6,6 0 0 1 6,-6 H994 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="850.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">kit_role</text>
+<text x="710" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="990" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="710" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_id</text>
+<text x="710" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">buyer_person</text>
+<text x="990" y="103.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="710" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">registrant_person</text>
+<text x="990" y="122.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="962" y="122.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">until registered</text>
+<text x="710" y="141.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">patient_person</text>
+<text x="990" y="141.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="962" y="141.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">from the result</text>
+<text x="710" y="160.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">stage</text>
+<text x="990" y="160.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">bought, shipped, registered, resulted</text>
+<rect x="700" y="250" width="300" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M700,276 V256 a6,6 0 0 1 6,-6 H994 a6,6 0 0 1 6,6 V276 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="850.0" y="264.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">consent</text>
+<text x="710" y="285.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">consent_id</text>
+<text x="990" y="285.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="710" y="304.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">person_key</text>
+<text x="990" y="304.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="710" y="323.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">channel, address_value</text>
+<text x="990" y="323.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">sms number or email</text>
+<text x="710" y="342.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">status</text>
+<text x="990" y="342.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">opt_in or opt_out</text>
+<text x="710" y="361.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">source_system, observed_at</text>
+<text x="990" y="361.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">strictest wins</text>
+<rect x="40" y="430" width="300" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,456 V436 a6,6 0 0 1 6,-6 H334 a6,6 0 0 1 6,6 V456 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="190.0" y="444.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">review_item</text>
+<text x="50" y="465.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">review_id</text>
+<text x="330" y="465.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="484.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">record_a, record_b</text>
+<text x="330" y="484.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="50" y="503.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">score, reasons</text>
+<text x="330" y="503.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">codes, no names</text>
+<text x="50" y="522.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">decision, decided_by, decided_at</text>
+<rect x="700" y="430" width="300" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M700,456 V436 a6,6 0 0 1 6,-6 H994 a6,6 0 0 1 6,6 V456 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="850.0" y="444.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">identity_event</text>
+<text x="710" y="465.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">event_id</text>
+<text x="990" y="465.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="962" y="465.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">append only</text>
+<text x="710" y="484.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">person_key</text>
+<text x="990" y="484.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="710" y="503.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kind</text>
+<text x="990" y="503.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">link, unlink, merge, split, view</text>
+<text x="710" y="522.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">actor, reason, at</text>
+<path d="M280,61.0 L340,89.5" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="310.0" y="65.25" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="310.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">1 to many</tspan></text>
+<path d="M280,111.0 L310,111 L310,300 L340,300.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="318" y="200.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="318" dy="0" font-size="11.5" fill="#62686d" font-weight="600">1 to many</tspan></text>
+<path d="M100.0,132 L100.0,250" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="110.0" y="191.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="110.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">2 per row</tspan></text>
+<path d="M640,69.5 L700,60.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="670.0" y="78.75" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="670.0" dy="0" font-size="11.5" fill="#202427" font-weight="600">3 roles per kit</tspan></text>
+<path d="M640,300.0 L700,290.5" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="670.0" y="309.25" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="670.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">per person</tspan></text>
+<path d="M100.0,333 L130.0,430" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="125.0" y="381.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="125.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">pairs under review</tspan></text>
+<path d="M910.0,371 L910.0,430" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="920.0" y="400.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="920.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">every change logged</tspan></text>
+</svg>
+</figure>
+<p class="caption">The person is a key and a status, nothing more. Everything known about the person hangs off it with provenance, so any fact can be traced to the system and moment it came from.</p>
+<div class="scroll"><table>
+<tr><th>Entity</th><th>Purpose</th><th>Rules</th></tr>
+<tr><td><code>person</code></td><td>The identity itself</td><td><code>person_key</code> is an opaque ULID. A merged person is kept with <code>status = merged</code> and <code>merged_into</code>, so old keys keep resolving</td></tr>
+<tr><td><code>source_record</code></td><td>One row per record in any system, the same shape as <code>identities.csv</code></td><td>Every record has exactly one current person. <code>confidence</code> is a match score from 0 to 1. It ranks links and is not a calibrated probability until it has been fitted to labelled pairs. <code>method</code> is rule, score or human. <code>evidence</code> lists the fields that agreed and disagreed</td></tr>
+<tr><td><code>identifier</code></td><td>Every email, phone, name, birthdate and address ever observed for a person</td><td>Append only. One value per type is marked preferred. The CRM reads preferred values; it never writes over them</td></tr>
+<tr><td><code>relationship</code></td><td>Household, guardian and gift relationships between two people</td><td>A relationship is evidence that two people are different, which the matcher uses as a negative signal</td></tr>
+<tr><td><code>kit_role</code></td><td>Buyer, registrant and patient for every kit, with the kit's stage</td><td>Stage comes from events: bought, shipped, registered, resulted. Marketing reads stage from here, per kit and per person</td></tr>
+<tr><td><code>consent</code></td><td>Opt-in or opt-out per channel and address</td><td>Attached to the person and to the address. Merge rules are set out under health information</td></tr>
+<tr><td><code>review_item</code></td><td>One question about two persons, with the record pairs that raised it. States and rules are under <a href="#review">human review</a></td><td>Holds record IDs, score and reason codes only, without names or birthdates, so the queue can be worked outside the clinical zone</td></tr>
+<tr><td><code>identity_event</code></td><td>Append-only audit</td><td>Link, unlink, merge, split and read, with actor and reason. Nothing is ever deleted from it</td></tr>
+</table></div>
+<h3>Normalisation rules</h3>
+<div class="scroll"><table>
+<tr><th>Field</th><th>Rule</th><th>From the data</th></tr>
+<tr><td>Email</td><td>Trim, lower case, drop plus tags. Dots in the local part are kept as a separate variant key, so <code>richard.moore@</code> and <code>richardmoore@</code> compare as near, not equal</td><td>No case or plus-tag noise. Dotted variants and work versus personal addresses are the real variation</td></tr>
+<tr><td>Phone</td><td>Digits only, last ten, stored as E.164</td><td>Four formats across three systems. The EHR already stores digits</td></tr>
+<tr><td>Name</td><td>Case fold, strip punctuation, map nicknames to a canonical form with a published table (Tony to Anthony, Bill to William)</td><td>Nine nickname pairs appear in the CRM</td></tr>
+<tr><td>Birthdate</td><td>ISO date. <code>1920-01-01</code> and blank both mean unknown</td><td>101 placeholder and 140 blank CRM birthdates</td></tr>
+<tr><td>Address</td><td>Street number plus zip as the household key</td><td>75 shared street and zip pairs in e-commerce alone</td></tr>
+</table></div>
+</section>
+
+<section id="matching">
+<h2>Matching and uncertainty</h2>
+<figure class="diagram" data-svg="t-matching">
+<svg viewBox="0 0 1100 420" role="img" aria-label="Matching pipeline: normalise, link deterministically, generate candidate pairs, score, split by threshold into automatic links, a review queue and no link, then cluster under constraints" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="20" y="50" width="170" height="90" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="105.0" y="69.5" text-anchor="middle" dominant-baseline="middle"><tspan x="105.0" dy="0" font-size="15" font-weight="700" fill="#202427">Normalise</tspan><tspan x="105.0" dy="17" font-size="12.5" fill="#62686d">emails, phones, names</tspan><tspan x="105.0" dy="17" font-size="12.5" fill="#62686d">with a nickname table,</tspan><tspan x="105.0" dy="17" font-size="12.5" fill="#62686d">dates, addresses</tspan></text>
+<rect x="215" y="50" width="170" height="90" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="300.0" y="69.5" text-anchor="middle" dominant-baseline="middle"><tspan x="300.0" dy="0" font-size="15" font-weight="700" fill="#202427">Deterministic links</tspan><tspan x="300.0" dy="17" font-size="12.5" fill="#62686d">kit barcode chain,</tspan><tspan x="300.0" dy="17" font-size="12.5" fill="#62686d">order to opportunity</tspan><tspan x="300.0" dy="17" font-size="12.5" fill="#62686d">confidence 1.0</tspan></text>
+<rect x="410" y="50" width="170" height="90" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="495.0" y="69.5" text-anchor="middle" dominant-baseline="middle"><tspan x="495.0" dy="0" font-size="15" font-weight="700" fill="#202427">Candidate pairs</tspan><tspan x="495.0" dy="17" font-size="12.5" fill="#62686d">share an email, a phone,</tspan><tspan x="495.0" dy="17" font-size="12.5" fill="#62686d">surname and zip,</tspan><tspan x="495.0" dy="17" font-size="12.5" fill="#62686d">or surname and birthdate</tspan></text>
+<rect x="605" y="50" width="180" height="90" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="695.0" y="69.5" text-anchor="middle" dominant-baseline="middle"><tspan x="695.0" dy="0" font-size="15" font-weight="700" fill="#202427">Score the pair</tspan><tspan x="695.0" dy="17" font-size="12.5" fill="#62686d">agree and disagree weights</tspan><tspan x="695.0" dy="17" font-size="12.5" fill="#62686d">birthdate conflict is a veto</tspan><tspan x="695.0" dy="17" font-size="12.5" fill="#62686d">household is not identity</tspan></text>
+<polygon points="880,55.0 955.0,95 880,135.0 805.0,95" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="880" y="95.0" text-anchor="middle" dominant-baseline="middle"><tspan x="880" dy="0" font-size="13.5" font-weight="700" fill="#202427">Score?</tspan></text>
+<rect x="920" y="250" width="170" height="56" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="1005.0" y="269.5" text-anchor="middle" dominant-baseline="middle"><tspan x="1005.0" dy="0" font-size="15" font-weight="700" fill="#202427">0.90 and above</tspan><tspan x="1005.0" dy="17" font-size="12.5" fill="#62686d">link automatically</tspan></text>
+<rect x="640" y="260" width="190" height="56" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="735.0" y="279.5" text-anchor="middle" dominant-baseline="middle"><tspan x="735.0" dy="0" font-size="15" font-weight="700" fill="#202427">0.60 to 0.90</tspan><tspan x="735.0" dy="17" font-size="12.5" fill="#62686d">review queue, with reasons</tspan></text>
+<rect x="420" y="260" width="170" height="56" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="505.0" y="279.5" text-anchor="middle" dominant-baseline="middle"><tspan x="505.0" dy="0" font-size="15" font-weight="700" fill="#202427">below 0.60</tspan><tspan x="505.0" dy="17" font-size="12.5" fill="#62686d">no link</tspan></text>
+<rect x="640" y="340" width="250" height="70" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="765.0" y="358.0" text-anchor="middle" dominant-baseline="middle"><tspan x="765.0" dy="0" font-size="15" font-weight="700" fill="#202427">Constrained clustering</tspan><tspan x="765.0" dy="17" font-size="12.5" fill="#62686d">no cluster with two birthdates,</tspan><tspan x="765.0" dy="17" font-size="12.5" fill="#62686d">EHR charts never merged by code</tspan></text>
+<rect x="20" y="340" width="340" height="70" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="190.0" y="358.0" text-anchor="middle" dominant-baseline="middle"><tspan x="190.0" dy="0" font-size="15" font-weight="700" fill="#202427">Outputs</tspan><tspan x="190.0" dy="17" font-size="12.5" fill="#62686d">person_key and confidence per record,</tspan><tspan x="190.0" dy="17" font-size="12.5" fill="#62686d">review items, event log entries</tspan></text>
+<path d="M190,95.0 L215,95.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M385,95.0 L410,95.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M580,95.0 L605,95.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M785,95.0 L805.0,95.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M955.0,95.0 L1005,165 L1005.0,250" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-system)"/>
+<path d="M880.0,135.0 L880,235 L735,235 L735.0,260" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-ext)"/>
+<path d="M880,235 L505,235 L505.0,260" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="600" y="225.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="600" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no link</tspan></text>
+<path d="M1005.0,306 L1005,375 L890,375.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-system)"/>
+<text x="1013" y="340.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="1013" dy="0" font-size="11.5" fill="#202427" font-weight="600">accepted links</tspan></text>
+<path d="M735.0,316 L735.0,340" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="743.0" y="328.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="743.0" dy="0" font-size="11.5" fill="#94550b" font-weight="600">human yes or no</tspan></text>
+<path d="M640,375.0 L360,375.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+</svg>
+<div class="legend"><span class="step">Step or decision</span><span class="new">New or changed component</span><span class="system">System record</span><span class="ext">Described, no code in the repo</span></div></figure>
+<p class="caption">Deterministic links first, scored pairs second, people last. The thresholds are set for precision: a wrong merge exposes one person's health information to another, a missed link costs a review.</p>
+<h3>Deterministic links</h3>
+<ul>
+  <li>Registration to chart through the lab result for the same kit barcode. In the sample all 406 results carry the registration's name and birthdate.</li>
+  <li>Order to opportunity through <code>ecom_order_id</code> and order to kit through <code>order_id</code>. These link records, not people: the buyer is the order's customer, the registrant is whoever registered the kit.</li>
+  <li><code>ecom_customer_id</code> on a CRM account is treated as weak evidence, not a key. The sync stamped it onto relatives' accounts.</li>
+</ul>
+<h3>Candidate pairs</h3>
+<p>Two records are compared only when they share a normalised email, a normalised phone, a surname and zip, or a surname and birthdate. In the sample this keeps the comparisons in the low thousands instead of the two million possible pairs.</p>
+<h3>Scoring</h3>
+<div class="scroll"><table>
+<tr><th>Field</th><th>Agree</th><th>Disagree</th><th>Note</th></tr>
+<tr><td>Email, exact</td><td>Strong positive</td><td>None</td><td>Many people have several addresses, so disagreement says nothing</td></tr>
+<tr><td>Email, dotted variant or same mailbox</td><td>Positive</td><td>None</td><td></td></tr>
+<tr><td>Phone</td><td>Positive</td><td>None</td><td>39 phones are shared by two e-commerce customers, so it is weaker than email</td></tr>
+<tr><td>Birthdate, both present</td><td>Strong positive</td><td>Veto</td><td>Two known birthdates that differ are different people, with no exception for a likely typo. A mistyped birthdate costs a review</td></tr>
+<tr><td>First name, after nicknames</td><td>Positive</td><td>Strong negative</td><td>Kevin and Kevin Jr share everything but a birthdate</td></tr>
+<tr><td>Surname</td><td>Small positive</td><td>Negative</td><td>Marriage and typos keep this soft</td></tr>
+<tr><td>Street and zip</td><td>Small positive</td><td>None</td><td>Agreement means the same household, which is not the same person</td></tr>
+<tr><td>Known relationship</td><td></td><td>Strong negative</td><td>Two people already recorded as a household or a gift pair stay two people</td></tr>
+</table></div>
+<p>Weights follow the Fellegi-Sunter form: the log ratio of how often a field agrees for true matches against how often it agrees by chance. In the working slice the weights are set by hand, so its scores rank pairs and are not probabilities.</p>
+<h3>Validation before any automatic link is trusted</h3>
+<ul>
+  <li>The unit is the automatic link: a record pair at or above the threshold. The population is every such pair.</li>
+  <li>A simple random sample of that population is labelled independently by two reviewers, with a third settling disagreements. The slice draws this sample with a fixed seed.</li>
+  <li>The false-match rate is reported with a 95 percent Wilson interval, which is valid because the sample is random and complete. The upper bound is held against the gate, never the point estimate.</li>
+  <li>The rollout gate asks for at least 600 labelled automatic links. With no false match in 600 the upper bound is about 0.6 percent. The acceptable bound is a decision for the privacy officer.</li>
+  <li>Samples of the review queue and of pairs just under the threshold are labelled too. They estimate reviewer workload and missed links and say nothing about automatic-link precision.</li>
+  <li>Rule families that have not been measured stay in review whatever they score. Today that covers addresses that match only after a plus tag is removed. Phone numbers with a non-US country code match only on every digit.</li>
+  <li>Weights are refitted from review decisions. The sample is redrawn and relabelled after each refit.</li>
+</ul>
+<h3>Thresholds</h3>
+<ul>
+  <li>0.90 and above: link automatically, record evidence, raise an event. The 0.90 figure is provisional until the validation above has been run. Until then the service runs in shadow and writes nothing.</li>
+  <li>0.60 to 0.90: create a review item. Both records remain separate people until decided.</li>
+  <li>Below 0.60: no link, no item.</li>
+</ul>
+<h3>Clustering</h3>
+<p>Accepted links are grouped into people with two constraints. A person may not hold two different birthdates. Two EHR charts are never merged by code; a chart pair that scores as one person goes to clinical operations as a review item. Transitive closure runs only across automatic and human-accepted links, never across review items. A record's confidence is the weakest link on its path into the cluster.</p>
+<h3>What happens while a pair is under review</h3>
+<ul>
+  <li>Both records stay separate people. A registration keeps its provisional person, so the kit, its chart and its result remain attached to the registrant and results are shown without delay.</li>
+  <li>The CRM shows the account with a pending-review flag. Nothing is moved.</li>
+  <li>Marketing reads kit stage, which does not depend on the review, so the registrant is not asked to register again.</li>
+  <li>Review items carry reason codes such as same surname and zip, birthdate missing on one side, email shared by two first names. A reviewer sees the two records side by side inside the restricted zone and decides same, different or cannot tell.</li>
+  <li>Every decision is an event and becomes a labelled pair for the next calibration.</li>
+</ul>
+<h3>Traps the sample data teaches</h3>
+<ul>
+  <li>Eight registration emails are used by more than one person and five EHR emails sit on more than one chart. A shared email is a household signal, not an identity.</li>
+  <li>Twenty non-gift kits were registered by the buyer under a second email. Work and personal addresses for one person are common, so a new email must not create a new person when phone, birthdate and name agree.</li>
+  <li>Same-name relatives with different birthdates exist. The birthdate veto handles them where a birthdate is present. Where the CRM has none, the pair goes to review.</li>
+  <li>Consecutive e-commerce customer IDs often belong to one person. That is how the sample was generated, not evidence. The matcher must not use it.</li>
+</ul>
+<p>The working slice is the reference implementation of this section. It reads <code>data/</code>, writes <code>identities.csv</code> and <code>review_queue.csv</code> and prints the precision estimate against the labelled pairs.</p>
+</section>
+
+<section id="review">
+<h2>Human review</h2>
+<p>Review is the second half of matching, not an exception path. The matcher links what it is sure of and hands everything else to a person. Review is asynchronous by design: nothing a customer does ever waits for a reviewer. Every system has a defined behaviour while an item is open.</p>
+<p>This section is a design. The working slice produces the queue as a file and implements none of the workflow below.</p>
+<h3>What sends a pair to review</h3>
+<div class="scroll"><table>
+<tr><th>Trigger</th><th>Example</th><th>Reason code family</th></tr>
+<tr><td>Score between the thresholds</td><td>Same name, phone and address, no birthdate on either record</td><td><code>birthdate_missing</code> with the evidence that agreed</td></tr>
+<tr><td>Score above the threshold but a cluster rule blocks the merge</td><td>Joining would put two birthdates or two first names in one person</td><td><code>cluster_conflict_*</code></td></tr>
+<tr><td>Two EHR charts that look like one person</td><td>Same name and birthdate, two chart IDs</td><td><code>two_ehr_charts_never_auto_merged</code></td></tr>
+<tr><td>Evidence from a rule that has not been measured</td><td>Addresses equal only after a plus tag is removed</td><td><code>unvalidated_rule</code></td></tr>
+<tr><td>Random audit of automatic links</td><td>A share of links the matcher made without help</td><td><code>audit_sample</code></td></tr>
+<tr><td>A person asks</td><td>A customer, support agent or clinician reports a wrong or missing link</td><td><code>reported</code></td></tr>
+</table></div>
+<p>The random audit is how the false-match rate is measured and kept measured. A fixed share of automatic links, 2 percent to start, is drawn at random each day and reviewed blind, without the matcher's score on screen. The labelled sample used before go-live is the first batch of this audit. The audit never stops.</p>
+<h3>Lifecycle of a review item</h3>
+<figure class="diagram" data-svg="t-review">
+<svg viewBox="0 0 1100 400" role="img" aria-label="Review item lifecycle: open, claimed, decided, applied and closed, with side paths for a lapsed claim, escalation, an item superseded by new evidence and a decision that fails to apply" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="20" y="150" width="150" height="70" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="95.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="95.0" dy="0" font-size="15" font-weight="700" fill="#202427">Open</tspan><tspan x="95.0" dy="17" font-size="12.5" fill="#62686d">queued with score</tspan><tspan x="95.0" dy="17" font-size="12.5" fill="#62686d">and reason codes</tspan></text>
+<rect x="235" y="150" width="150" height="70" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="310.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="310.0" dy="0" font-size="15" font-weight="700" fill="#202427">Claimed</tspan><tspan x="310.0" dy="17" font-size="12.5" fill="#62686d">one reviewer,</tspan><tspan x="310.0" dy="17" font-size="12.5" fill="#62686d">30-minute lease</tspan></text>
+<rect x="450" y="150" width="160" height="70" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="530.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="530.0" dy="0" font-size="15" font-weight="700" fill="#202427">Decided</tspan><tspan x="530.0" dy="17" font-size="12.5" fill="#62686d">same, different</tspan><tspan x="530.0" dy="17" font-size="12.5" fill="#62686d">or cannot tell</tspan></text>
+<rect x="675" y="150" width="160" height="70" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="755.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="755.0" dy="0" font-size="15" font-weight="700" fill="#202427">Applying</tspan><tspan x="755.0" dy="17" font-size="12.5" fill="#62686d">re-check evidence,</tspan><tspan x="755.0" dy="17" font-size="12.5" fill="#62686d">merge or keep apart</tspan></text>
+<rect x="900" y="150" width="180" height="70" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="990.0" y="168.0" text-anchor="middle" dominant-baseline="middle"><tspan x="990.0" dy="0" font-size="15" font-weight="700" fill="#202427">Closed</tspan><tspan x="990.0" dy="17" font-size="12.5" fill="#62686d">event logged, consumers</tspan><tspan x="990.0" dy="17" font-size="12.5" fill="#62686d">notified, label stored</tspan></text>
+<rect x="450" y="30" width="160" height="60" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="530.0" y="43.0" text-anchor="middle" dominant-baseline="middle"><tspan x="530.0" dy="0" font-size="15" font-weight="700" fill="#202427">Escalated</tspan><tspan x="530.0" dy="17" font-size="12.5" fill="#62686d">second reviewer or</tspan><tspan x="530.0" dy="17" font-size="12.5" fill="#62686d">clinical operations</tspan></text>
+<rect x="40" y="290" width="190" height="64" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="135.0" y="305.0" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="15" font-weight="700" fill="#202427">Superseded</tspan><tspan x="135.0" dy="17" font-size="12.5" fill="#62686d">evidence changed,</tspan><tspan x="135.0" dy="17" font-size="12.5" fill="#62686d">pair re-scored</tspan></text>
+<rect x="675" y="300" width="160" height="64" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="755.0" y="315.0" text-anchor="middle" dominant-baseline="middle"><tspan x="755.0" dy="0" font-size="15" font-weight="700" fill="#202427">Apply failed</tspan><tspan x="755.0" dy="17" font-size="12.5" fill="#62686d">retried, then paged</tspan><tspan x="755.0" dy="17" font-size="12.5" fill="#62686d">nothing half-applied</tspan></text>
+<path d="M170,185.0 L235,185.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="202.5" y="175.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="202.5" dy="0" font-size="11.5" fill="#202427" font-weight="600">claim</tspan></text>
+<path d="M385,185.0 L450,185.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="417.5" y="175.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="417.5" dy="0" font-size="11.5" fill="#202427" font-weight="600">decide</tspan></text>
+<path d="M610,185.0 L675,185.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="642.5" y="175.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="642.5" dy="0" font-size="11.5" fill="#202427" font-weight="600">same or different</tspan></text>
+<path d="M835,185.0 L900,185.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-system)"/>
+<text x="867.5" y="175.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="867.5" dy="0" font-size="11.5" fill="#202427" font-weight="600">committed</tspan></text>
+<path d="M280.0,150 L280,110 L95,110 L95.0,150" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="190" y="100.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="190" dy="0" font-size="11.5" fill="#62686d" font-weight="600">lease lapses</tspan></text>
+<path d="M530.0,150 L530.0,90" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="540.0" y="103.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540.0" dy="0" font-size="11.5" fill="#94550b" font-weight="600">cannot tell, chart pair</tspan><tspan x="540.0" dy="17" font-size="11.5" fill="#94550b" font-weight="600">or high-risk merge</tspan></text>
+<path d="M610,60.0 L755,60 L755.0,150" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="690" y="50.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="690" dy="0" font-size="11.5" fill="#94550b" font-weight="600">second decision</tspan></text>
+<path d="M115.0,220 L135.0,290" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="135.0" y="255.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="135.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">new record or link</tspan></text>
+<path d="M715.0,220 L715,260 L140,260 L160.0,290" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="430" y="250.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="430" dy="0" font-size="11.5" fill="#62686d" font-weight="600">evidence no longer matches the decision</tspan></text>
+<path d="M775.0,220 L775.0,300" fill="none" stroke="#c00000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-risk)"/>
+<text x="783.0" y="260.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="783.0" dy="0" font-size="11.5" fill="#980000" font-weight="600">error</tspan></text>
+<path d="M95.0,354 L75,385 L8,385 L8,185 L20,185.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="90" y="385.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="90" dy="0" font-size="11.5" fill="#62686d" font-weight="600">re-queued, or closed as moot</tspan></text>
+</svg>
+<div class="legend"><span class="step">Step or decision</span><span class="new">New or changed component</span><span class="system">System record</span><span class="ext">Described, no code in the repo</span><span class="risk">Where it fails</span></div></figure>
+<p class="caption">One item is one question: are these two persons the same person. Record pairs that raise the same question are attached to the item as evidence, so a reviewer answers it once.</p>
+<div class="scroll"><table>
+<tr><th>State</th><th>Meaning</th><th>Leaves when</th></tr>
+<tr><td>Open</td><td>Waiting in the queue, ordered by priority</td><td>A reviewer claims it, or its evidence changes</td></tr>
+<tr><td>Claimed</td><td>One reviewer holds it under a 30-minute lease</td><td>They decide, release it or the lease lapses and it returns to open</td></tr>
+<tr><td>Decided</td><td>Same, different or cannot tell, with a reason chosen from a list</td><td>The decision is applied, or it needs a second person</td></tr>
+<tr><td>Escalated</td><td>Waiting for a second reviewer or for clinical operations</td><td>The second decision agrees, or a lead settles a disagreement</td></tr>
+<tr><td>Applying</td><td>The service re-checks the evidence and commits the merge or the keep-apart rule</td><td>The transaction commits or fails</td></tr>
+<tr><td>Closed</td><td>Applied, logged and stored as a labelled pair</td><td>Final. A later correction is a new item, never an edit</td></tr>
+<tr><td>Superseded</td><td>A new record or link changed what the item was about</td><td>The pair is re-scored: linked automatically, re-queued or closed as moot</td></tr>
+<tr><td>Apply failed</td><td>The commit did not succeed</td><td>Retried automatically, then raised to the on-call engineer</td></tr>
+</table></div>
+<h3>What every system does while an item is open</h3>
+<div class="scroll"><table>
+<tr><th>System</th><th>Behaviour while the question is undecided</th></tr>
+<tr><td>Member portal</td><td>Nothing changes for the customer. The registration stands, the kit belongs to its provisional person and results are shown to that registrant as soon as they exist</td></tr>
+<tr><td>EHR and lab</td><td>Unaffected. A chart is never merged or re-pointed by an open item</td></tr>
+<tr><td>CRM</td><td>Both accounts stay as they are, each flagged as under review. Purchases are not moved</td></tr>
+<tr><td>Marketing</td><td>Stage is read per kit, so it does not depend on the answer. Consent is read as the stricter of the two persons for any address they share, so an undecided pair can never loosen an opt-out</td></tr>
+<tr><td>Support</td><td>Sees both persons and a link to the open item</td></tr>
+<tr><td>Identity service</td><td>Treats the two as different people. New evidence on either one supersedes the item</td></tr>
+</table></div>
+<p>The rule behind the table: an open item is always resolved in the safe direction. Two people are kept apart until someone says otherwise, because a wrong merge exposes health information and a missed merge only delays tidiness.</p>
+<h3>Decisions and what they do</h3>
+<div class="scroll"><table>
+<tr><th>Decision</th><th>Effect</th><th>Second person needed</th></tr>
+<tr><td>Same person</td><td>The two persons merge. One key survives and the other keeps resolving to it. Consent follows the consent rules. Consumers are told through the outbox</td><td>Yes when either side holds an EHR chart or a result, or when the two sides carry different surnames</td></tr>
+<tr><td>Different people</td><td>A keep-apart rule is stored for the pair. The matcher treats it as a veto, so the same question is never asked again unless new evidence arrives. A household relationship is recorded where the evidence shows one</td><td>No</td></tr>
+<tr><td>Cannot tell</td><td>Nothing merges. The item escalates to a lead, who may request more information through support</td><td>Always</td></tr>
+<tr><td>Two charts, one patient</td><td>The identity service links both charts to one person and raises a task for clinical operations. Charts are merged only in the EHR by clinical staff</td><td>Clinical operations decide</td></tr>
+<tr><td>Wrong link reported</td><td>A split: the person is divided along the links the reviewer rejects, each side gets back its own history from the event log and a keep-apart rule is stored</td><td>Yes</td></tr>
+</table></div>
+<h3>Service levels and escalation</h3>
+<div class="scroll"><table>
+<tr><th>Priority</th><th>What is in it</th><th>Age target</th><th>If missed</th></tr>
+<tr><td>1</td><td>Reported wrong links, plus any item where one side has results</td><td>4 working hours</td><td>Paged to the queue owner</td></tr>
+<tr><td>2</td><td>Items blocking a support case or a gift</td><td>1 working day</td><td>Raised in the daily queue report</td></tr>
+<tr><td>3</td><td>Everything else, including the random audit</td><td>2 working days</td><td>Raised in the daily queue report</td></tr>
+</table></div>
+<p>An item that passes twice its age target is raised to the head of operations. No item expires into a decision: silence never merges and never closes. The targets are proposals, to be set with whoever staffs the queue.</p>
+<h3>Safeguards</h3>
+<ul>
+  <li>Least exposure. The queue lists items by ID, score and reason code. Names, birthdates and contact details appear only on the comparison screen for the item a reviewer has claimed. That read is logged. Result values are never shown.</li>
+  <li>Blind audit. Audit items hide the matcher's score and decision, so the reviewer is not led.</li>
+  <li>Two-person rule for merges that touch clinical records, as set out above. The second reviewer does not see the first decision.</li>
+  <li>No self-review. A reviewer cannot decide an item about their own record or one they reported.</li>
+  <li>Stale-decision check. When a decision is applied, the service compares the evidence the reviewer saw with the evidence now. If a record, link or birthdate changed in between, the decision is not applied and the item is superseded.</li>
+  <li>Constraints still hold. A human decision cannot create a person with two EHR charts merged by code. A merge that would put two known birthdates on one person requires the reviewer to mark which is the error. It is then routed to a lead.</li>
+  <li>Reversible. Every merge can be split from the event log. Nothing is deleted.</li>
+  <li>Reviewer quality. A share of closed items is re-reviewed by a second person. Agreement is tracked per reviewer.</li>
+  <li>No bulk decisions. There is no approve-all. Decisions are rate-limited per reviewer.</li>
+</ul>
+<h3>Errors and how each is handled</h3>
+<div class="scroll"><table>
+<tr><th>Failure</th><th>Handling</th></tr>
+<tr><td>Reviewer abandons a claimed item</td><td>The lease lapses after 30 minutes and the item returns to open with its age unchanged</td></tr>
+<tr><td>Two reviewers act on one item</td><td>The claim is a conditional update, so only one succeeds. The other sees that it is taken</td></tr>
+<tr><td>Decision submitted twice</td><td>Decisions carry an idempotency key. The second submission returns the first result</td></tr>
+<tr><td>Evidence changed while the item was open</td><td>Superseded and re-scored, as above. The reviewer is told why</td></tr>
+<tr><td>The merge transaction fails</td><td>Nothing is half-applied: merge, consent, event and outbox rows commit together. Retried three times, then the item moves to apply failed and the on-call engineer is paged</td></tr>
+<tr><td>A consumer does not receive the outcome</td><td>The outcome sits in the identity service's outbox and is retried, the same way registrations are in the <a href="build-spec.html">build specification</a>. The decision stands either way</td></tr>
+<tr><td>Two reviewers disagree</td><td>Goes to a lead. The disagreement is kept as a label of its own, because it marks a hard case</td></tr>
+<tr><td>A decision turns out to be wrong</td><td>Reported as a wrong link, which opens a priority 1 item and a split. If results were visible to the wrong person in the meantime, the privacy officer is notified and the incident process starts</td></tr>
+<tr><td>The queue grows faster than it drains</td><td>Alert when the oldest priority 3 item passes its target or the queue doubles in a week. The response is staffing or sending fewer families to review once they are measured, never lowering the threshold to clear a backlog</td></tr>
+<tr><td>The review screen or queue is unavailable</td><td>Items wait. Nothing customer-facing depends on it</td></tr>
+</table></div>
+<h3>What review feeds back</h3>
+<ul>
+  <li>Every closed item is a labelled pair. The audit items give the false-match rate of automatic links, with its interval, on a dashboard that the rollout gates read.</li>
+  <li>Weights are refitted from the labels on a schedule. After a refit the thresholds are re-validated on a fresh random sample before the new weights go live.</li>
+  <li>A reason-code family whose reviewed items come back the same person nearly every time is a candidate for automatic linking. One that comes back different people is a candidate for a stronger negative weight.</li>
+  <li>Measures: queue size and age by priority, decisions per day, share decided same, reviewer agreement, superseded share, apply failures, false-match rate from the audit, wrong links reported.</li>
+</ul>
+</section>
+
+<section id="systems">
+<h2>How each system uses the identity</h2>
+<div class="scroll"><table>
+<tr><th>System</th><th>Today</th><th>Target</th><th>Change to make</th></tr>
+<tr><td>E-commerce</td><td>One customer per email. The sync guesses the account.</td><td>Unchanged model. Each order raises an event; the person key comes back and is stored on the customer as a metafield or tag.</td><td>Order webhook to the identity service. A field for the key. Email is never written back</td></tr>
+<tr><td>CRM, today's</td><td>Account is the person. Email overwritten by every order. Duplicate rule blocks creates. Gifts moved by hand.</td><td>Account carries <code>person_key</code>. Opportunities land on the buyer's account. The recipient is a role on the opportunity. Preferred contact details come from the identity store with their source. Duplicate rule set to alert and judged by the matcher instead.</td><td>Custom field for the key and the recipient role. Sync rewritten as a consumer of identity events. Merges done through the service</td></tr>
+<tr><td>CRM, replacement</td><td>Not yet built</td><td>Keyed on <code>person_key</code> from day one. Account is a view of a person, not the source of identity.</td><td>Migration maps each old account to a person key, so the new CRM starts clean</td></tr>
+<tr><td>Member portal</td><td>Calls the CRM inside the registration request and fails when it fails.</td><td>Accepts the registration, stores it, emits an event. Shows results through the kit's patient role. Stores the person key when it arrives.</td><td>Remove the synchronous CRM call. Add the event and the key field</td></tr>
+<tr><td>EHR</td><td>Chart created from name and birthdate, linked to nothing but the lab result.</td><td>Still the clinical system of record. Chart carries the person key as an external identifier. Suspected duplicate charts are flagged to clinical operations, never merged by code.</td><td>External identifier field. Result status event out</td></tr>
+<tr><td>Lab</td><td>Result by kit barcode</td><td>Unchanged</td><td>None</td></tr>
+<tr><td>Marketing</td><td>Stage per CRM account, computed by a helper nothing calls</td><td>Stage per kit and per person from <code>kit_role</code>. "Please register" goes only for kits with no registration event. Sends are suppressed by channel consent.</td><td>Feed of person key, stage and consent, without product names or results</td></tr>
+<tr><td>Support</td><td>Moves purchases and merges accounts by hand, blocked by inactive owners</td><td>Works the review queue, corrects roles and merges or splits people through the service. Every action is logged and reversible.</td><td>A review screen over the API</td></tr>
+</table></div>
+<h3>Registration without waiting</h3>
+<figure class="diagram" data-svg="t-registration">
+<svg viewBox="0 0 1100 330" role="img" aria-label="Registration never waits on identity: the portal accepts, a provisional person is created, resolution runs afterwards and a merge or a review item follows" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="20" y="90" width="180" height="80" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="110.0" y="113.0" text-anchor="middle" dominant-baseline="middle"><tspan x="110.0" dy="0" font-size="15" font-weight="700" fill="#202427">Portal accepts</tspan><tspan x="110.0" dy="17" font-size="12.5" fill="#62686d">the registration</tspan><tspan x="110.0" dy="17" font-size="12.5" fill="#62686d">milliseconds</tspan></text>
+<rect x="230" y="90" width="200" height="80" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="330.0" y="113.0" text-anchor="middle" dominant-baseline="middle"><tspan x="330.0" dy="0" font-size="15" font-weight="700" fill="#202427">Provisional person</tspan><tspan x="330.0" dy="17" font-size="12.5" fill="#62686d">linked to this registration</tspan><tspan x="330.0" dy="17" font-size="12.5" fill="#62686d">with confidence 1.0</tspan></text>
+<rect x="460" y="90" width="190" height="80" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="555.0" y="113.0" text-anchor="middle" dominant-baseline="middle"><tspan x="555.0" dy="0" font-size="15" font-weight="700" fill="#202427">Kit stage: registered</tspan><tspan x="555.0" dy="17" font-size="12.5" fill="#62686d">chart and lab flow</tspan><tspan x="555.0" dy="17" font-size="12.5" fill="#62686d">continue as today</tspan></text>
+<rect x="680" y="90" width="190" height="80" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="775.0" y="113.0" text-anchor="middle" dominant-baseline="middle"><tspan x="775.0" dy="0" font-size="15" font-weight="700" fill="#202427">Resolve in the background</tspan><tspan x="775.0" dy="17" font-size="12.5" fill="#62686d">match against</tspan><tspan x="775.0" dy="17" font-size="12.5" fill="#62686d">existing people</tspan></text>
+<polygon points="980,90.0 1055.0,130 980,170.0 905.0,130" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="980" y="130.0" text-anchor="middle" dominant-baseline="middle"><tspan x="980" dy="0" font-size="13.5" font-weight="700" fill="#202427">Confident?</tspan></text>
+<rect x="680" y="230" width="190" height="60" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="775.0" y="251.5" text-anchor="middle" dominant-baseline="middle"><tspan x="775.0" dy="0" font-size="15" font-weight="700" fill="#202427">Merge provisional into</tspan><tspan x="775.0" dy="17" font-size="12.5" fill="#62686d">the person, log the event</tspan></text>
+<rect x="900" y="230" width="190" height="60" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="995.0" y="251.5" text-anchor="middle" dominant-baseline="middle"><tspan x="995.0" dy="0" font-size="15" font-weight="700" fill="#202427">Review item</tspan><tspan x="995.0" dy="17" font-size="12.5" fill="#62686d">kit keeps the provisional person</tspan></text>
+<path d="M200,130.0 L230,130.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M430,130.0 L460,130.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M650,130.0 L680,130.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M870,130.0 L905.0,130.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M950.0,170.0 L950,200 L775,200 L775.0,230" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-system)"/>
+<text x="958" y="185.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="958" dy="0" font-size="11.5" fill="#202427" font-weight="600">yes</tspan></text>
+<path d="M1010.0,170.0 L1010,200 L995,200 L995.0,230" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-ext)"/>
+<text x="1018" y="185.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="1018" dy="0" font-size="11.5" fill="#94550b" font-weight="600">no</tspan></text>
+<path d="M110.0,90 L110,40 L575,40 L555.0,90" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7"/>
+<text x="340" y="30.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="340" dy="0" font-size="11.5" fill="#202427" font-weight="600">nothing on this path calls the CRM</tspan></text>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="new">New or changed component</span><span class="ext">Described, no code in the repo</span></div></figure>
+<p class="caption">The brief's fixed constraint. The portal stores the registration and answers the customer before anything else happens. If the service is down, events queue and the only thing delayed is the CRM's view of who registered.</p>
+</section>
+
+<section id="phi">
+<h2>How it treats protected health information</h2>
+<p>The brief says to treat the data as protected health information. The identity store holds demographics tied to test kits and results, so it is inside the boundary and is treated as a clinical system for access, logging and contracts.</p>
+<figure class="diagram" data-svg="t-phi">
+<svg viewBox="0 0 1100 420" role="img" aria-label="Protected health information: the clinical zone and the identity store sit inside the boundary; the commercial zone receives the person key, contact details and consent, never results or test names" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="820" y="60" width="260" height="340" rx="10" fill="none" stroke="#737373" stroke-opacity="0.6" stroke-dasharray="6 5"/>
+<text x="834" y="78" font-size="12.5" font-weight="700" fill="#62686d">Commercial zone</text>
+<rect x="390" y="60" width="320" height="340" rx="10" fill="none" stroke="#c00000" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="404" y="78" font-size="12.5" font-weight="700" fill="#c00000">Identity service, PHI, restricted access</text>
+<rect x="20" y="60" width="230" height="340" rx="10" fill="none" stroke="#c00000" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="34" y="78" font-size="12.5" font-weight="700" fill="#c00000">Clinical zone, PHI</text>
+<path d="M50,119 v58 a85.0,9 0 0 0 170,0 v-58" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="135.0" cy="119" rx="85.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="135.0" y="152.5" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="15" font-weight="700" fill="#202427">Member portal</tspan></text>
+<path d="M50,239 v58 a85.0,9 0 0 0 170,0 v-58" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<ellipse cx="135.0" cy="239" rx="85.0" ry="9" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="135.0" y="272.5" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="15" font-weight="700" fill="#202427">EHR</tspan></text>
+<rect x="60" y="345" width="150" height="36" rx="18.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="135.0" y="363.0" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Lab partner</tspan></text>
+<path d="M420,159 v92 a130.0,9 0 0 0 260,0 v-92" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<ellipse cx="550.0" cy="159" rx="130.0" ry="9" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="550.0" y="192.5" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="15" font-weight="700" fill="#202427">Identity store</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">demographics, links, consent,</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">every access logged</tspan></text>
+<rect x="420" y="300" width="260" height="50" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="550.0" y="316.5" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="15" font-weight="700" fill="#202427">Hashed match keys for blocking</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">outside the boundary</tspan></text>
+<path d="M850,99 v62 a100.0,9 0 0 0 200,0 v-62" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="950.0" cy="99" rx="100.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="950.0" y="126.0" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">CRM</tspan><tspan x="950.0" dy="17" font-size="12.5" fill="#62686d">sales and support</tspan></text>
+<rect x="850" y="215" width="200" height="56" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="950.0" y="243.0" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">Marketing platform</tspan></text>
+<path d="M850,319 v58 a100.0,9 0 0 0 200,0 v-58" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="950.0" cy="319" rx="100.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="950.0" y="352.5" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">E-commerce</tspan></text>
+<path d="M220,148.0 L320,148 L320,180 L420,180.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="320" y="93.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="320" dy="0" font-size="11.5" fill="#202427" font-weight="600">registration: name, email,</tspan><tspan x="320" dy="17" font-size="11.5" fill="#202427" font-weight="600">phone, birthdate, kit barcode</tspan></text>
+<path d="M220,268.0 L320,268 L320,220 L420,220.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="320" y="283.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="320" dy="0" font-size="11.5" fill="#202427" font-weight="600">chart_id and result event,</tspan><tspan x="320" dy="17" font-size="11.5" fill="#202427" font-weight="600">status only, without values</tspan></text>
+<path d="M680,175.0 L760,175 L760,130 L850,130.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="805" y="83.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="805" dy="0" font-size="11.5" fill="#202427" font-weight="600">person_key, preferred contact</tspan><tspan x="805" dy="17" font-size="11.5" fill="#202427" font-weight="600">details, consent flags</tspan></text>
+<path d="M680,215.0 L760,215 L760,243 L850,243.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="760" y="273.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11.5" fill="#202427" font-weight="600">person_key, kit stage,</tspan><tspan x="760" dy="17" font-size="11.5" fill="#202427" font-weight="600">channel consent</tspan></text>
+<path d="M850,348.0 L760,348 L760,330 L680,330.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="760" y="363.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11.5" fill="#202427" font-weight="600">order event in,</tspan><tspan x="760" dy="17" font-size="11.5" fill="#202427" font-weight="600">person_key back</tspan></text>
+<path d="M550.0,260 L550.0,300" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="new">New or changed component</span><span class="ext">Described, no code in the repo</span></div></figure>
+<p class="caption">Two zones inside the boundary, one outside. Only the person key, preferred contact details, consent and a kit stage cross to the commercial side.</p>
+<h3>Classification</h3>
+<div class="scroll"><table>
+<tr><th>Data</th><th>Class</th><th>Who may see it</th></tr>
+<tr><td>Result values</td><td>Clinical</td><td>EHR, portal for the patient, nobody else</td></tr>
+<tr><td>Result status, kit stage</td><td>Health-adjacent</td><td>Identity service, marketing as a stage word only</td></tr>
+<tr><td>Test name on an order or opportunity</td><td>Health-adjacent once linked to a person</td><td>E-commerce and CRM already hold it, marketing never receives it. Masked in the review screen</td></tr>
+<tr><td>Name, birthdate, email, phone, address</td><td>Identifiers, PHI inside the boundary</td><td>Identity service, reviewers, the systems that already hold them</td></tr>
+<tr><td><code>person_key</code></td><td>Sensitive. Next to a name or a contact address it shows that a person is a testing customer</td><td>Only the systems listed in the consumer table below, each under the same contract terms as the data it sits beside</td></tr>
+<tr><td>Review items</td><td>Record IDs, scores, reason codes</td><td>Support, without seeing names unless they open the restricted view</td></tr>
+<tr><td>Consent</td><td>Regulatory record</td><td>Identity service, CRM, marketing</td></tr>
+</table></div>
+<h3>What each consumer receives</h3>
+<p>The person key and the kit stage are treated as sensitive health-related data, because either one beside a contact address reveals that someone bought or took a test. Each consumer gets the fields it needs and no others.</p>
+<div class="scroll"><table>
+<tr><th>Consumer</th><th>Receives</th><th>Never receives</th><th>Condition</th></tr>
+<tr><td>E-commerce</td><td>Person key for its own customers</td><td>Stage, birthdate, chart or result data</td><td>Stored in a field staff roles cannot export</td></tr>
+<tr><td>CRM</td><td>Person key, preferred contact details, consent, the buyer and recipient roles on an order</td><td>Result status or values, chart identifiers</td><td>Field-level access by role</td></tr>
+<tr><td>Marketing platform</td><td>Person key, stage per kit, consent per channel address</td><td>Product names, birthdate, anything from the chart</td><td>A business associate agreement, or equivalent contract terms confirmed by counsel, before it receives any stage. Without one it receives consent and a send list only</td></tr>
+<tr><td>Member portal</td><td>Person key for the registrant and patient</td><td>CRM data</td><td>Already inside the clinical zone</td></tr>
+<tr><td>EHR</td><td>Person key as an external identifier</td><td>Commercial data</td><td>Already inside the clinical zone</td></tr>
+<tr><td>Support reviewers</td><td>Review items by ID, score and reason code. Identifiers for the two records under review</td><td>Result values</td><td>Each read of identifiers is logged</td></tr>
+</table></div>
+<p>Whether these records are protected health information in law depends on the company's status and contracts, which the brief does not give. The design assumes they are and those terms need confirming with counsel before build.</p>
+<h3>Consent rules</h3>
+<ul>
+  <li>A consent record has a person, a channel (text, call, email), the address it applies to, a status, a source system and the time it was observed.</li>
+  <li>Status is one of opted out, opted in or unknown. Unknown is never permission: a channel address with no opt-in on record is not messaged for marketing.</li>
+  <li>An opt-out applies to the address it was given for and to the person. After a merge, every address the merged person holds on that channel inherits the opt-out.</li>
+  <li>An opt-in applies only to the address it was given for. It never spreads to other addresses or across a merge.</li>
+  <li>When two people merge and their records conflict for a channel, opted out beats unknown and unknown beats opted in.</li>
+  <li>A split restores each person's own consent records from the event log, then applies any opt-out recorded while they were merged to both people.</li>
+  <li>Consent records are never edited or deleted. A change is a new record, so the history of who was contactable when can be shown.</li>
+  <li>Today's CRM flags <code>sms_opt_out</code> and <code>do_not_call</code> are imported as opted out when true and as unknown when false, because a false flag does not record that anyone agreed.</li>
+</ul>
+<h3>Controls</h3>
+<ul>
+  <li>Encryption in transit and at rest, with identifier columns encrypted at the field level.</li>
+  <li>Role-based access with scopes on the API: commercial consumers can read keys, stages and consent, not identifiers. Reviewers can read identifiers for the two records in front of them. The read is logged.</li>
+  <li>Candidate generation outside the restricted zone uses salted hashes of normalised email and phone, never the values.</li>
+  <li>Logs and error messages carry record IDs and reason codes only. The current code already does this; the rule is kept.</li>
+  <li>Development, testing and AI tooling use synthetic or de-identified data. Nothing from the store is pasted into an assistant or a ticket.</li>
+  <li>Retention follows the clinical record. Merged persons and audit events are kept, not purged, so a wrong merge can be undone.</li>
+  <li>A business associate agreement with every vendor that touches the store, including the hosting and the marketing platform if it receives a results-ready stage.</li>
+  <li>Text messaging honours <code>sms_opt_out</code> per number. A merge can only tighten consent, never loosen it.</li>
+</ul>
+</section>
+
+<section id="leave">
+<h2>What stays as it is</h2>
+<ul>
+  <li>E-commerce keeps one customer per email. The identity service absorbs that, so the shop does not need a customer merge feature.</li>
+  <li>The EHR keeps creating charts from name and birthdate. It gains an identifier, not a new workflow.</li>
+  <li>The lab integration is untouched. The kit barcode is already the right key.</li>
+  <li>The CRM's duplicate rule stays, set to alert. It is useful as a signal, harmful as a gate.</li>
+  <li><code>legacy-sync</code> keeps running in shadow until the new consumer has matched its decisions for a full cycle, then it is retired.</li>
+  <li>Historic CRM data is corrected through identity merges with audit, not edited in place.</li>
+</ul>
+</section>
+
+<section id="questions">
+<h2>Open questions and the assumptions made</h2>
+<div class="scroll"><table>
+<tr><th>Question</th><th>Assumed here</th></tr>
+<tr><td>Can the EHR store an external identifier on a chart?</td><td>Yes. If not, the mapping lives in the identity store only</td></tr>
+<tr><td>Does the e-commerce platform send order webhooks?</td><td>Yes. A polled feed works with the same event shape</td></tr>
+<tr><td>Who staffs the review queue and how fast must it drain?</td><td>Support, within two working days. Nothing customer-facing waits on it</td></tr>
+<tr><td>Is marketing's platform inside the business associate agreement?</td><td>It must be if it receives results-ready. Otherwise it receives registered as the last stage</td></tr>
+<tr><td>May a parent register a kit for a child?</td><td>Yes. The registrant and the patient are separate roles and a guardian relationship is recorded</td></tr>
+<tr><td>What happens to accounts owned by inactive reps?</td><td>Ownership is a CRM concern. Identity links and role changes never check it</td></tr>
+<tr><td>Where do phone sales enter?</td><td>Rep-created CRM accounts raise the same event an order does, with the rep as the source</td></tr>
+</table></div>
+</section>
+<section id="astra-6-adversarial-review">
+<h2>Astra 6 adversarial review</h2>
+<p class="caption">Review date: 9 November 2026. Comparison of this target architecture with the <a href="../../codex/future-state-target-architecture.html">Codex future-state design</a>, including the supporting build specification and rollout. This assesses the written proposals; it does not verify that their implementations satisfy them. The recommendations below remain review findings, not changes to the design above.</p>
+<p class="note"><strong>Recommendation:</strong> Use Claude's architecture as the submission's foundation, then incorporate Codex's identity model and result-access safeguards. Claude is more actionable and better connected to this case. Codex draws important boundaries more precisely.</p>
+<h3>Strengths and tradeoffs</h3>
+<div class="scroll"><table>
+<thead><tr><th scope="col">Area</th><th scope="col">Stronger approach</th><th scope="col">Reason and tradeoff</th></tr></thead>
+<tbody>
+<tr><td>Overall architecture</td><td>Claude</td><td>Concrete system-to-system flows, payloads and responsibilities make the design easier to build and defend. Codex leaves more decisions for discovery.</td></tr>
+<tr><td>Identity data model</td><td>Codex</td><td>Separates source records from identity links, including link status and validity periods. This better represents disputed, corrected and historical mappings. Claude's simpler model is easier to explain.</td></tr>
+<tr><td>Matching and validation</td><td>Claude</td><td>Defines candidate generation, conflict rules, provisional thresholds and a measurable validation process. Codex gives sound principles but less implementation guidance.</td></tr>
+<tr><td>Human review</td><td>Claude</td><td>Specifies claims, stale evidence checks, second reviewers, failed application, escalation and correction. Codex largely describes the required capabilities.</td></tr>
+<tr><td>Registration resilience</td><td>Claude, with its build specification</td><td>Makes the nonblocking requirement concrete through a local transaction, outbox, durable acknowledgement and reconciliation.</td></tr>
+<tr><td>Patient access and representation</td><td>Codex</td><td>Explicitly separates identity matching from clinical authorization and includes authorized representatives. This matters for gifts, parents and children.</td></tr>
+<tr><td>Consent</td><td>Combine them</td><td>Claude has useful merge and split rules tied to actual addresses. Codex also models purpose and scope, avoiding one overly broad permission state.</td></tr>
+<tr><td>Rollout</td><td>Claude, with its rollout document</td><td>Named gates, consumer sequencing and fallback behavior provide a stronger delivery story. Codex provides a sensible outline.</td></tr>
+</tbody></table></div>
+<h3>First priority: distinguish unresolved identity from result authorization</h3>
+<p>The <a href="#review">pending-review behavior</a> promises results to the registrant as soon as they exist. That is safe only when patient linkage and the viewer's authority have already been established independently. Being the registrant does not necessarily make someone the patient or an authorized representative. Separate roles are recognized elsewhere in this design, but this promise is too broad.</p>
+<p><a href="../../codex/future-state-target-architecture.html#registration-and-result-safety">Codex's result-safety policy</a> requires confirmed patient linkage and normal portal authorization before release. That is the stronger boundary. Its wording should also make clear that an unresolved match to a commercial account cannot delay an otherwise authorized patient viewing their own results.</p>
+<p class="note"><strong>Proposed combined rule:</strong> Accept registration independently of identity resolution. Release results when the patient-to-result linkage and the viewer's authority are established. An unresolved CRM or commerce match does not block that release.</p>
+<h3>Adopt the more explicit identity-link model</h3>
+<p>Codex's separate <code>SourceRecord</code>, <code>IdentityLink</code> and <code>MatchEvidence</code> entities distinguish the original record from the current belief about who it belongs to. Link validity dates and superseded decisions make corrections easier to express. Its relationship model includes authority and validity, which is useful when a guardian's access changes.</p>
+<p>Claude's direct source-record-to-person mapping can work for this exercise, but recovering history and handling disputed links depends more heavily on the event log. Adopt Codex's separation while retaining Claude's concrete kit roles and readable schema. See the <a href="../../codex/future-state-target-architecture.html#data-model">alternative data model</a>.</p>
+<h3>Keep the operational detail and clarify internal responsibilities</h3>
+<p>The <a href="#review">review workflow</a> accounts for simultaneous reviewers, changing evidence, failed commits and consumers missing updates. The <a href="build-spec.html#outbox">registration specification</a> explains exactly where durability begins. These details make the architecture credible beyond a diagram.</p>
+<p>The tradeoff is that the identity service centralizes matching, preferred contacts, consent, kit stages and review. That is reasonable as a small deployment, but these responsibilities should be separated internally. A matcher outage should not stop consent suppression or kit-stage processing.</p>
+<h3>Further changes before presenting</h3>
+<ul>
+  <li><strong>Reconcile the marketing contract.</strong> The <a href="#phi">consumer contract</a> says no stage is sent without the required agreement; the <a href="#questions">open assumptions</a> permit <code>registered</code> as the fallback. Pick one approved payload and use it throughout.</li>
+  <li><strong>Measure errors after clustering as well as before it.</strong> The <a href="#matching">random audit of automatic links</a> is a good foundation. Add checks for incorrect combined identities: one bad bridge can bring several otherwise correct records into the wrong person. Pair-level precision alone does not describe that impact.</li>
+  <li><strong>Make consent purpose-specific.</strong> Keep the conservative opt-out preservation, but incorporate Codex's purpose and scope so marketing preferences and other communication permissions are evaluated explicitly.</li>
+</ul>
+<p>For the review session, present Claude's concrete delivery design with Codex's clearer separation of identity, relationships and authorization. Claude is the stronger overall case-study answer; Codex contributes safeguards to incorporate before approving implementation.</p>
+</section>
+<section id="fable-5-2-adversarial-review">
+<h2>Fable 5.2 adversarial review</h2>
+<p class="caption">Review date: 9 November 2026. A second, independent comparison of this target architecture with the <a href="../../codex/future-state-target-architecture.html">Codex future-state design</a>, by Claude Fable 5.2 from a solution architect's seat. Both pages were read against the brief and both adversarial reviews. The first read predates the <a href="#review">human review</a> section above, so every point below was rechecked against the page as it stands. This reviewer shares a model family with the session that wrote this page. Read the verdict as a second opinion from a reviewer with that bias. These are review findings, not changes to the design above.</p>
+<p class="note">This page is the better target architecture for the brief. The Codex page is a good governance checklist with a handful of ideas worth porting.</p>
+<h3>Why this page is the stronger answer</h3>
+<p>The brief says to make a reasonable assumption, write it down and keep going. This page does that: thresholds, a payload per hop, a scoring table, a validation plan and an assumptions table. The Codex page defers the threshold, the transport and the authority model to discovery and ends on seven open questions. One of them asks whether a registration can be accepted before identity resolution, which is the brief's one fixed constraint.</p>
+<h3>Where this review differs from the one above: the results path</h3>
+<p>The review above treats <a href="../../codex/future-state-target-architecture.html#registration-and-result-safety">Codex's result-safety policy</a> as the stronger boundary. As written, that policy holds a result until the patient link is confirmed. The claim was checked against the CSVs in <code>data/</code>. All 406 lab results carry the same name and birthdate as both their registration and their chart, with every chart holding a single identity. The kit barcode chain already establishes which patient a result belongs to, without the identity service. A hold behind identity review adds a customer-facing delay to the one path that is not broken.</p>
+<p>The review above is right on a narrower point: the registrant is not always the patient, so "results are shown to that registrant" is too broad. That is a portal authorization rule, which the portal can enforce without waiting for an identity decision. Both reviews arrive at the same combined rule: release on the kit chain and the viewer's authority, never on an unresolved commercial match. Codex's narrower safeguard is worth keeping as the single exception: stop release when the EHR returns conflicting chart information.</p>
+<h3>Part by part</h3>
+<div class="scroll"><table>
+<thead><tr><th scope="col">Part</th><th scope="col">This page</th><th scope="col">Codex page</th></tr></thead>
+<tbody>
+<tr><td>Position</td><td>Commits to numbers and labels them provisional. Ties every principle to a symptom.</td><td>Accurate and careful, but too little is decided for anyone to build from it.</td></tr>
+<tr><td>Data model</td><td>Concrete, the same shape as <code>identities.csv</code>. Kit roles carry the stage. A household relationship counts as evidence against a match.</td><td>Better link model: the link is its own entity with a state machine and validity dates. Adds an authorized representative role with an authority basis.</td></tr>
+<tr><td>Matching</td><td>Blocking keys, a scoring table grounded in sample counts, a birthdate veto and a 600-pair validation gate with a Wilson bound.</td><td>Has a good rule this page lacks: confirm automatically only when there is a single strong candidate backed by independent evidence. Otherwise no usable policy and no account of how an EHR chart joins a person.</td></tr>
+<tr><td>Human review</td><td>Item lifecycle, claim leases, a second reviewer for clinical merges, a stale-decision check and a standing random audit.</td><td>Names the capabilities and a restricted queue without describing a workflow.</td></tr>
+<tr><td>Results and registration</td><td>Registration accepted first, results follow the kit chain, duplicate charts go to clinical operations.</td><td>Registration accepted, results held. The chart-conflict stop is the part to keep.</td></tr>
+<tr><td>Health information</td><td>Zones, a classification table, a receive and never-receive list per consumer, merge and split rules for consent.</td><td>Stronger on three details: keyed tokens with managed keys, consent by channel and purpose, named retention, deletion and breach handling.</td></tr>
+<tr><td>Operations</td><td>Queue service levels and measures are in the human review section. Owners, gates and success metrics are in the <a href="rollout.html">rollout</a>.</td><td>Has its own section with metrics and named owner roles.</td></tr>
+</tbody></table></div>
+<h3>Weak spots in this design</h3>
+<ul>
+  <li>Each source record has exactly one current person, so past links live only in the event log. Codex's link entity makes an unmerge and a question such as "who was this record linked to in March" simpler to answer. The changed-requirement part of the review session could probe this.</li>
+  <li>The <a href="#phi">controls</a> use salted hashes of email and phone for candidate generation. The phone number space is small enough to brute-force. Keyed tokens with the key held in a secrets service are the right answer.</li>
+  <li>Consent has a channel and an address but no purpose. A results notification and a nurture message look the same to the consent rules.</li>
+  <li>"Nothing is deleted" and "kept, not purged" conflict with deletion requests. A consumer test seller may fall under consumer health privacy law, not only HIPAA.</li>
+  <li>A record that scores above the threshold against two different persons bridges them into one unless a cluster rule fires. Codex's <a href="../../codex/future-state-target-architecture.html#decision-policy">single-candidate rule</a> would send that case to review.</li>
+  <li>The sample has two name and birthdate pairs with two charts each. The clinical review path for duplicate charts will get real traffic.</li>
+</ul>
+<h3>Recommended changes</h3>
+<p>Keep this page as the submission and port five things from the Codex page.</p>
+<ol>
+  <li>The link entity with validity dates.</li>
+  <li>The single-candidate rule for automatic links.</li>
+  <li>Keyed tokens in place of salted hashes.</li>
+  <li>Purpose on consent records.</li>
+  <li>A short paragraph on deletion and data-subject requests.</li>
+</ol>
+<p>Add the chart-conflict stop as a narrow exception to "results are never delayed". State the viewer-authority rule for the portal where the registrant and the patient are different people.</p>
+</section>
+<p class="foot">The company, systems and records in this case study are fictional. The data is treated as protected health information for the design. Production transports, vendor contracts and privacy terms need confirming before any of this is built.</p>
+</main>
+</body>
+</html>

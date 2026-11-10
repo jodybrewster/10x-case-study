@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Current sync flow and evidence-based diagnosis of six customer-data symptoms for the Lumen Health case study.">
+  <title>Current Sync and Symptom Diagnosis | Lumen Health Case Study</title>
+  <style>
+    :root {
+      --neutral-pale: #f3f3f3;
+      --neutral-code: #737373;
+      --brand-red-pale: #fbeaea;
+      --brand-red: #c00000;
+      --brand-red-dark: #980000;
+      color-scheme: light;
+      --ink: #202427;
+      --muted: #62686d;
+      --paper: #f5f5f5;
+      --surface: #ffffff;
+      --line: #dedede;
+      
+      
+      --amber: #94550b;
+      --amber-pale: #fff3dc;
+      --red: #c00000;
+      --red-pale: #fbeaea;
+      
+      
+      --shadow: 0 14px 36px rgba(23, 44, 54, .07);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.62 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: #980000; text-decoration-thickness: .08em; text-underline-offset: .18em; }
+    a:hover { color: #810000; }
+    .masthead {
+      padding: 18px max(24px, calc((100vw - 1180px) / 2));
+      background: #202427;
+      color: #edf6f4;
+      font-size: 13px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    main { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .hero { padding: 66px 0 44px; }
+    .eyebrow { margin: 0 0 12px; color: var(--brand-red); font-size: 13px; font-weight: 750; letter-spacing: .11em; text-transform: uppercase; }
+    h1, h2, h3 { color: var(--ink); line-height: 1.2; }
+    h1 { max-width: 850px; margin: 0; font-size: clamp(38px, 6vw, 68px); letter-spacing: -.045em; }
+    h2 { margin: 0 0 20px; font-size: clamp(27px, 3vw, 38px); letter-spacing: -.025em; }
+    h3 { margin: 0 0 9px; font-size: 20px; }
+    .lede { max-width: 850px; margin: 22px 0 0; color: var(--muted); font-size: 20px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 24px; color: var(--muted); font-size: 14px; }
+    .meta span::before { content: "•"; margin-right: 8px; color: var(--brand-red); }
+    nav.toc { display: flex; flex-wrap: wrap; gap: 9px; padding: 16px 0 34px; border-top: 1px solid var(--line); }
+    nav.toc a { padding: 7px 11px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); font-size: 13px; text-decoration: none; }
+    section { padding: 46px 0; border-top: 1px solid var(--line); }
+    .intro { max-width: 790px; color: var(--muted); }
+    .callout { margin: 24px 0; padding: 18px 22px; border-left: 4px solid var(--brand-red); background: var(--brand-red-pale); }
+    .callout strong { color: #980000; }
+    .diagram { margin: 26px 0 12px; padding: 20px; overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: var(--shadow); }
+    .diagram svg { display: block; width: 100%; min-width: 760px; height: auto; }
+    .diagram figcaption { margin: 14px 2px 0; color: var(--muted); font-size: 13px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 15px; color: var(--muted); font-size: 13px; }
+    .legend span::before { display: inline-block; width: 11px; height: 11px; margin-right: 8px; border-radius: 2px; background: var(--brand-red); content: ""; }
+    .legend .conditional::before { background: #d28a25; }
+    .legend .gap::before { background: #c00000; }
+    .legend .derived::before { background: #737373; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th, td { padding: 13px 15px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { background: #f3f3f3; color: #292d31; font-size: 13px; letter-spacing: .02em; }
+    td { font-size: 14px; }
+    tr:last-child td { border-bottom: 0; }
+    code, .ref { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    code { padding: 2px 5px; border-radius: 3px; background: #f3f3f3; font-size: .92em; }
+    .ref { font-size: 12px; white-space: nowrap; }
+    .findings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+    .finding { padding: 21px 22px 19px; border: 1px solid var(--line); border-radius: 7px; background: var(--surface); box-shadow: var(--shadow); }
+    .finding p { margin: 10px 0; }
+    .finding .finding-head { display: flex; align-items: flex-start; gap: 13px; }
+    .number { display: grid; width: 33px; height: 33px; flex: 0 0 33px; place-items: center; border-radius: 50%; background: #202427; color: white; font-weight: 750; }
+    .status { display: inline-block; margin: 2px 0 7px; padding: 3px 8px; border-radius: 3px; font-size: 11px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+    .confirmed { background: var(--red-pale); color: var(--red); }
+    .partial { background: var(--amber-pale); color: var(--amber); }
+    .not-proven { background: var(--neutral-pale); color: var(--neutral-code); }
+    .finding p, .finding li { color: #4e5458; font-size: 14px; }
+    .finding ul { margin: 9px 0 0; padding-left: 20px; }
+    .code-link { display: inline-block; margin: 2px 7px 2px 0; }
+    .causal { padding: 12px 14px; border-radius: 4px; background: #f5f5f5; color: #4e5458; font-size: 13px; }
+    .note { margin: 18px 0 0; color: var(--muted); font-size: 14px; }
+    .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 24px; }
+    .summary-grid div { padding: 17px; border-top: 3px solid var(--brand-red); background: var(--surface); }
+    .summary-grid strong { display: block; margin-bottom: 6px; }
+    .summary-grid span { color: var(--muted); font-size: 14px; }
+    footer { margin-top: 28px; padding: 24px 0 46px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    @media (max-width: 760px) {
+      main { width: min(100% - 28px, 1180px); }
+      .hero { padding-top: 42px; }
+      .findings { grid-template-columns: 1fr; }
+      .summary-grid { grid-template-columns: 1fr; }
+      section { padding: 34px 0; }
+    }
+    @media print {
+      body { background: white; }
+      .masthead { print-color-adjust: exact; }
+      nav.toc { display: none; }
+      .finding, .diagram { break-inside: avoid; box-shadow: none; }
+      section { break-before: auto; }
+      a { color: inherit; }
+    }
+
+    /* 10X document-writer theme, matched to executive-summary.html */
+    body { background:var(--paper); color:var(--ink); font:15px/1.48 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    a { color:#980000; }
+    .masthead {
+      width:min(8.5in,calc(100% - 32px)); margin:28px auto 0; padding:.58in .62in 12px;
+      border-bottom:2px solid var(--brand-red); background:#fff; box-shadow:0 12px 38px rgba(0,0,0,.08);
+      color:var(--muted); font-size:10px; font-weight:700; letter-spacing:.12em;
+    }
+    main {
+      width:min(8.5in,calc(100% - 32px)); margin:0 auto; padding:0 .62in .5in;
+      background:#fff; box-shadow:0 12px 38px rgba(0,0,0,.08);
+    }
+    .hero { padding:30px 0 24px; }
+    .eyebrow { margin:30px 0 9px; color:var(--brand-red); font-size:11px; font-weight:750; letter-spacing:.12em; }
+    h1,h2,h3 { color:var(--ink); line-height:1.2; }
+    h1 { max-width:640px; margin:0; font-size:37px; font-weight:580; line-height:1.06; letter-spacing:-.045em; }
+    h2 { margin:0 0 8px; color:#292d31; font-size:16px; font-weight:580; letter-spacing:-.018em; }
+    h3 { margin:0 0 9px; font-size:14px; font-weight:620; }
+    .lede { max-width:650px; margin:13px 0 0; color:var(--muted); font-size:17px; line-height:1.4; }
+    .meta { gap:8px 18px; margin-top:16px; color:var(--muted); font-size:11px; }
+    nav.toc { gap:7px 14px; padding:14px 0 18px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    nav.toc a { padding:4px 0; border:0; border-radius:0; background:transparent; color:#980000; font-size:12px; text-decoration:underline; text-underline-offset:3px; }
+    section { padding:17px 0 15px; border-top:1px solid var(--line); }
+    .intro { max-width:650px; color:var(--muted); }
+    .callout { margin:22px 0 25px; padding:17px 20px; border-left:4px solid var(--brand-red); background:var(--brand-red-pale); }
+    .callout strong { color:#980000; }
+    .diagram { padding:16px; border-color:var(--line); border-radius:3px; background:#fff; box-shadow:none; }
+    .diagram figcaption { font-size:12px; }
+    .table-wrap { border-color:var(--line); border-radius:3px; }
+    th { background:#f3f3f3; color:#292d31; }
+    code { background:#f3f3f3; }
+    .finding { padding:16px 0; border:0; border-top:2px solid var(--brand-red); border-radius:0; background:#fff; box-shadow:none; }
+    .finding p,.finding li { color:#4e5458; font-size:13px; }
+    .summary-grid div { padding:12px 0; border-top:2px solid var(--brand-red); background:#fff; }
+    footer { margin-top:15px; padding:10px 0 0; border-top:1px solid var(--line); font-size:10px; }
+    @media (max-width:760px) {
+      .masthead { width:100%; margin:0; padding:22px 22px 12px; }
+      main { width:100%; padding:0 22px 30px; box-shadow:none; }
+      .hero { padding:24px 0 20px; }
+      h1 { font-size:32px; }
+    }
+    @media print {
+      @page { size:letter; margin:0; }
+      body { background:#fff; }
+      .masthead,main { width:8.5in; margin:0; box-shadow:none; }
+      .masthead { padding:.5in .58in 12px; }
+      main { padding:0 .58in .42in; }
+      .diagram,.finding { box-shadow:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="masthead">Lumen Health · Solution Architect Case Study</div>
+  <main>
+    <header class="hero">
+      <p class="eyebrow">System walkthrough and diagnosis</p>
+      <h1>One customer across many systems</h1>
+      <p class="lede">How the supplied sync currently moves orders and kit registrations into the CRM, where the six reported symptoms appear in the code and which questions the code alone cannot settle.</p>
+      <div class="meta"><span>Read-only code review</span><span>Evidence from legacy-sync</span><span>Fictional case data</span></div>
+    </header>
+
+    <nav class="toc" aria-label="Contents">
+      <a href="#scope">Scope</a><a href="#topology">Problem-space topology</a><a href="#journey">Customer journey</a><a href="#transport">Transport</a><a href="#order-flow">Order flow</a><a href="#registration-flow">Registration flow</a><a href="#records">IDs and data shape</a><a href="#symptoms">Six symptoms</a><a href="#data-checks">Data checks</a><a href="#limits">Architect notes</a>
+    </nav>
+
+    <section id="scope">
+      <p class="eyebrow">01 · Scope</p>
+      <h2>What this code does today</h2>
+      <p class="intro">The replay loads CSVs into memory, initializes the CRM stand-in with older accounts, processes e-commerce orders in creation-time order, creates an opportunity for each order, then processes portal registrations. It prints outcome counts. It does not call a live CRM or implement an end-to-end identity registry.</p>
+      <div class="callout"><strong>Reading the evidence:</strong> the sync has multiple ways to associate records, but it does not record why an account match was made. The address fallback can therefore turn a household resemblance into a person-level CRM link without leaving an auditable matching decision.</div>
+      <p>Sources: <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:15-50</a>, <a class="ref" href="../legacy-sync/legacy_sync/store.py">store.py:5-16</a>.</p>
+    </section>
+
+    <section id="topology">
+      <p class="eyebrow">02 · Problem-space topology</p>
+      <h2>Systems, actors and the known data paths</h2>
+      <p class="intro">The case describes a customer journey across commerce, sales, fulfillment, registration, laboratory processing, clinical records and marketing. The diagram distinguishes the business flow in the brief from the limited paths exercised by the local replay.</p>
+      <figure class="diagram">
+        <svg viewBox="0 0 1120 500" role="img" aria-labelledby="topology-title topology-desc" xmlns="http://www.w3.org/2000/svg">
+          <title id="topology-title">Current problem-space system topology</title>
+          <desc id="topology-desc">Online purchases enter e-commerce. Phone purchases go through sales reps into CRM. The local legacy sync reads order and registration CSVs and simulates CRM writes. Orders are fulfilled as kits, registered in a member portal, sent to a lab and results are filed in the EHR and viewed through the portal. Marketing uses bought, registered and results-ready stages. Production transport for the described integrations is not supplied.</desc>
+          <defs>
+            <marker id="top-arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker>
+            <marker id="top-arrow-teal" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker>
+            <marker id="top-arrow-amber" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker>
+            <marker id="top-arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker>
+          </defs>
+          <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M210 97 H278" stroke="#737373" stroke-width="3" marker-end="url(#top-arrow-blue)"/>
+            <path d="M468 97 H538" stroke="#737373" stroke-width="3" marker-end="url(#top-arrow-blue)"/>
+            <path d="M116 135 V220" stroke="#b97818" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-amber)"/>
+            <path d="M210 263 H278" stroke="#b97818" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-amber)"/>
+            <path d="M374 226 V135" stroke="#737373" stroke-width="3" marker-end="url(#top-arrow-blue)"/>
+            <path d="M116 306 V359 H585 V326" stroke="#b97818" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-amber)"/>
+            <path d="M635 306 V367" stroke="#b97818" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-amber)"/>
+            <path d="M540 405 H496 V324 Q496 306 478 306 H468" stroke="#b97818" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-amber)"/>
+            <path d="M733 135 C820 158 850 197 880 220" stroke="#b97818" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-amber)"/>
+            <path d="M730 404 H824 Q843 404 843 385 V314 H880" stroke="#c00000" stroke-width="2.5" stroke-dasharray="7 7" marker-end="url(#top-arrow-red)"/>
+          </g>
+          <g font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif">
+            <rect x="22" y="55" width="188" height="80" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+            <text x="116" y="84" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">E-commerce</text><text x="116" y="108" text-anchor="middle" font-size="13" fill="#62686d">Shopify-like, inferred*</text><text x="116" y="126" text-anchor="middle" font-size="11" fill="#62686d">customer_id · order_id</text>
+            <rect x="280" y="55" width="188" height="80" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+            <text x="374" y="84" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">legacy-sync</text><text x="374" y="108" text-anchor="middle" font-size="13" fill="#62686d">local Python replay</text><text x="374" y="126" text-anchor="middle" font-size="11" fill="#62686d">CSV in · in-memory CRM</text>
+            <rect x="540" y="55" width="190" height="80" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+            <text x="635" y="84" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">CRM</text><text x="635" y="108" text-anchor="middle" font-size="13" fill="#62686d">Salesforce-style IDs*</text><text x="635" y="126" text-anchor="middle" font-size="11" fill="#62686d">account_id · opportunity_id</text>
+            <rect x="22" y="226" width="188" height="80" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+            <text x="116" y="255" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">Kit fulfillment</text><text x="116" y="279" text-anchor="middle" font-size="13" fill="#62686d">shipment + barcode</text><text x="116" y="297" text-anchor="middle" font-size="11" fill="#62686d">kit_barcode · order_id</text>
+            <rect x="280" y="226" width="188" height="80" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+            <text x="374" y="255" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">Member portal</text><text x="374" y="279" text-anchor="middle" font-size="13" fill="#62686d">vendor not identified</text><text x="374" y="297" text-anchor="middle" font-size="11" fill="#62686d">registration_id · kit_barcode</text>
+            <rect x="540" y="226" width="190" height="80" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+            <text x="635" y="255" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">Lab partner</text><text x="635" y="279" text-anchor="middle" font-size="13" fill="#62686d">vendor not identified</text><text x="635" y="297" text-anchor="middle" font-size="11" fill="#62686d">kit barcode</text>
+            <rect x="880" y="226" width="210" height="88" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+            <text x="985" y="255" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">Marketing</text><text x="985" y="279" text-anchor="middle" font-size="13" fill="#62686d">stage helper; platform unknown</text><text x="985" y="300" text-anchor="middle" font-size="11" fill="#62686d">bought · registered · results ready</text>
+            <rect x="540" y="367" width="190" height="76" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+            <text x="635" y="396" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">EHR</text><text x="635" y="420" text-anchor="middle" font-size="13" fill="#62686d">vendor not identified</text><text x="635" y="438" text-anchor="middle" font-size="11" fill="#62686d">chart_id · result_id</text>
+            <text x="244" y="84" text-anchor="middle" font-size="11" fill="#737373">orders</text>
+            <text x="504" y="84" text-anchor="middle" font-size="11" fill="#737373">simulated account / opportunity writes</text>
+            <text x="147" y="184" text-anchor="middle" font-size="11" fill="#94550b">kit orders</text>
+            <text x="244" y="250" text-anchor="middle" font-size="11" fill="#94550b">barcode</text>
+            <text x="406" y="183" text-anchor="start" font-size="11" fill="#737373">registration CSV</text>
+            <text x="350" y="350" text-anchor="middle" font-size="11" fill="#94550b">sample</text>
+            <text x="650" y="348" text-anchor="start" font-size="11" fill="#94550b">result</text>
+            <text x="820" y="198" text-anchor="middle" font-size="11" fill="#94550b">stage inputs</text>
+            <text x="520" y="390" text-anchor="middle" font-size="11" fill="#94550b">results view</text>
+            <text x="816" y="397" text-anchor="middle" font-size="11" fill="#c00000">result-to-account join</text>
+          </g>
+          <text x="22" y="478" font-size="12" fill="#62686d">Actors: customers buy online or through sales reps using CRM. In gift orders, buyer, recipient, registrant and patient may differ.</text>
+        </svg>
+        <figcaption>System roles and business flows come from the case brief. Blue arrows show the local CSV replay paths in the supplied code. Amber dashed arrows are described or implied in the problem statement, but their production transport and implementation are not supplied.</figcaption>
+        <div class="legend"><span>System / business record</span><span class="derived">Implemented in local replay</span><span class="conditional">Described flow, transport unknown</span><span class="gap">Unspecified cross-system identity link</span></div>
+      </figure>
+      <h3 style="margin-top:28px">What we can infer about vendors</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>System</th><th>Working label</th><th>Evidence and confidence</th></tr></thead>
+          <tbody>
+            <tr><td>CRM</td><td>Salesforce-style CRM, vendor unconfirmed</td><td>Strong clue: account IDs begin <code>001</code>, opportunity IDs begin <code>006</code>, and the brief uses “Person Account.” Salesforce documents those prefixes for Account and Opportunity objects. The source code is still an in-memory simulation, so this does not prove which CRM production uses. <a href="https://developer.salesforce.com/docs/platform/api/guide/sforce-api-calls-describeglobal-describeglobalresult.html">Salesforce Developers</a>.</td></tr>
+            <tr><td>E-commerce</td><td>Shopify-like storefront, vendor unconfirmed</td><td>The order IDs use a <code>#</code> prefix, matching Shopify order names such as <code>#1004</code>. Customer fields such as <code>default_address1</code>, <code>default_city</code> and <code>default_zip</code> resemble Shopify's “Default Address” customer CSV fields after header normalization. This is a stronger vendor clue than a generic storefront schema, but the data is fictional and no vendor name or live connector is present. See <a href="https://help.shopify.com/en/manual/fulfillment/managing-orders/printing-orders/packing-slips/variable-reference">Shopify order name documentation</a> and <a href="https://help.shopify.com/en/manual/customers/import-export-customers">Shopify customer CSV documentation</a>.</td></tr>
+            <tr><td>Member portal, EHR, lab partner</td><td>Generic named roles</td><td>The brief and CSVs describe functions and data fields, but provide no product names, hostnames, API schemas or vendor-specific identifiers.</td></tr>
+            <tr><td>Marketing</td><td>Lifecycle-stage consumer</td><td>The repository contains a stage helper, but no campaign platform, sender integration or message logs.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><strong>Identity boundary:</strong> the supplied records have system-specific identifiers, but no shared person key. A valid order-to-kit or result-to-chart join establishes a record relationship. It does not prove that the buyer, recipient, registrant and patient are one person.</div>
+      <p>Brief context: <a class="ref" href="../BRIEF.pdf">case study brief</a>. Implemented paths: <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:15-45</a>, <a class="ref" href="../legacy-sync/legacy_sync/sync/order_sync.py">order_sync.py:6-43</a>, <a class="ref" href="../legacy-sync/legacy_sync/registration/register.py">register.py:22-48</a>.</p>
+    </section>
+
+    <section id="journey">
+      <p class="eyebrow">03 · Customer journey</p>
+      <h2>Touchpoints from purchase through follow-up</h2>
+      <p class="intro">The brief describes one lifecycle across several people and systems. A gift may split the purchaser, kit recipient, registrant and patient across different people, so the journey should track those roles separately.</p>
+      <p class="causal"><strong>Journey:</strong> purchase → kit fulfillment → registration → sample processing → results access → lifecycle outreach</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Touchpoint</th><th>Person or role</th><th>System and data</th><th>What the sample establishes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>1. Purchase</strong></td><td>Buyer; online customer or phone customer working with a sales rep</td><td>E-commerce customer/order with customer ID, order ID, order email and shipping details; phone orders are described as CRM sales</td><td>The replay processes e-commerce orders. The phone-sales path appears in the brief but has no code or separate input file.</td></tr>
+            <tr><td><strong>2. Account and opportunity</strong></td><td>Buyer or CRM contact</td><td>CRM account and opportunity, with an e-commerce order reference</td><td>The replay chooses or creates an account then creates an opportunity. Existing CRM opportunity rows are not loaded by the replay.</td></tr>
+            <tr><td><strong>3. Kit fulfillment</strong></td><td>Recipient, who may differ from buyer</td><td>Kit barcode linked to order ID, shipment and delivery timestamps</td><td>The CSV records the order-to-kit relationship. No fulfillment application or carrier connection is included.</td></tr>
+            <tr><td><strong>4. Kit registration</strong></td><td>Registrant, usually the recipient but not guaranteed to be the buyer</td><td>Member portal registration includes kit barcode, email, name, phone, birthdate and registration time</td><td>The replay resolves the CRM account before accepting the registration. This is synchronous in the sample and can block on identity or duplicate checks.</td></tr>
+            <tr><td><strong>5. Sample and result processing</strong></td><td>Patient; may differ from purchaser</td><td>Lab partner handles the sample; EHR chart and lab result use chart ID and kit barcode</td><td>The brief describes this path and the CSVs contain the records. No lab or EHR integration is implemented in legacy-sync.</td></tr>
+            <tr><td><strong>6. Results access</strong></td><td>Patient or authorized portal user</td><td>Member portal displays results from the EHR</td><td>This is a stated customer touchpoint. The portal application, authorization model and result transport are not supplied.</td></tr>
+            <tr><td><strong>7. Lifecycle outreach</strong></td><td>Marketing recipient, with channel consent</td><td>Marketing uses bought, registered and results-ready stages</td><td>A stage helper exists, but the production event mapping, campaign platform, send history and consent checks are absent.</td></tr>
+            <tr><td><strong>Exception and support</strong></td><td>Customer and support team</td><td>Registration rejection, gift purchase reassignment or identity review</td><td>The brief reports support pain, but no support console, manual correction flow or audit trail is included.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><strong>Architecture implication:</strong> preserve each touchpoint as its own event and connect it to a person only with evidence. An order can belong to the buyer while its kit, registration and result belong to the recipient or patient.</div>
+    </section>
+
+    <section id="transport">
+      <p class="eyebrow">04 · Runtime and transport</p>
+      <h2>This is a local batch replay, not a REST server</h2>
+      <p class="intro">The supplied codebase is a small Python package invoked from the command line. Its README documents a CSV replay command. There are no HTTP routes, web server, network client, webhook handler, message broker or scheduled worker in the supplied source.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Question</th><th>What the supplied code shows</th><th>What remains unknown</th></tr></thead>
+          <tbody>
+            <tr><td>How does it start?</td><td><code>python -m legacy_sync.replay --data ../data</code></td><td>How a real production job is scheduled or deployed</td></tr>
+            <tr><td>How does data enter?</td><td><code>store.load</code> reads every local CSV with Python’s <code>csv.DictReader</code> into in-memory lists</td><td>Whether real systems use REST, SFTP, webhooks, CDC, a vendor connector or another transport</td></tr>
+            <tr><td>How does CRM access work?</td><td><code>CRMClient</code> is explicitly an in-memory stand-in; it reads and mutates Python dictionaries</td><td>CRM API, authentication, rate limits, retries, timeouts, idempotency and error handling</td></tr>
+            <tr><td>How are orders processed?</td><td>The replay sorts the supplied order rows by <code>created_at</code>, runs each through the sync function and creates opportunities in memory</td><td>Whether production is streaming, incremental or scheduled batch, and its ordering guarantees</td></tr>
+            <tr><td>How are registrations processed?</td><td>The replay sorts portal registrations by <code>registered_at</code> and calls the registration function synchronously</td><td>Whether production accepts registrations before CRM resolution, or has a queue and retry policy</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><strong>Architecture boundary:</strong> do not describe this repository as an existing REST integration. The case gives CSV snapshots and a local simulation. The production transport, authentication boundary and vendor contracts must be confirmed with the company.</div>
+      <p>Sources: <a class="ref" href="../legacy-sync/README.md">legacy-sync/README.md</a>, <a class="ref" href="../legacy-sync/legacy_sync/store.py">store.py:5-9</a>, <a class="ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:1-21</a>, <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:15-45</a>.</p>
+      <p class="note">The replay loads all CSV tables, but it initializes the CRM with an empty opportunity list and then synthesizes opportunities from orders. It does not use the supplied <code>crm_opportunities.csv</code>, <code>ehr_patients.csv</code> or <code>lab_results.csv</code> to resolve the marketing stage.</p>
+      <p>Source: <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:19-38</a>.</p>
+    </section>
+
+    <section id="order-flow">
+      <p class="eyebrow">05 · E-commerce to CRM</p>
+      <h2>Order sync and account selection</h2>
+      <p class="intro">For each order, the resolver tries an e-commerce customer ID, then the order email, then a last-name-and-ZIP address lookup. If all fail, it creates an account. The replay then creates an opportunity linked to the selected account.</p>
+      <figure class="diagram">
+        <svg viewBox="0 0 1040 320" role="img" aria-labelledby="order-title order-desc" xmlns="http://www.w3.org/2000/svg">
+          <title id="order-title">Current order sync flow</title>
+          <desc id="order-desc">An order tries account matching by e-commerce customer ID, email, then last name and ZIP. A match is updated with the order email and customer phone. If no match exists, an account is created. Replay creates an opportunity for the order.</desc>
+          <defs>
+            <marker id="arrow-order" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker>
+          </defs>
+          <rect x="22" y="118" width="150" height="72" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+          <text x="97" y="148" text-anchor="middle" font-size="17" font-weight="700" fill="#202427">E-commerce</text><text x="97" y="171" text-anchor="middle" font-size="14" fill="#62686d">order + customer</text>
+          <path d="M172 154 H220" stroke="#737373" stroke-width="2" marker-end="url(#arrow-order)"/>
+          <rect x="226" y="92" width="204" height="122" rx="8" fill="#fff" stroke="#737373" stroke-width="2"/>
+          <text x="328" y="119" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Resolve CRM account</text>
+          <text x="246" y="148" font-size="14" fill="#4e5458">1. e-commerce customer ID</text><text x="246" y="171" font-size="14" fill="#4e5458">2. order email</text><text x="246" y="194" font-size="14" fill="#94550b">3. last name + ZIP</text>
+          <path d="M430 154 H482" stroke="#737373" stroke-width="2" marker-end="url(#arrow-order)"/>
+          <rect x="488" y="54" width="198" height="72" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+          <text x="587" y="83" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Account found</text><text x="587" y="105" text-anchor="middle" font-size="13" fill="#62686d">update contact details</text>
+          <rect x="488" y="180" width="198" height="72" rx="8" fill="#fff3dc" stroke="#d28a25" stroke-width="2"/>
+          <text x="587" y="209" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">No account found</text><text x="587" y="231" text-anchor="middle" font-size="13" fill="#62686d">create CRM account</text>
+          <path d="M686 90 C760 90 746 153 800 153" fill="none" stroke="#737373" stroke-width="2" marker-end="url(#arrow-order)"/>
+          <path d="M686 216 C760 216 746 153 800 153" fill="none" stroke="#737373" stroke-width="2" marker-end="url(#arrow-order)"/>
+          <rect x="806" y="116" width="208" height="74" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+          <text x="910" y="146" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Create opportunity</text><text x="910" y="169" text-anchor="middle" font-size="13" fill="#62686d">order → selected account</text>
+          <text x="328" y="258" text-anchor="middle" font-size="12" fill="#94550b">Enabled by MATCH_FALLBACK_ADDRESS</text>
+          <text x="587" y="285" text-anchor="middle" font-size="12" fill="#c00000">Matched account gets order email as primary email</text>
+          <path d="M587 126 V270" stroke="#c00000" stroke-dasharray="4 5" stroke-width="1.5"/>
+        </svg>
+        <figcaption>Current behavior in <a class="ref" href="../legacy-sync/legacy_sync/sync/order_sync.py">order_sync.py:6-43</a> and <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:28-34</a>. Solid steps are explicit in the code; amber and red mark risky behavior.</figcaption>
+        <div class="legend"><span>Implemented path</span><span class="conditional">Conditional fallback</span><span class="gap">Risky write</span><span class="derived">Replay-created opportunity</span></div>
+      </figure>
+      <p>The account lookup for an existing e-commerce ID takes the first result. Email lookup can return primary or secondary email matches. The address lookup compares only last name and ZIP, then the order resolver also takes the first result. The function’s docstring says strict email matching, but the configured address fallback is active.</p>
+      <p>Sources: <a class="ref" href="../legacy-sync/legacy_sync/sync/order_sync.py">order_sync.py:6-26, 29-43</a>, <a class="ref" href="../legacy-sync/legacy_sync/config.py">config.py:3-12</a>, <a class="ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:24-35, 48-55</a>.</p>
+    </section>
+
+    <section id="registration-flow">
+      <p class="eyebrow">06 · Portal, kit and CRM</p>
+      <h2>Registration, duplicate checks and gift handling</h2>
+      <p class="intro">A registration is joined to a kit and its order. The code looks up a CRM account using the registrant’s email, checks name and date of birth, creates an account if needed, then moves a gift opportunity to the matched registrant account.</p>
+      <figure class="diagram">
+        <svg viewBox="0 0 1040 350" role="img" aria-labelledby="reg-title reg-desc" xmlns="http://www.w3.org/2000/svg">
+          <title id="reg-title">Current kit registration flow</title>
+          <desc id="reg-desc">A portal registration finds a kit by barcode, its order and CRM opportunity. It resolves an account by email, checks last name and date of birth, creates an account if needed, then moves gift opportunity ownership to the registrant account. Duplicate rules or inactive ownership can fail.</desc>
+          <defs><marker id="arrow-reg" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker></defs>
+          <rect x="20" y="55" width="170" height="66" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/><text x="105" y="83" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Portal registration</text><text x="105" y="105" text-anchor="middle" font-size="13" fill="#62686d">registration email</text>
+          <rect x="20" y="226" width="170" height="66" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/><text x="105" y="254" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Kit barcode</text><text x="105" y="276" text-anchor="middle" font-size="13" fill="#62686d">links to order</text>
+          <path d="M190 88 C246 88 230 170 280 170" fill="none" stroke="#737373" stroke-width="2" marker-end="url(#arrow-reg)"/><path d="M190 259 C246 259 230 190 280 190" fill="none" stroke="#737373" stroke-width="2" marker-end="url(#arrow-reg)"/>
+          <rect x="286" y="132" width="190" height="92" rx="8" fill="#fff" stroke="#737373" stroke-width="2"/><text x="381" y="162" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Find order + CRM</text><text x="381" y="186" text-anchor="middle" font-size="13" fill="#62686d">opportunity by order ID</text><text x="381" y="207" text-anchor="middle" font-size="12" fill="#62686d">from kit → order</text>
+          <path d="M476 178 H526" stroke="#737373" stroke-width="2" marker-end="url(#arrow-reg)"/>
+          <rect x="532" y="132" width="192" height="92" rx="8" fill="#fff" stroke="#737373" stroke-width="2"/><text x="628" y="160" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Resolve registrant</text><text x="628" y="184" text-anchor="middle" font-size="13" fill="#62686d">email, then name + DOB</text><text x="628" y="205" text-anchor="middle" font-size="12" fill="#62686d">DOB missing: last name only</text>
+          <path d="M724 178 H775" stroke="#737373" stroke-width="2" marker-end="url(#arrow-reg)"/>
+          <rect x="781" y="132" width="190" height="92" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/><text x="876" y="161" text-anchor="middle" font-size="16" font-weight="700" fill="#202427">Attach to account</text><text x="876" y="185" text-anchor="middle" font-size="13" fill="#62686d">create if no email match</text><text x="876" y="205" text-anchor="middle" font-size="12" fill="#62686d">then move gift opportunity</text>
+          <path d="M628 224 V277 H726" fill="none" stroke="#c00000" stroke-width="2" marker-end="url(#arrow-reg)"/>
+          <rect x="732" y="250" width="250" height="68" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/><text x="857" y="278" text-anchor="middle" font-size="15" font-weight="700" fill="#980000">Possible failure paths</text><text x="857" y="301" text-anchor="middle" font-size="13" fill="#62686d">duplicate block · inactive owner · identity conflict</text>
+        </svg>
+        <figcaption>Current behavior in <a class="ref" href="../legacy-sync/legacy_sync/registration/register.py">register.py:15-48</a>. The diagram shows the in-memory replay path, not a production service guarantee.</figcaption>
+      </figure>
+      <p>The replay records registration outcomes for duplicate-rule blocks, identity conflicts and inactive owners. Registration handling is synchronous in this sample: account resolution happens before the registration is counted as accepted.</p>
+      <p>Sources: <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:36-45</a>, <a class="ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:37-45, 57-61</a>.</p>
+    </section>
+
+    <section id="records">
+      <p class="eyebrow">07 · Source record map</p>
+      <h2>Identifiers and joins present in the supplied data</h2>
+      <p class="intro">These are record keys and relationships, not proof that two records represent the same person. In particular, an order’s buyer may differ from a kit’s recipient or the patient named on a result.</p>
+      <p>All examples below are from the fictional case data. The eight CSVs contain 4,757 source rows in total; these are rows across systems and events, not 4,757 unique people.</p>
+      <h3>CSV record shape and example IDs</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CSV</th><th>Rows</th><th>Example ID fields</th><th>Other fields carried</th></tr></thead>
+          <tbody>
+            <tr><td><code>ecom_customers.csv</code></td><td>533</td><td><code>customer_id=7000001</code></td><td>Name, email, phone, created time and default address</td></tr>
+            <tr><td><code>ecom_orders.csv</code></td><td>905</td><td><code>order_id=#100001</code>, <code>customer_id=7000001</code></td><td>Order email, product, amount, ship-to fields, gift flag and channel</td></tr>
+            <tr><td><code>crm_accounts.csv</code></td><td>689</td><td><code>account_id=001A000001</code>, <code>ecom_customer_id=7000473</code></td><td>Contact and address fields, birthdate, owner and consent flags</td></tr>
+            <tr><td><code>crm_opportunities.csv</code></td><td>905</td><td><code>opportunity_id=006A000001</code>, <code>ecom_order_id=#100001</code></td><td>Account link, product, amount, stage and gift-recipient account field</td></tr>
+            <tr><td><code>kits.csv</code></td><td>547</td><td><code>kit_barcode=KT0000001</code>, <code>order_id=#100001</code></td><td>Shipment and delivery times</td></tr>
+            <tr><td><code>portal_registrations.csv</code></td><td>433</td><td><code>registration_id=R000001</code>, <code>kit_barcode=KT0000001</code></td><td>Registrant name, email, phone, birthdate and registration time</td></tr>
+            <tr><td><code>ehr_patients.csv</code></td><td>339</td><td><code>chart_id=CH050001</code></td><td>Patient name, birthdate, sex, phone and email</td></tr>
+            <tr><td><code>lab_results.csv</code></td><td>406</td><td><code>result_id=LR000001</code>, <code>chart_id=CH050001</code>, <code>kit_barcode=KT0000001</code></td><td>Patient name and birthdate, result time and status</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">The identifiers are source-specific formats. For example, an e-commerce customer ID is not equivalent to a CRM account ID or EHR chart ID. The fields that connect records must be interpreted according to the role they represent.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source records</th><th>Key or join field</th><th>What the link establishes</th><th>What it does not establish</th></tr></thead>
+          <tbody>
+            <tr><td>E-commerce customer → order</td><td><code>customer_id</code></td><td>Which platform customer account placed the order</td><td>That the shipping recipient is that customer</td></tr>
+            <tr><td>Order → CRM opportunity</td><td><code>ecom_order_id</code></td><td>Which order the opportunity represents</td><td>That the selected CRM account is the correct person</td></tr>
+            <tr><td>Order → kit</td><td><code>order_id</code></td><td>Which purchase fulfilled the kit</td><td>Who will register or use the kit</td></tr>
+            <tr><td>Portal registration → kit</td><td><code>kit_barcode</code></td><td>Which kit was registered</td><td>That registrant equals purchaser or patient</td></tr>
+            <tr><td>Lab result → kit and EHR chart</td><td><code>kit_barcode</code>, <code>chart_id</code></td><td>Which kit and chart the result references</td><td>That the chart is linked to the right CRM account</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">The CSVs include the fields above. The replay loads CRM accounts, e-commerce customers and orders, kits and portal registrations. It does not consume the EHR or lab-result files to build an account-level result map.</p>
+    </section>
+
+    <section id="symptoms">
+      <p class="eyebrow">08 · Findings</p>
+      <h2>Six reported symptoms</h2>
+      <p class="intro">“Confirmed” means the code contains a direct behavior that can produce the symptom. “Partial” identifies a concrete failure path without proving it explains every reported case. “Not proven” means the relevant production path or data transformation is absent from the supplied code.</p>
+      <div class="findings">
+        <article class="finding">
+          <div class="finding-head"><span class="number">1</span><div><span class="status confirmed">Confirmed cause</span><h3>Orders land on a family member’s account</h3></div></div>
+          <p>If customer-ID and email lookups fail, address fallback searches by shipping last name and ZIP. The order resolver selects the first match, with no uniqueness or person-level check. A household address can therefore attach the purchase to a relative’s CRM account.</p>
+          <p class="causal"><strong>Direct path:</strong> fallback enabled → last name + ZIP lookup → first result selected.</p>
+          <a class="code-link ref" href="../legacy-sync/legacy_sync/sync/order_sync.py">order_sync.py:12-24</a><a class="code-link ref" href="../legacy-sync/legacy_sync/config.py">config.py:3-5</a><a class="code-link ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:32-35</a>
+        </article>
+
+        <article class="finding">
+          <div class="finding-head"><span class="number">2</span><div><span class="status confirmed">Confirmed cause</span><h3>CRM email changes after an order</h3></div></div>
+          <p>After resolving or creating an account, every order calls <code>update_contact_details</code> with the order email. The CRM stand-in writes that value directly to <code>primary_email</code>. If the chosen account belongs to another household member, their primary email can be replaced by the buyer’s order email.</p>
+          <p class="causal"><strong>Direct path:</strong> account match → order email written as primary email, even when it differs from the CRM value.</p>
+          <a class="code-link ref" href="../legacy-sync/legacy_sync/sync/order_sync.py">order_sync.py:29-43</a><a class="code-link ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:48-55</a>
+        </article>
+
+        <article class="finding">
+          <div class="finding-head"><span class="number">3</span><div><span class="status confirmed">Confirmed cause</span><h3>Registration is rejected as a possible duplicate</h3></div></div>
+          <p>When the registration email has no CRM match, the flow creates an account using the registrant’s name and the order’s shipping ZIP. The duplicate rule blocks account creation when first name, last name and ZIP match an existing account. That exception becomes <code>RegistrationBlocked</code>, which the replay counts as a rejected registration.</p>
+          <p class="causal"><strong>Direct path:</strong> no email match → create registrant account → exact first/last/ZIP collision → block.</p>
+          <a class="code-link ref" href="../legacy-sync/legacy_sync/registration/register.py">register.py:28-43</a><a class="code-link ref" href="../legacy-sync/legacy_sync/config.py">config.py:7-12</a><a class="code-link ref" href="../legacy-sync/legacy_sync/crm/duplicate_rules.py">duplicate_rules.py:4-11</a>
+        </article>
+
+        <article class="finding">
+          <div class="finding-head"><span class="number">4</span><div><span class="status partial">Specific failure path</span><h3>Gift registrations or purchase moves fail</h3></div></div>
+          <p>The gift path tries to move the opportunity to the account found for the registrant. The CRM stand-in raises <code>InactiveOwner</code> when that destination account has an inactive owner, and the replay counts this as a registration failure. The flow can also fail earlier on a duplicate block or identity conflict. The code does not show a support workflow or prove which path explains every reported gift failure.</p>
+          <p class="causal"><strong>Direct path:</strong> gift → move opportunity to registrant account → inactive destination owner → exception.</p>
+          <a class="code-link ref" href="../legacy-sync/legacy_sync/registration/register.py">register.py:22-48</a><a class="code-link ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:57-61</a><a class="code-link ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:36-45</a>
+        </article>
+
+        <article class="finding">
+          <div class="finding-head"><span class="number">5</span><div><span class="status not-proven">Not established by supplied code</span><h3>Marketing asks people to register after results are ready</h3></div></div>
+          <p>The stage helper checks results before registrations, so it returns <code>results_ready</code> when given a truthy results collection keyed to that CRM account. The replay does not load lab results or construct <code>results_by_account</code>. The likely fault is upstream: results may not be linked to the account key used by the marketing stage calculation, or a separate sender may use stale state. Confirm against that missing mapping and sender before naming a root cause.</p>
+          <p class="causal"><strong>Evidence limit:</strong> correct precedence is present; result-to-account mapping and campaign send path are absent.</p>
+          <a class="code-link ref" href="../legacy-sync/legacy_sync/marketing/stage.py">stage.py:6-14</a><a class="code-link ref" href="../legacy-sync/legacy_sync/replay.py">replay.py:15-50</a>
+        </article>
+
+        <article class="finding">
+          <div class="finding-head"><span class="number">6</span><div><span class="status confirmed">Confirmed cause</span><h3>Text opt-out is lost when accounts merge</h3></div></div>
+          <p>The merge removes the losing account and copies selected identity/contact fields, but the merge field list omits <code>sms_opt_out</code> and <code>do_not_call</code>. If the losing account carries an opt-out and the survivor does not, that preference disappears with the removed record. The merge also has no consent history or rule to preserve the more restrictive state.</p>
+          <p class="causal"><strong>Direct path:</strong> loser with opt-out removed → consent fields not copied or reconciled.</p>
+          <a class="code-link ref" href="../legacy-sync/legacy_sync/consent/merge.py">merge.py:3-18</a><a class="code-link ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:42-45</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="data-checks">
+        <p class="eyebrow">09 · Code and data validation</p>
+        <h2>What the snapshot supports for each symptom</h2>
+        <p class="intro">The table separates behavior proven by code from evidence observed in the supplied data. Snapshot associations can support a hypothesis, but they do not replace production change history, message logs or a human-verified identity set.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Symptom</th><th>What the code proves</th><th>What the supplied data shows</th><th>Conclusion</th></tr></thead>
+            <tbody>
+              <tr><td><strong>1. Order on family account</strong></td><td>After customer ID and order email fail, the active fallback selects the first CRM account with matching shipping last name and ZIP.</td><td>Among 905 snapshot opportunity-to-order associations, 873 accounts have the same e-commerce customer ID, 6 match by email without that ID, and 26 have neither match but fit the address-only rule.</td><td>There are 26 address-only candidate links consistent with fallback selection. The CSVs do not identify which candidate is the wrong family member.</td></tr>
+              <tr><td><strong>2. CRM email changes</strong></td><td>Every synced order writes <code>order_email</code> to CRM <code>primary_email</code>.</td><td>Nineteen CRM accounts are linked to orders with two or more distinct order emails. For 29 linked accounts, the current primary email differs from the latest linked order email.</td><td>The snapshot shows email variation and discrepancies. Without CRM field history, it cannot prove which update changed an email or whether the change was unexpected.</td></tr>
+              <tr><td><strong>3. Registration duplicate rejection</strong></td><td>On account creation, a first-name, last-name and ZIP collision raises a blocking duplicate exception.</td><td>Replaying the supplied snapshot accepts 401 of 433 registrations, blocks 20 on the duplicate rule, blocks 11 on identity conflict and fails 1 on inactive owner. The duplicate-rule tuple also occurs in 87 groups covering 181 CRM accounts.</td><td>The duplicate-block path is exercised by this dataset. The snapshot alone cannot say which blocked registrants are distinct people versus true duplicate records.</td></tr>
+              <tr><td><strong>4. Gift registration or move failure</strong></td><td>For a gift, registration moves the opportunity to the registrant account; the CRM stand-in rejects a destination account with an inactive owner.</td><td>There are 30 gift orders and 25 registrations for those kits. Replay outcomes for the 25 are: 15 accepted, 4 duplicate blocks, 5 identity conflicts and 1 inactive-owner failure. All 905 CRM opportunity gift-recipient fields are blank.</td><td>The inactive-owner cause occurs once in the replay and other gift failures occur earlier. No support workflow or historical production move attempts are supplied.</td></tr>
+              <tr><td><strong>5. Register reminder after results</strong></td><td>The stage helper returns <code>results_ready</code> before checking registration, when given a results collection keyed to the CRM account.</td><td>All 406 results are final and link by kit to an order and opportunity; this simple chain reaches 321 CRM accounts. Every result kit also has a portal registration.</td><td>The snapshot has the records needed for a candidate account-level stage, but no campaign send log or production <code>results_by_account</code> builder. It cannot prove which customer received which message.</td></tr>
+              <tr><td><strong>6. Text opt-out lost on merge</strong></td><td>The merge deletes the losing account but omits <code>sms_opt_out</code> and <code>do_not_call</code> from fields it reconciles.</td><td>The CRM snapshot contains 10 SMS opt-outs and 10 do-not-call flags. It contains no merge events, before/after snapshots or consent history.</td><td>The code can lose a losing account’s opt-out if the survivor is not opted out. The data has cases to test, but cannot establish that a real merge already erased one.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">Replay counts are from the provided in-memory simulation. The opportunity comparisons and counts are aggregate checks over the fictional CSV snapshot. No names, email addresses, phone numbers, addresses, birthdates or result values are included.</p>
+    </section>
+
+    <section id="limits">
+      <p class="eyebrow">10 · Architect notes</p>
+      <h2>Additional findings that affect the design</h2>
+      <div class="summary-grid">
+        <div><strong>Link keys are referentially complete</strong><span>All order-to-customer, order-to-kit, opportunity-to-order, registration-to-kit and result-to-kit/chart references found in the CSVs resolve to a row in the referenced table.</span></div>
+        <div><strong>Referential integrity is not person identity</strong><span>There are 30 gift orders, yet the CRM opportunity gift-recipient field is blank on all 905 opportunity rows. Preserve buyer, recipient, registrant and patient as separate roles.</span></div>
+        <div><strong>The snapshot is mid-lifecycle</strong><span>There are 547 test-kit orders and 547 kit rows, 433 registrations and 406 results. All 406 result kits have registrations; 27 registered kits have no result row yet. That can reflect timing, not necessarily a broken join.</span></div>
+      </div>
+      <div class="findings">
+        <article class="finding"><h3>Matching fields are not unique person keys</h3><p>Across CRM accounts, 58 normalized primary-email values appear on 116 records. Portal registrations contain 78 repeated email groups covering 170 records. The CRM duplicate-rule tuple (first name, last name, ZIP) occurs in 87 groups covering 181 accounts. These are collision counts, not proof of which rows are duplicate people.</p><p>Source: <a class="ref" href="../legacy-sync/legacy_sync/config.py">config.py:11-12</a>; counts derived from supplied CSVs.</p></article>
+        <article class="finding"><h3>The CRM e-commerce crosswalk itself has collisions</h3><p>Of 689 CRM accounts, 520 have an e-commerce customer ID, but only 518 distinct IDs occur. Two IDs appear on more than one CRM account. The current ID lookup returns the first match, so even its strongest lookup is not guaranteed unique in this snapshot.</p><p>Source: <a class="ref" href="../legacy-sync/legacy_sync/crm/client.py">client.py:24-25</a>; counts derived from <code>crm_accounts.csv</code>.</p></article>
+        <article class="finding"><h3>The matcher is present but unused</h3><p><code>matcher_v1.py</code> weights name, email, phone and DOB and sets a 0.75 threshold, but no active replay or sync module imports it. It also treats two missing email or phone values as a match because both normalize to an empty string. With identical names and both email and phone missing, the score reaches 0.8. Missing data must contribute no match evidence.</p><p>Source: <a class="ref" href="../legacy-sync/legacy_sync/identity/matcher_v1.py">matcher_v1.py</a>.</p></article>
+        <article class="finding"><h3>Consent and timestamps need explicit semantics</h3><p>CRM accounts contain 101 DOB placeholders and 140 blank DOB values. Order, account, registration and result timestamps have no timezone offsets. The prototype should treat placeholders as missing evidence; the production design should define timezone, event time and processing time.</p><p>Sources: <a class="ref" href="../legacy-sync/legacy_sync/config.py">config.py:14-15</a>; counts derived from supplied CSVs.</p></article>
+        <article class="finding"><h3>Results are many-to-one by chart</h3><p>The 406 lab-result rows reference 323 distinct EHR charts. Seventy charts have multiple results, with up to four results per chart. A person can have several result events; the identity or lifecycle model must not assume one result per patient.</p><p>Counts derived from <code>lab_results.csv</code>.</p></article>
+      </div>
+      <h3 style="margin-top:30px">What this review does and does not claim</h3>
+      <div class="summary-grid">
+        <div><strong>Directly evidenced</strong><span>Address fallback, email overwrite, duplicate blocking, inactive-owner gift failure path and consent omission in account merge.</span></div>
+        <div><strong>Needs another code path</strong><span>The marketing symptom requires the production result-to-account mapping and campaign sender, neither is implemented in this replay.</span></div>
+        <div><strong>Prototype, not production</strong><span>The repository uses an in-memory CRM stand-in. Findings describe supplied code behavior and should be checked against live integration semantics.</span></div>
+      </div>
+      <p class="note">The account-merge helper and marketing stage helper are not invoked by the replay. The replay loads all CSVs but processes only CRM accounts, e-commerce customers, e-commerce orders, kits and portal registrations. It does not consume CRM opportunities, EHR patients or lab results as input to the simulation.</p>
+      <p>Sources: <a class="ref" href="../legacy-sync/legacy_sync/identity/matcher_v1.py">matcher_v1.py</a>, <a class="ref" href="../legacy-sync/legacy_sync/replay.py">replay.py</a>.</p>
+      <p class="note"><strong>Implementation coverage:</strong> the repository has four test cases across order sync and registration. The household address fallback is explicitly expected by one test. There are no dedicated tests for account merging, fuzzy matching, marketing-stage calculation or gift moves.</p>
+      <p>Sources: <a class="ref" href="../legacy-sync/tests/test_order_sync.py">test_order_sync.py</a>, <a class="ref" href="../legacy-sync/tests/test_register.py">test_register.py</a>.</p>
+      <p class="note"><strong>History:</strong> the Git history records commit <code>87aff62</code> as the address-fallback hotfix after an unmatched-orders backlog, followed by registration resolution in <code>f4adca0</code> and primary-contact updates in <code>11cc1ab</code>. This explains the operational pressure behind the behavior but does not establish what the production integration currently runs.</p>
+      <h3 style="margin-top:30px">Questions to confirm with the team</h3>
+      <ul>
+        <li>Which production product and transport move data at each hop, and what freshness or retry expectations apply?</li>
+        <li>For phone and gift orders, which person owns the sales opportunity, kit registration and clinical result?</li>
+        <li>How does the lab result get assigned to an EHR chart, and how does that chart map to the marketing stage?</li>
+        <li>Where is channel consent recorded, and how do opt-outs reach the marketing sender after an account merge?</li>
+        <li>What is the support correction path for a wrong account match or an unresolved registration, and how is that action audited?</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p><strong>Method:</strong> read-only inspection of the supplied Python source and CSV schemas. No patient-level values are reproduced here. Code references are relative to this report and open the source files in the adjacent <code>legacy-sync</code> directory.</p>
+      <p>Prepared for the Lumen Health Solution Architect case study · 2026</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/executive-summary.html"
+        ],
+        "createdAt": "2026-11-09T21:43:17.122Z",
+        "reason": "user asked on 2026-11-09 to match codex/executive-summary.html, which uses an eyebrow label above the title"
+      },
+      {
+        "rule": "tiny-text",
+        "value": "*",
+        "files": [
+          "claude/docs/executive-summary.html"
+        ],
+        "createdAt": "2026-11-09T21:43:17.164Z",
+        "reason": "user asked to match codex/executive-summary.html, a letter-size one-page memo with a small footnote; raised from 10px to 11.5px"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/current-system.html"
+        ],
+        "createdAt": "2026-11-09T22:23:59.942Z",
+        "reason": "project skill 10x-document-writer specifies compact uppercase eyebrow labels"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/target-architecture.html"
+        ],
+        "createdAt": "2026-11-09T22:23:59.973Z",
+        "reason": "project skill 10x-document-writer specifies compact uppercase eyebrow labels"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/rollout.html"
+        ],
+        "createdAt": "2026-11-09T22:53:24.614Z",
+        "reason": "project skill 10x-document-writer specifies compact uppercase eyebrow labels"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/build-spec.html"
+        ],
+        "createdAt": "2026-11-09T22:53:24.644Z",
+        "reason": "project skill 10x-document-writer specifies compact uppercase eyebrow labels"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/solution-design.html"
+        ],
+        "createdAt": "2026-11-09T23:49:52.904Z",
+        "reason": "project skill 10x-document-writer specifies compact uppercase eyebrow labels"
+      },
+      {
+        "rule": "aphoristic-cadence",
+        "value": "*",
+        "files": [
+          "claude/docs/solution-design.html"
+        ],
+        "createdAt": "2026-11-09T23:50:50.606Z",
+        "reason": "30,000-word design document: six remaining short statements such as 'Nothing is deleted.' are literal design rules, not rhetorical contrast; 17 clipped cells were rewritten"
+      },
+      {
+        "rule": "kicker-above-heading",
+        "value": "*",
+        "files": [
+          "claude/docs/worked-examples.html"
+        ],
+        "createdAt": "2026-11-09T23:57:11.622Z",
+        "reason": "project skill 10x-document-writer specifies compact uppercase eyebrow labels"
+      }
+    ]
+  }
+}

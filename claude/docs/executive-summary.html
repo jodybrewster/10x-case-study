@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Executive summary of the Lumen Health customer identity case study: the problem, the recommendation and what changes for the business.">
+  <title>Lumen Health | Executive summary</title>
+  <style>
+    :root {
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --neutral-code: #737373;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000; --ink:#202427; --muted:#62686d;  --line:#dedede; --paper:#f5f5f5; --pale:#fbeaea; --signal:#c00000; --brand-black:#111111; }
+    * { box-sizing:border-box; }
+    html { background:var(--paper); }
+    body { margin:0; color:var(--ink); font:15px/1.48 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .page { width:min(8.5in,calc(100% - 32px)); min-height:11in; margin:28px auto; padding:.58in .62in .5in; background:#fff; box-shadow:0 12px 38px rgba(0,0,0,.08); }
+    .topline { display:flex; justify-content:space-between; gap:16px; align-items:baseline; padding-bottom:12px; border-bottom:3px solid var(--signal); color:var(--muted); font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+    .wordmark { color:var(--brand-black); font:700 14px/1 "Helvetica Neue",Helvetica,Arial,sans-serif; letter-spacing:.04em; }
+    .eyebrow { margin:30px 0 9px; color:var(--brand-red); font-size:11px; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { max-width:640px; margin:0; font-size:37px; font-weight:580; line-height:1.06; letter-spacing:-.045em; }
+    .dek { max-width:650px; margin:13px 0 22px; color:var(--muted); font-size:17px; line-height:1.4; }
+    .recommendation { margin:20px 0 22px; padding:17px 20px; border-left:4px solid var(--brand-red); background:var(--pale); font-size:18px; font-weight:650; line-height:1.38; }
+    h2 { margin:0 0 8px; color:#292d31; font-size:16px; font-weight:580; line-height:1.25; letter-spacing:-.018em; }
+    p { margin:0 0 10px; }
+    .section { padding:16px 0 14px; border-top:1px solid var(--line); }
+    .two-col { display:grid; grid-template-columns:1.25fr 1fr; gap:28px; }
+    .numbers { display:grid; grid-template-columns:1fr 1fr; gap:12px 18px; margin-top:4px; }
+    .number { padding-top:8px; border-top:2px solid var(--signal); }
+    .number b { display:block; font-size:24px; font-weight:600; line-height:1.1; letter-spacing:-.02em; font-variant-numeric:tabular-nums; }
+    .number span { display:block; margin-top:3px; color:var(--muted); font-size:12.5px; line-height:1.35; }
+    .effects { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:11px; }
+    .effect { padding-top:9px; border-top:3px solid var(--brand-red); }
+    .effect strong { display:block; margin-bottom:4px; font-size:13px; }
+    .effect span { color:var(--muted); font-size:12.5px; }
+    .steps { display:flex; gap:0; margin:13px 0 8px; padding:0; list-style:none; }
+    .steps li { flex:1; padding:9px 10px 8px 0; border-top:2px solid var(--brand-red); font-size:12.5px; }
+    .steps b { display:block; margin-bottom:3px; color:var(--brand-red); font-size:11px; letter-spacing:.07em; text-transform:uppercase; }
+    .measures { color:var(--muted); font-size:12.5px; }
+    .foot { margin-top:15px; padding-top:10px; border-top:1px solid var(--line); color:#62686d; font-size:11.5px; }
+    .foot a { color:#980000; }
+    @media(max-width:640px) {
+      .page { width:100%; min-height:0; margin:0; padding:26px 22px; box-shadow:none; }
+      h1 { font-size:32px; }
+      .two-col,.effects { grid-template-columns:1fr; gap:13px; }
+      .steps { flex-direction:column; }
+    }
+    @media print {
+      @page { size:letter; margin:0; }
+      html,body { width:8.5in; background:#fff; }
+      .page { width:8.5in; min-height:0; margin:0; padding:.5in .58in .4in; box-shadow:none; break-inside:avoid; }
+      .eyebrow { margin-top:14px; margin-bottom:6px; }
+      h1 { font-size:28px; }
+      .dek { font-size:14px; margin:9px 0 10px; }
+      .recommendation { margin:10px 0 10px; padding:10px 16px; font-size:14.5px; }
+      .section { padding:10px 0 5px; }
+      body { font-size:12.5px; line-height:1.42; }
+      .page { padding:.42in .55in .3in; }
+      .topline { padding-bottom:9px; }
+      .number b { font-size:20px; }
+      .number span, .effect span, .steps li, .measures { font-size:11.5px; line-height:1.36; }
+      .numbers { gap:9px 16px; }
+      .effects { margin-top:7px; }
+      .steps { margin:8px 0 6px; }
+      .foot { margin-top:8px; padding-top:7px; font-size:11px; }
+      p { margin-bottom:7px; }
+      a { color:inherit; text-decoration:none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline"><span class="wordmark" aria-label="Lumen Health">LUMEN HEALTH</span><span>Solution architect case study</span></div>
+    <p class="eyebrow">Executive summary</p>
+    <h1>One customer, many systems, avoidable failures</h1>
+    <p class="dek">Our four customer systems each keep their own idea of who a person is. The software that joins them guesses. Those guesses reach customers as rejected kit registrations, wrong marketing messages and texts to people who opted out.</p>
+
+    <div class="recommendation">Give every person one identity that sits outside the CRM. The software links records only when the evidence is strong, a person decides the uncertain cases and a kit registration is never held up by either.</div>
+
+    <section class="section two-col">
+      <div>
+        <h2>What is going wrong</h2>
+        <p>When an order's email is not recognised, the sync files it on any account with the same surname and zip code, often a relative's. Each order then overwrites that account's email. When the real owner registers a kit, the system cannot find them and the CRM rejects them as a duplicate of themselves.</p>
+        <p>Marketing reads its status from the same records, so it sends the wrong message. Merging duplicates loses text opt-outs. The records name genetic tests, so a purchase filed on a relative is a health-data exposure.</p>
+      </div>
+      <div>
+        <h2>In the sample period</h2>
+        <div class="numbers">
+          <div class="number"><b>1 in 14</b><span>kit registrations rejected by our own system (32 of 433)</span></div>
+          <div class="number"><b>4 in 10</b><span>gift registrations rejected (10 of 25)</span></div>
+          <div class="number"><b>About 60</b><span>kits with results whose buyer would still be told to register, a replay estimate</span></div>
+          <div class="number"><b>45</b><span>CRM accounts whose email address was overwritten by an order</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>What changes for the business</h2>
+      <div class="effects">
+        <div class="effect"><strong>Customers</strong><span>A valid kit registration is always accepted at once. Gifts work. Messages match where the customer is.</span></div>
+        <div class="effect"><strong>Support</strong><span>A short review queue replaces detective work: 26 open questions in the sample. Every merge can be undone.</span></div>
+        <div class="effect"><strong>Marketing</strong><span>One status per kit, so nobody with results is asked to register. An opt-out survives every merge.</span></div>
+        <div class="effect"><strong>Compliance</strong><span>Two people are kept apart until the evidence or a reviewer says otherwise. Every link is recorded.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Introduce it in 90 days without interrupting service</h2>
+      <ol class="steps">
+        <li><b>1 · Days 1 to 14</b>Fix the current software: the portal accepts every valid registration whatever the CRM says, the surname-and-zip guess goes, emails stop being rewritten.</li>
+        <li><b>2 · Days 15 to 45</b>Run identity in shadow, changing nothing. Staff the review queue. Measure how often an automatic link is wrong before trusting any.</li>
+        <li><b>3 · Days 46 to 75</b>Start using it, one system at a time with rollback: marketing, then the CRM, then the portal.</li>
+        <li><b>4 · Days 76 to 90</b>Build the replacement CRM on the person key and retire the old sync.</li>
+      </ol>
+      <p class="measures"><strong>Decisions needed:</strong> approve the two-week fixes and the plan, name who owns and staffs the review queue, have the privacy officer set the error rate at which automatic linking may be switched on and confirm that the strictest opt-out wins when records are combined.</p>
+    </section>
+
+    <p class="foot">Figures come from running the current sync software over the fictional sample data, treated as protected health information. The marketing figure assumes messages follow the stage on the CRM account holding the purchase, which the supplied code does not show. The prototype matcher has not yet been measured against labelled pairs. Detail: <a href="solution-design.html">solution design</a>, <a href="current-system.html">current system</a>, <a href="target-architecture.html">target architecture</a>, <a href="build-spec.html">build specification</a>, <a href="rollout.html">rollout</a>.</p>
+  </main>
+</body>
+</html>

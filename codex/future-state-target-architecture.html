@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Future-state customer identity architecture for the Lumen Health case study, including matching, system responsibilities and protected health information safeguards.">
+  <title>Future-state target architecture: single customer identity | Lumen Health Case Study</title>
+  <style>
+    :root {
+      --neutral-pale: #f3f3f3;
+      --brand-red: #c00000;
+      --neutral-code: #737373;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000; --ink:#202427; --muted:#62686d;  --deep:#980000; --line:#dedede; --paper:#f5f5f5; --pale:#fbeaea; --gold:#94550b; --gold-pale:#fff3dc;  }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; background:var(--paper); }
+    body { margin:0; color:var(--ink); font:16px/1.62 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .shell { width:min(1120px,calc(100% - 40px)); margin:28px auto 64px; }
+    .hero { padding:42px 48px 38px; border-radius:22px; color:#f5fbfa; background:linear-gradient(125deg,#202427,#c00000 78%,#980000); box-shadow:0 18px 50px rgba(18,59,69,.17); }
+    .eyebrow { margin:0 0 13px; color:#fbeaea; font-size:11px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; }
+    h1 { max-width:850px; margin:0; font-size:clamp(34px,5vw,54px); font-weight:570; line-height:1.04; letter-spacing:-.047em; }
+    .hero p { max-width:760px; margin:18px 0 0; color:#62686d; font-size:17px; line-height:1.5; }
+    .meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:24px; }
+    .meta span { padding:6px 10px; border:1px solid rgba(220,242,237,.27); border-radius:999px; color:#fbeaea; font-size:11px; }
+    .toolbar { position:sticky; top:0; z-index:5; margin:14px 0 22px; padding:11px 13px; border:1px solid rgba(204,220,216,.85); border-radius:14px; background:rgba(248,251,250,.93); box-shadow:0 8px 22px rgba(23,49,59,.05); backdrop-filter:blur(12px); }
+    .toolbar nav { display:flex; gap:7px; overflow:auto; scrollbar-width:thin; }
+    .toolbar a { flex:none; padding:7px 10px; border-radius:999px; color:#4e5458; font-size:12px; text-decoration:none; white-space:nowrap; }
+    .toolbar a:hover { color:var(--deep); background:var(--pale); }
+    .toolbar a:focus-visible,a:focus-visible { outline:3px solid #c00000; outline-offset:2px; }
+    main { padding:0 16px; }
+    .section { margin:14px 0; padding:32px 36px; border:1px solid #e1e9e7; border-radius:18px; background:#fff; box-shadow:0 8px 26px rgba(23,49,59,.035); scroll-margin-top:84px; }
+    h2 { margin:0 0 19px; color:#292d31; font-size:26px; font-weight:560; line-height:1.2; letter-spacing:-.03em; }
+    h3 { margin:28px 0 11px; color:#292d31; font-size:18px; font-weight:610; line-height:1.3; letter-spacing:-.018em; }
+    p { margin:0 0 13px; }
+    p:last-child { margin-bottom:0; }
+    strong { color:#292d31; font-weight:680; }
+    a { color:#980000; }
+    code { padding:2px 5px; border:1px solid #dedede; border-radius:5px; background:#f3f3f3; color:#292d31; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:.91em; overflow-wrap:anywhere; }
+    ul,ol { margin:8px 0 17px; padding-left:24px; }
+    li { margin:0 0 8px; padding-left:3px; }
+    li::marker { color:var(--brand-red); font-weight:700; }
+    .table-wrap { margin:17px 0 21px; overflow:auto; border:1px solid var(--line); border-radius:12px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; line-height:1.5; }
+    th,td { padding:13px 14px; border-bottom:1px solid #dedede; text-align:left; vertical-align:top; }
+    thead th { color:#292d31; background:#f3f3f3; font-size:12px; font-weight:700; letter-spacing:.025em; }
+    tbody tr:last-child td { border-bottom:0; }
+    tbody tr:nth-child(even) { background:#ffffff; }
+    td:first-child { color:#292d31; font-weight:650; }
+    .diagram-wrap { margin:22px 0 25px; padding:18px 16px 13px; border:1px solid #dedede; border-radius:14px; background:linear-gradient(180deg,#ffffff,#ffffff); }
+    .diagram-scroll { overflow-x:auto; }
+    svg.architecture,svg.state-machine { display:block; width:100%; min-width:780px; height:auto; }
+    svg .links path,svg .state-links path { fill:none; stroke:#737373; stroke-width:2; marker-end:url(#arrow-a); }
+    svg .links path.accent { stroke:var(--brand-red); stroke-dasharray:5 5; marker-end:url(#arrow-b); }
+    svg .node rect { fill:#fff; stroke:#dedede; stroke-width:1.5; }
+    svg .node.adapter rect { fill:#f3f3f3; stroke:#dedede; }
+    svg .node.registry rect { fill:#fbeaea; stroke:#e5b8b8; stroke-width:2; }
+    svg .node.match rect { fill:#fff7f7; stroke:#e5b8b8; }
+    svg .node.review rect { fill:#fbf3e7; stroke:#d6ae6c; }
+    svg .node.audit rect { fill:#f5f5f5; stroke:#dedede; }
+    svg .node text,svg .state-node text { fill:#202427; font:600 15px ui-sans-serif,system-ui,sans-serif; text-anchor:middle; }
+    svg .node text.sub { fill:#62686d; font-size:11px; font-weight:450; }
+    svg .edge-label { fill:#62686d; font:11px ui-sans-serif,system-ui,sans-serif; text-anchor:middle; }
+    svg .state-links path { marker-end:url(#arrow-state); }
+    svg .state-node rect { fill:#fff; stroke:#e5b8b8; stroke-width:1.6; }
+    svg .state-node rect.confirmed { fill:#fbeaea; stroke:#c00000; }
+    svg .state-node rect.review { fill:#fbf3e7; stroke:#d6ae6c; }
+    svg .state-node rect.conflict { fill:#fbeaea; stroke:#c00000; }
+    svg .state-node rect.rejected { fill:#f3f3f3; stroke:#dedede; }
+    svg .state-node rect.superseded { fill:#f3f3f3; stroke:#dedede; }
+    figcaption { margin-top:10px; color:var(--muted); font-size:12px; }
+    .section#executive-view { border-color:#dedede; background:linear-gradient(145deg,#ffffff,#fff7f7); }
+    .section#scope-and-evidence-boundary { border-left:4px solid #c00000; background:#ffffff; }
+    .section#protected-health-information-and-privacy-controls { border-color:#dedede; background:#ffffff; }
+    .section#related-case-study-material { padding:20px 28px; }
+    .section#related-case-study-material h2 { font-size:17px; }
+    .section#related-case-study-material ul { display:flex; flex-wrap:wrap; gap:8px 22px; list-style:none; padding:0; }
+    .section#related-case-study-material li { margin:0; }
+    footer { padding:16px 20px; color:#62686d; font-size:12px; text-align:center; }
+    @media(max-width:700px) {
+      .shell { width:100%; margin:0 auto 30px; }
+      .hero { padding:30px 23px 28px; border-radius:0 0 18px 18px; }
+      .hero p { font-size:15px; }
+      .toolbar { top:0; margin:0 0 12px; border-radius:0 0 12px 12px; }
+      main { padding:0 10px; }
+      .section { padding:24px 20px; border-radius:14px; }
+      h2 { font-size:23px; }
+      .table-wrap { margin-left:-4px; margin-right:-4px; }
+      table { min-width:640px; }
+      .diagram-wrap { margin-left:-4px; margin-right:-4px; padding:12px; }
+    }
+    @media print {
+      @page { size:letter; margin:.55in; }
+      html,body { background:#fff; font-size:10.5pt; }
+      .shell { width:100%; margin:0; }
+      .hero { padding:24px 28px; color:var(--ink); background:#fff; border:1px solid #dedede; box-shadow:none; }
+      .hero .eyebrow,.hero p { color:#4e5458; }
+      .meta span { color:#4e5458; border-color:#e5b8b8; }
+      .toolbar { display:none; }
+      main { padding:0; }
+      .section { break-inside:auto; margin:10px 0; padding:19px 20px; border-radius:8px; box-shadow:none; }
+      h2,h3,figure,table { break-inside:avoid; }
+      .diagram-wrap { break-inside:avoid; }
+      svg.architecture,svg.state-machine { min-width:0; }
+      a { color:inherit; text-decoration:none; }
+      footer { display:none; }
+    }
+    @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
+
+    /* 10X document-writer theme, matched to executive-summary.html */
+    body { color:var(--ink); font:15px/1.48 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .shell {
+      width:min(8.5in,calc(100% - 32px)); min-height:11in; margin:28px auto;
+      padding:.58in .62in .5in; background:#fff; box-shadow:0 12px 38px rgba(0,0,0,.08);
+    }
+    .hero {
+      padding:0 0 18px; border-bottom:2px solid var(--brand-red); border-radius:0;
+      background:#fff; color:var(--ink); box-shadow:none;
+    }
+    .eyebrow { margin:30px 0 9px; color:var(--brand-red); font-size:11px; font-weight:750; letter-spacing:.12em; }
+    h1 { max-width:640px; margin:0; font-size:37px; font-weight:580; line-height:1.06; letter-spacing:-.045em; }
+    .hero p { max-width:650px; margin:13px 0 0; color:var(--muted); font-size:17px; line-height:1.4; }
+    .meta { gap:8px 18px; margin-top:16px; }
+    .meta span { padding:0; border:0; border-radius:0; color:var(--muted); font-size:11px; }
+    .toolbar { position:static; margin:14px 0 0; padding:10px 0 13px; border:0; border-bottom:1px solid var(--line); border-radius:0; background:#fff; box-shadow:none; backdrop-filter:none; }
+    .toolbar nav { flex-wrap:wrap; gap:5px 15px; }
+    .toolbar a { padding:3px 0; border-radius:0; color:#980000; font-size:12px; text-decoration:underline; text-underline-offset:3px; }
+    .toolbar a:hover { color:var(--deep); background:transparent; }
+    main { padding:0; }
+    .section { margin:0; padding:17px 0 15px; border:0; border-top:1px solid var(--line); border-radius:0; background:#fff; box-shadow:none; scroll-margin-top:20px; }
+    h2 { margin:0 0 8px; color:#292d31; font-size:16px; font-weight:580; line-height:1.25; letter-spacing:-.018em; }
+    h3 { margin:20px 0 9px; color:#292d31; font-size:14px; font-weight:620; line-height:1.3; letter-spacing:-.01em; }
+    p { margin:0 0 10px; }
+    strong { color:var(--ink); font-weight:650; }
+    a { color:#980000; }
+    code { padding:2px 5px; border:0; border-radius:3px; background:#f3f3f3; color:#292d31; }
+    ul,ol { margin:8px 0 14px; padding-left:22px; }
+    li { margin:0 0 7px; padding-left:2px; }
+    .table-wrap { margin:14px 0 17px; border-color:var(--line); border-radius:3px; }
+    table { font-size:13px; }
+    th,td { padding:10px 11px; border-color:var(--line); }
+    thead th { color:#292d31; background:#f3f3f3; font-size:11px; }
+    tbody tr:nth-child(even) { background:#ffffff; }
+    .diagram-wrap { margin:18px 0 20px; padding:14px 12px 11px; border-color:var(--line); border-radius:3px; background:#fff; }
+    .section#executive-view { border-left:4px solid var(--brand-red); padding:16px 18px; background:var(--pale); }
+    .section#scope-and-evidence-boundary,.section#protected-health-information-and-privacy-controls { border-left:0; background:#fff; }
+    .section#related-case-study-material { padding:17px 0; }
+    .section#related-case-study-material h2 { font-size:16px; }
+    footer { margin-top:15px; padding:10px 0 0; border-top:1px solid var(--line); color:#62686d; font-size:10px; text-align:left; }
+    @media(max-width:700px) {
+      .shell { width:100%; min-height:0; margin:0; padding:26px 22px; box-shadow:none; }
+      .hero { padding:0 0 16px; border-radius:0; }
+      h1 { font-size:32px; }
+      .hero p { font-size:15px; }
+      .toolbar { margin-top:10px; padding:8px 0 12px; border-radius:0; }
+      .section { padding:17px 0 15px; }
+      .section#executive-view { padding:14px 15px; }
+      h2 { font-size:16px; }
+      .table-wrap { margin-left:-4px; margin-right:-4px; }
+      table { min-width:640px; }
+      .diagram-wrap { margin-left:-4px; margin-right:-4px; padding:12px; }
+    }
+    @media print {
+      @page { size:letter; margin:0; }
+      html,body { width:8.5in; height:auto; background:#fff; }
+      .shell { width:8.5in; min-height:11in; margin:0; padding:.5in .58in .42in; box-shadow:none; }
+      .eyebrow { margin-top:22px; }
+      .toolbar { display:none; }
+      .section { margin:0; padding:17px 0 15px; border-radius:0; box-shadow:none; }
+      .section#executive-view { padding:14px 17px; }
+      svg.architecture,svg.state-machine { min-width:0; }
+      a { color:inherit; text-decoration:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="hero">
+      <p class="eyebrow">Lumen Health · Solution Architect Case Study</p>
+      <h1>Future-state target architecture: single customer identity</h1>
+      <p>A proposed identity layer across commerce, CRM, the member portal and the EHR, designed to resolve people carefully while keeping clinical data in the right systems.</p>
+      <div class="meta"><span>Future-state proposal</span><span>Based on supplied brief and sample code</span><span>Health-data controls by design</span></div>
+    </header>
+    <div class="toolbar"><nav aria-label="On this page"><a href="#target-architecture">Target architecture</a><a href="#data-model">Data model</a><a href="#record-matching-and-uncertainty">Matching and uncertainty</a><a href="#how-each-system-uses-the-identity">System responsibilities</a><a href="#protected-health-information-and-privacy-controls">PHI protections</a><a href="#operations-and-governance">Operations</a><a href="#phased-introduction">Rollout</a><a href="#decisions-to-validate-against-the-brief-and-production-owners">Validation questions</a></nav></div>
+    <main>
+      <section class="section" id="executive-view"><h2>Executive view</h2>
+<p>Create an identity registry that assigns an opaque, stable <code>person_id</code> and maintains governed links to records in e-commerce, CRM, the member portal and the EHR.</p>
+<p>The registry is the authority for cross-system identity links and their evidence, not a replacement for each system's business records or source-specific contact data.</p>
+<p>Keep buyer, recipient, registrant, patient and authorized representative as distinct roles because one transaction can involve several people.</p>
+<p>Accept registrations even while identity is being resolved, but do not attach clinical results or disclose identity-dependent information until the patient link is confirmed.</p>
+<p>Treat identity, contact details, kit registration and result-linkage data as sensitive and apply the stricter health-data controls wherever a record could reveal a person's relationship to testing or care.</p>
+</section>
+      <section class="section" id="scope-and-evidence-boundary"><h2>Scope and evidence boundary</h2>
+<p>The case describes e-commerce, CRM, member portal and EHR systems, with a lab partner in the sample and results journey.</p>
+<p>The local code is a Python CSV replay with an in-memory CRM stand-in, not a production REST service or a complete implementation of these system connections.</p>
+<p>The e-commerce data is Shopify-like and the CRM IDs are Salesforce-style, but both vendor identifications are inferences and remain unconfirmed.</p>
+<p>The proposed interfaces and controls below are target-state recommendations, not claims about current production capabilities.</p>
+<p>See <a href="current-system-diagnosis.html">the current-system diagnosis</a> for the evidence, observed data shapes and open production questions.</p>
+</section>
+      <section class="section" id="target-architecture"><h2>Target architecture</h2>
+<figure class="diagram-wrap" aria-labelledby="architecture-caption"><div class="diagram-scroll"><svg class="architecture" viewBox="0 0 1000 500" role="img" aria-labelledby="arch-title arch-desc" xmlns="http://www.w3.org/2000/svg"><title id="arch-title">Future-state customer identity architecture</title><desc id="arch-desc">E-commerce, CRM, member portal, EHR and lab partner exchange source events with integration adapters. The adapters feed an identity registry and match service. Uncertain matches go to a restricted review queue. Confirmed links are returned to systems as minimum necessary references, and decisions and access are audited.</desc><defs><marker id="arrow-a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#737373"/></marker><marker id="arrow-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c00000"/></marker></defs><g class="links"><path d="M100 96 C100 130 400 110 425 151"/><path d="M300 96 C300 124 420 118 440 151"/><path d="M500 96 V151"/><path d="M700 96 C700 124 580 118 560 151"/><path d="M900 96 C900 130 600 110 575 151"/><path d="M500 205 V238"/><path d="M412 293 C330 319 270 334 237 357"/><path d="M588 293 C670 319 730 334 763 357"/><path d="M237 388 C310 421 385 420 424 393"/><path d="M576 391 C626 420 687 417 737 390"/><path class="accent" d="M500 293 V432"/><path class="accent" d="M120 96 C75 167 71 288 114 354"/><path class="accent" d="M880 96 C927 167 932 288 886 354"/></g><g class="node source"><rect x="20" y="35" width="160" height="61" rx="12"/><text x="100" y="61">E-commerce</text><text class="sub" x="100" y="81">buyer · order</text><rect x="220" y="35" width="160" height="61" rx="12"/><text x="300" y="61">CRM</text><text class="sub" x="300" y="81">sales · service</text><rect x="420" y="35" width="160" height="61" rx="12"/><text x="500" y="61">Member portal</text><text class="sub" x="500" y="81">account · registration</text><rect x="620" y="35" width="160" height="61" rx="12"/><text x="700" y="61">EHR</text><text class="sub" x="700" y="81">patient chart</text><rect x="820" y="35" width="160" height="61" rx="12"/><text x="900" y="61">Lab partner</text><text class="sub" x="900" y="81">kit · result</text></g><g class="node adapter"><rect x="350" y="151" width="300" height="54" rx="12"/><text x="500" y="175">Integration adapters</text><text class="sub" x="500" y="193">approved transport · retries · idempotency</text></g><g class="node registry"><rect x="350" y="238" width="300" height="55" rx="12"/><text x="500" y="263">Identity registry</text><text class="sub" x="500" y="282">opaque person IDs · source links · evidence</text></g><g class="node match"><rect x="65" y="354" width="275" height="68" rx="12"/><text x="202" y="381">Match and resolution</text><text class="sub" x="202" y="401">ranked candidates · explicit decisions</text></g><g class="node review"><rect x="660" y="354" width="275" height="68" rx="12"/><text x="797" y="381">Restricted review queue</text><text class="sub" x="797" y="401">uncertain · conflicting · correctable</text></g><g class="node audit"><rect x="370" y="432" width="260" height="48" rx="12"/><text x="500" y="461">Append-only decision and access audit</text></g><text class="edge-label" x="500" y="226">normalized source records</text><text class="edge-label" x="315" y="330">evaluate</text><text class="edge-label" x="690" y="330">uncertain</text><text class="edge-label" x="338" y="431">confirm</text><text class="edge-label" x="655" y="431">review outcome</text></svg></div><figcaption id="architecture-caption">The registry governs cross-system links. Each connected system continues to own its business or clinical records.</figcaption></figure>
+<p>The integration layer should use the production-approved transport available for each system, such as APIs, webhooks, managed file exchange or change-data feeds.</p>
+<p>The case does not establish which transport is available, so transport selection, authentication, delivery guarantees and freshness targets require discovery with the system owners.</p>
+<p>Regardless of transport, normalize each incoming change to an idempotent event with a source, source record ID, event time, processing time and schema version.</p>
+<p>Use an outbox, durable queue or equivalent retryable handoff where supported so a temporary downstream failure does not lose an accepted order or registration.</p>
+</section>
+      <section class="section" id="data-model"><h2>Data model</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">Entity</th><th scope="col">Purpose</th><th scope="col">Important fields</th></tr></thead><tbody><tr><td><code>Person</code></td><td>Stable enterprise identity anchor.</td><td><code>person_id</code> (opaque UUID), lifecycle status, created time, updated time.</td></tr><tr><td><code>SourceRecord</code></td><td>Names a record in an owning system without replacing it.</td><td><code>source_system</code>, <code>record_type</code>, <code>source_record_id</code>, first seen, last seen.</td></tr><tr><td><code>IdentityLink</code></td><td>Records a proposed or confirmed relationship between a source record and a person.</td><td><code>source_record_id</code>, <code>person_id</code>, status, confidence band, method, evidence references, valid-from/to, decision actor and time.</td></tr><tr><td><code>MatchEvidence</code></td><td>Explains why a link was proposed or rejected.</td><td>Evidence type, source, normalized token or protected reference, quality, observed time, contribution and reason.</td></tr><tr><td><code>BusinessRelationship</code></td><td>Captures the person's role in a business event or account relationship.</td><td><code>person_id</code>, related order/kit/registration/chart reference, role, authority basis, valid-from/to.</td></tr><tr><td><code>ContactPoint</code></td><td>Keeps email, phone and address as source-attributed contact facts.</td><td>Person or source-record reference, value or protected token, source, verification status, purpose, valid-from/to.</td></tr><tr><td><code>ConsentPreference</code></td><td>Stores communication permission separately from identity and lifecycle.</td><td>Person/source reference, channel, purpose, status, collection source, time, scope and evidence.</td></tr><tr><td><code>IdentityDecisionEvent</code></td><td>Provides a durable history of matching, review, correction, merge and unmerge decisions.</td><td>Event ID, affected links/person IDs, actor, reason, before/after references and timestamp.</td></tr></tbody></table></div>
+<p>Use source-specific IDs as crosswalk keys, not as interchangeable person IDs.</p>
+<p>Examples from the supplied files include e-commerce customer <code>7000001</code>, order <code>#100001</code>, CRM account <code>001A000001</code>, portal registration <code>R000001</code>, EHR chart <code>CH050001</code> and lab result <code>LR000001</code>.</p>
+<p>The IDs identify different entity types and have different owners; an order or kit ID identifies a transaction or specimen path, not necessarily the person who will register or receive a result.</p>
+<p>Do not make email, phone, name plus ZIP, date of birth or a household address a global primary key.</p>
+<p>Store contact attributes with source and time provenance rather than overwriting a person's one canonical email with whichever system sent the latest event.</p>
+<p>An order should retain separate buyer, recipient and ship-to references where known.</p>
+<p>A kit should retain its order relationship and a separate registrant relationship.</p>
+<p>A portal registration should record the registrant and its kit; an EHR chart should be linked to the patient only after an authorized identity decision.</p>
+<p>A patient can have multiple charts or results until enterprise chart reconciliation is explicitly validated.</p>
+</section>
+      <section class="section" id="record-matching-and-uncertainty"><h2>Record matching and uncertainty</h2>
+<h3 id="evidence-strategy">Evidence strategy</h3>
+<p>Resolve known source crosswalks first, such as an already-confirmed mapping from an e-commerce customer ID to a person ID.</p>
+<p>Use exact, unique and appropriately verified identifiers as strong evidence, but check for collisions and source quality before treating them as conclusive.</p>
+<p>Use name, date of birth, email, phone and address as supporting evidence with source, recency and verification status attached.</p>
+<p>Treat shared household address, order email, ship-to name and a kit barcode as transaction evidence, not proof that buyer, recipient, registrant and patient are the same person.</p>
+<p>Treat missing values as no evidence and placeholders such as <code>1920-01-01</code> as missing or invalid according to a documented source rule.</p>
+<p>Never award a match because both records have the same blank email or phone.</p>
+<p>Do not use a lab result, diagnosis or other clinical content as a general-purpose matching feature.</p>
+<h3 id="decision-policy">Decision policy</h3>
+<p>The match service should produce a ranked candidate list with a human-readable explanation, evidence provenance, confidence band and any hard conflicts.</p>
+<p>Automatically confirm a link only when there is one sufficiently strong candidate, independent evidence supports it, no disqualifying conflict exists and the rule has been validated against labeled examples.</p>
+<p>Route ambiguous, conflicting or below-threshold candidates to a restricted review queue.</p>
+<p>Leave records unmatched when there is not enough evidence; an explicit unmatched state is safer than forcing a false link.</p>
+<p>Do not set a universal numeric threshold until the business owners agree on the acceptable false-link risk and the threshold is measured on representative labeled cases.</p>
+<p>The unused <code>matcher_v1.py</code> in the supplied code is not a safe production policy as written: it treats two missing values as a match and has no recorded evidence or review decision.</p>
+<h3 id="identity-resolution-state-machine">Identity-resolution state machine</h3>
+<p>Model the status of each identity link as a state machine, not as a single status for a person or customer account.</p>
+<figure class="diagram-wrap" aria-labelledby="state-caption"><div class="diagram-scroll"><svg class="state-machine" viewBox="0 0 1000 310" role="img" aria-labelledby="state-title state-desc" xmlns="http://www.w3.org/2000/svg"><title id="state-title">Identity link resolution states</title><desc id="state-desc">A source record begins unmatched. Evidence creates a candidate. A candidate can be confirmed, sent to review or marked conflict. Review can confirm, reject or return to unmatched. A confirmed link can return to review if new evidence challenges it, or be superseded by a correction.</desc><defs><marker id="arrow-state" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="#737373"/></marker></defs><g class="state-links"><path d="M155 146 H240"/><path d="M350 130 C390 78 445 63 490 63"/><path d="M350 146 H490"/><path d="M350 164 C400 217 440 241 490 241"/><path d="M600 63 H700"/><path d="M600 146 H700"/><path d="M600 241 C650 241 670 225 700 200"/><path d="M755 175 C700 285 540 287 540 175"/><path d="M755 121 C720 39 678 30 602 44"/><path d="M812 121 V63"/><path d="M700 146 C650 100 626 82 600 74"/><path d="M755 175 V210"/></g><g class="state-node"><rect x="45" y="121" width="110" height="50" rx="25"/><text x="100" y="151">Unmatched</text><rect x="240" y="121" width="110" height="50" rx="25"/><text x="295" y="151">Candidate</text><rect class="confirmed" x="490" y="38" width="110" height="50" rx="25"/><text x="545" y="68">Confirmed</text><rect class="review" x="700" y="121" width="110" height="50" rx="25"/><text x="755" y="151">Review</text><rect class="conflict" x="490" y="216" width="110" height="50" rx="25"/><text x="545" y="246">Conflict</text><rect class="rejected" x="850" y="121" width="110" height="50" rx="25"/><text x="905" y="151">Rejected</text><rect class="superseded" x="760" y="210" width="120" height="50" rx="25"/><text x="820" y="240">Superseded</text></g><text class="edge-label" x="198" y="111">evidence</text><text class="edge-label" x="425" y="48">strong, no conflict</text><text class="edge-label" x="423" y="137">ambiguous</text><text class="edge-label" x="419" y="225">contradiction</text><text class="edge-label" x="650" y="54">approved</text><text class="edge-label" x="650" y="137">review needed</text><text class="edge-label" x="652" y="221">new evidence</text><text class="edge-label" x="730" y="278">challenged link</text><text class="edge-label" x="675" y="24">correction</text><text class="edge-label" x="870" y="98">reject</text><text class="edge-label" x="815" y="194">correction</text></svg></div><figcaption id="state-caption">The state belongs to an identity link. Order, registration, laboratory and consent lifecycles remain separate.</figcaption></figure>
+<p>Every transition should preserve the previous decision and append the actor, time, reason and evidence used.</p>
+<p>Corrections should supersede a link or record an unmerge rather than erase history.</p>
+<p>Keep this identity-link state machine separate from order fulfillment, kit registration, lab processing, portal access and communication consent states.</p>
+<h3 id="registration-and-result-safety">Registration and result safety</h3>
+<p>Accept a valid kit registration and assign a registration ID even when its person link is unresolved.</p>
+<p>Move the identity link to <code>Review</code> or <code>Unmatched</code> and allow operations to resolve it asynchronously without asking the customer to repeat a successful registration.</p>
+<p>Keep the kit and registration connected while review is pending, but do not publish a result under a patient identity that is not confirmed.</p>
+<p>Once the patient-to-chart link is confirmed through an authorized process, associate the result to the EHR chart and make it available through the portal's normal authorization controls.</p>
+<p>If the EHR returns conflicting chart information, stop the release path and create a high-priority review case rather than selecting the first chart.</p>
+</section>
+      <section class="section" id="how-each-system-uses-the-identity"><h2>How each system uses the identity</h2>
+<div class="table-wrap"><table><thead><tr><th scope="col">System</th><th scope="col">Target use of enterprise identity</th><th scope="col">Data it should own or retain</th></tr></thead><tbody><tr><td>E-commerce</td><td>Keep its native customer and order IDs. Use the enterprise person ID only where the integration is approved and needed for service or order context. Preserve buyer, recipient and shipping roles separately.</td><td>Cart, order, payment and fulfillment data, source customer details and order-level contact facts. Do not receive clinical results or EHR details.</td></tr><tr><td>CRM</td><td>Store the enterprise person ID and source crosswalk as references. Represent household, buyer, recipient and service relationships without forcing every transaction onto one account.</td><td>Sales and service workflow, account ownership, CRM contact fields and permitted communication activity. Do not use it as the clinical record.</td></tr><tr><td>Member portal</td><td>Bind authenticated portal accounts to a confirmed person identity. Keep registrations and kits attached to the person who registered, even when a different person bought the kit.</td><td>Login credentials, registration workflow and portal authorization. Keep clinical-result display behind patient and representative authorization.</td></tr><tr><td>EHR</td><td>Maintain the EHR's chart ID as the clinical system's native identifier. Store the enterprise crosswalk only through the approved clinical identity process.</td><td>Patient chart, clinical history, laboratory results and clinical corrections. The registry must not become a parallel clinical record.</td></tr><tr><td>Lab partner</td><td>Exchange kit or specimen references and the minimum required patient linkage for the validated workflow.</td><td>Specimen processing and result production under the approved contract and interface. Do not send marketing profile data.</td></tr><tr><td>Identity registry</td><td>Resolve cross-system identity, preserve relationship roles and make the decision trail available to authorized operators.</td><td>Opaque person IDs, source crosswalks, match evidence references, link states, consent references and audit events. Avoid storing result values or duplicating full clinical records.</td></tr><tr><td>Marketing or lifecycle tools</td><td>Consume only an approved, minimal lifecycle signal and the relevant channel-purpose consent decision. Suppress when consent is absent, conflicting or opted out.</td><td>Campaign execution and communication history. Do not receive diagnoses, biomarkers, test values or detailed clinical status.</td></tr></tbody></table></div>
+<p>The registry should publish identity-link changes to subscribers or expose a controlled lookup interface, depending on the transport supported by each system.</p>
+<p>Downstream systems should receive only the reference and status they need, not the full match evidence or clinical context.</p>
+<p>Do not let an order email silently update the CRM's preferred email; reconcile contact points with source, verification and consent semantics.</p>
+</section>
+      <section class="section" id="protected-health-information-and-privacy-controls"><h2>Protected health information and privacy controls</h2>
+<p>Design conservatively as if identity mappings, kit registration and result-linkage metadata are protected health information because they can reveal that a person is testing or receiving care.</p>
+<p>Keep clinical results, diagnoses and detailed health attributes in the EHR and approved clinical workflow.</p>
+<p>Keep the registry's minimum necessary data to opaque identifiers, source references, decision status and evidence needed to support a safe link.</p>
+<p>Where matching needs direct identifiers, process them in a tightly restricted matching boundary and store protected values separately from general operational logs.</p>
+<p>Use keyed tokens for exact-match indexes where appropriate, with keys held in a managed secrets service and access separated from application operators.</p>
+<p>For fuzzy matching, decrypt only the fields needed inside the restricted service, avoid writing raw values to logs, traces or review notifications and retain them only as long as the approved workflow requires.</p>
+<p>Encrypt data in transit and at rest, apply least-privilege roles, require strong operator authentication and audit every search, view, decision, export and correction.</p>
+<p>Limit the review queue to trained identity-resolution staff and show only the fields needed to decide the case.</p>
+<p>Do not put patient identifiers or health-related match details in analytics, generic support tooling, email notifications or AI prompts unless a separately approved control set permits it.</p>
+<p>Keep consent separate from identity confidence and from purchase or registration status.</p>
+<p>Represent consent by channel and purpose with its source, timestamp and scope; do not infer opt-in from a purchase, kit registration or account merge.</p>
+<p>When records are linked or merged, preserve all opt-outs and apply the most restrictive applicable communication state until conflicting consent evidence is reviewed.</p>
+<p>Before production, confirm the organization's legal role for each data flow, the applicable privacy requirements, vendor contracts and any business associate agreement needs with counsel and privacy leadership.</p>
+<p>Define retention, correction, deletion, breach response and data-subject request handling for both the source records and the identity crosswalk.</p>
+</section>
+      <section class="section" id="operations-and-governance"><h2>Operations and governance</h2>
+<p>Provide an operations view for pending reviews, stale cases, conflicting links, source delivery failures and result-release holds.</p>
+<p>Require a reason code and evidence reference for every manual approval, rejection, merge or unmerge.</p>
+<p>Monitor false-link rate, review queue age, registration completion, time from registration to confirmed patient link, result-release holds, duplicate-link rate and consent preservation.</p>
+<p>Set service-level targets only after observing source delivery cadence and review capacity.</p>
+<p>Establish named owners for identity policy, EHR patient-link approval, CRM data stewardship, consent policy, security operations and source-system contracts.</p>
+</section>
+      <section class="section" id="phased-introduction"><h2>Phased introduction</h2>
+<ol>
+<li><strong>Discover:</strong> validate production systems, interfaces, identifiers, data ownership, consent meanings, patient-link authority and operational reviewers.</li>
+<li><strong>Shadow:</strong> build crosswalk suggestions from representative data without changing source records or exposing results differently.</li>
+<li><strong>Measure and tune:</strong> review labeled samples, quantify false links and unresolved cases, and set thresholds with clinical, operations and privacy owners.</li>
+<li><strong>Pilot:</strong> enable confirmed identity links for a narrow workflow while registrations continue independently and result release stays gated on confirmed patient linkage.</li>
+<li><strong>Expand:</strong> add system consumers gradually, with reconciliation, rollback and audit checks at each step.</li>
+</ol>
+</section>
+      <section class="section" id="decisions-to-validate-against-the-brief-and-production-owners"><h2>Decisions to validate against the brief and production owners</h2>
+<ul>
+<li>Which system is authoritative for person creation, contact fields, patient-chart linkage and communication consent?</li>
+<li>What production transport exists between each pair of systems, and what are its ordering, retry, latency and idempotency guarantees?</li>
+<li>Which identifiers are verified, unique and stable in each source, and can any be reused or shared?</li>
+<li>Who is authorized to confirm or correct an EHR patient link?</li>
+<li>Can a portal registration be accepted before identity resolution, and what existing product behavior must be preserved?</li>
+<li>Which result-ready signal, if any, may be exposed to a non-clinical marketing tool, and under what consent and privacy review?</li>
+<li>What retention, correction, deletion and incident procedures apply to the central crosswalk and decision history?</li>
+</ul>
+</section>
+      <section class="section" id="related-case-study-material"><h2>Related case-study material</h2>
+<ul>
+<li><a href="current-system-diagnosis.html">Current-system diagnosis</a></li>
+<li><a href="executive-summary.html">Executive summary</a></li>
+<li><a href="../BRIEF.pdf">Case study brief</a></li>
+</ul>
+      </section>
+    </main>
+    <footer>Future-state design for the fictional case study. Production details and privacy obligations require validation with system owners.</footer>
+  </div>
+</body>
+</html>

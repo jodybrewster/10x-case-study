@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Health | 90-day rollout</title>
+<style>
+  :root {
+      --neutral-code: #737373;
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000;
+    color-scheme: light;
+    --ink: #202427; --muted: #62686d;  --line: #dedede; --paper: #f5f5f5; --pale: #fbeaea;
+    --heading: #292d31; --link: #980000; --code-bg: #f3f3f3;
+    --brand-black: #111111;  --brand-grey: #f4f4f4;
+     --amber: #b97818; --amber-ink: #94550b;
+    --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); scroll-behavior: smooth; scroll-padding-top: 56px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; color: var(--ink); font: 15px/1.5 var(--sans); counter-reset: fig sym; }
+  a { color: var(--link); text-underline-offset: .18em; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--brand-red); outline-offset: 3px; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line);
+    overflow-x: auto; white-space: nowrap; padding: 11px max(16px, calc((100vw - 1120px) / 2)); font-size: 13px; }
+  nav a { color: var(--muted); text-decoration: none; margin-right: 20px; }
+  nav a:hover { color: var(--ink); }
+  main { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: .58in .62in .5in; background: #fff;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, .08); }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 12px;
+    border-bottom: 3px solid var(--brand-red); color: var(--muted); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; }
+  .wordmark { color: var(--brand-black); font: 700 14px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+  header { max-width: 720px; margin: 0 0 34px; }
+  .eyebrow { margin: 30px 0 9px; color: var(--brand-red); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 37px; font-weight: 580; line-height: 1.06; letter-spacing: -.045em; }
+  header p:not(.eyebrow) { margin: 13px 0 0; color: var(--muted); }
+  header h1 + p { font-size: 17px; line-height: 1.4; }
+  section { display: grid; grid-template-columns: 168px minmax(0, 1fr); column-gap: 34px; padding: 20px 0 26px;
+    border-top: 1px solid var(--line); }
+  section > h2 { grid-column: 1; grid-row: 1 / span 200; align-self: start; position: sticky; top: 60px; margin: 0;
+    color: var(--heading); font-size: 17px; font-weight: 580; line-height: 1.25; letter-spacing: -.018em; }
+  section > :not(h2) { grid-column: 2; }
+  section > .diagram { grid-column: 1 / -1; }
+  h3 { margin: 26px 0 7px; color: var(--heading); font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+  section > h2 + h3, section > h2 + p { margin-top: 0; }
+  p, li { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  ul { margin: 0 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  code { padding: 1px 5px; border-radius: 3px; background: var(--code-bg); font: 12.5px/1.4 var(--mono); overflow-wrap: break-word; }
+  td code { white-space: nowrap; }
+  pre.cmd { max-width: 70ch; padding: 13px 15px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 var(--mono); }
+  .scroll { overflow-x: auto; margin: 10px 0 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { border-bottom: 2px solid var(--brand-red); color: var(--heading); font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+  td:first-child { min-width: 9em; font-weight: 600; }
+  td.num, th.num { padding-right: 20px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 18px; margin: 16px 0 8px; }
+  .tile { padding-top: 9px; border-top: 3px solid var(--brand-red); }
+  .tile b { display: block; font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tile span { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.38; }
+  figure { margin: 0; }
+  .diagram { margin: 14px 0 8px; padding: 18px 16px 14px; overflow-x: auto; border: 1px solid var(--line); background: #fff; counter-increment: fig; }
+  .diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .diagram pre { margin: 0; min-width: 640px; font: 12px var(--mono); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 2px 0; color: var(--muted); font-size: 12.5px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 7px; border-radius: 2px; background: #fff; border: 2px solid var(--ink); vertical-align: -2px; box-sizing: border-box; }
+  .legend .code::before { background: var(--neutral-pale); border-color: var(--neutral-code); }
+  .legend .new::before { background: var(--neutral-pale); }
+  .legend .ext::before { background: #fff3dc; border-color: var(--amber); }
+  .legend .risk::before { background: var(--brand-red-pale); border-color: var(--brand-red); }
+  .legend .step::before { border-color: #737373; }
+  .legend .person::before { background: var(--neutral-pale); border-color: #737373; border-radius: 5px; }
+  .caption { max-width: 84ch; margin: 0 0 22px; color: var(--muted); font-size: 12.5px; }
+  .diagram + .caption::before { content: "Figure " counter(fig) ". "; color: var(--ink); font-weight: 650; }
+  .symptom { counter-increment: sym; display: grid; grid-template-columns: 34px 1fr; column-gap: 10px; padding: 15px 0 6px; border-top: 1px solid var(--line); }
+  .symptom::before { content: counter(sym); color: var(--brand-red); font-size: 24px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .symptom h3 { grid-column: 2; margin: 2px 0 8px; }
+  .symptom dl { grid-column: 2; display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin: 0; }
+  .symptom dt { padding-top: 1px; color: var(--muted); font-size: 12.5px; }
+  .symptom dd { max-width: 74ch; margin: 0; }
+  .tag { font-weight: 650; white-space: nowrap; }
+  .tag::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 2px; background: currentColor; }
+  .known { color: var(--ink); } .inferred { color: var(--amber-ink); } .unknown { color: var(--brand-red); }
+  .note { max-width: 70ch; margin: 16px 0; padding: 14px 18px; border-left: 4px solid var(--brand-red); background: var(--pale); }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { padding: 10px 0; font-weight: 600; cursor: pointer; }
+  details .scroll { margin: 2px 0 16px; }
+  .foot { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+  @media (max-width: 780px) {
+    main { width: 100%; margin: 0; padding: 26px 20px; box-shadow: none; }
+    h1 { font-size: 32px; }
+    section { display: block; }
+    section > h2 { position: static; margin-bottom: 12px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .symptom dl { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { size: letter; margin: .5in; }
+    html, body { background: #fff; }
+    nav { display: none; }
+    main { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    section > h2 { position: static; }
+    .diagram, .symptom, tr { break-inside: avoid; }
+    .diagram { overflow: visible; }
+    details > .scroll { display: block; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#summary">Summary</a>
+  <a href="#timeline">Timeline</a>
+  <a href="#invariants">What never changes</a>
+  <a href="#phase0">Phase 0</a>
+  <a href="#phase1">Phase 1</a>
+  <a href="#phase2">Phase 2</a>
+  <a href="#phase3">Phase 3</a>
+  <a href="#metrics">Success metrics</a>
+  <a href="#gates">Decision log</a>
+  <a href="#dependencies">Dependencies</a>
+  <a href="#risks">Risks</a>
+  <a href="current-system.html">Current system</a>
+  <a href="target-architecture.html">Target architecture</a>
+  <a href="build-spec.html">Build specification</a>
+  <a href="executive-summary.html">Executive summary</a>
+  <a href="solution-design.html">Solution design</a>
+  <a href="worked-examples.html">Worked examples</a>
+</nav>
+<main>
+<div class="topline"><span class="wordmark" aria-label="Lumen Health">LUMEN HEALTH</span><span>Solution architect case study</span></div>
+<header>
+  <p class="eyebrow">90-day rollout</p>
+  <h1>90-day rollout: from the current sync to one customer identity</h1>
+  <p>Lumen Health case study. How the identity design in the <a href="target-architecture.html">target architecture</a> is introduced while orders and registrations keep flowing and the CRM is replaced, written against the findings in <a href="current-system.html">how legacy-sync works today</a>.</p>
+  <p>The fixed constraint is that a customer&#39;s kit registration is never blocked waiting on identity. The first two weeks make that true without any new service. Everything after that adds identity behind flags, one consumer at a time.</p>
+</header>
+
+<section id="summary">
+<h2>Summary</h2>
+<p>The rollout has four phases over 90 days. Phase 0 (days 1 to 14) stops the damage in <code>legacy-sync</code> and the registration path without introducing anything new. Phase 1 (days 15 to 45) runs the identity service in shadow mode and proves its matching on a hand-labelled set. Phase 2 (days 46 to 75) switches consumers to the identity result one at a time, each behind a flag. Phase 3 (days 76 to 90) keys the replacement CRM on <code>person_key</code> and retires <code>legacy-sync</code>.</p>
+<p>A kit registration is never blocked waiting on identity or on the CRM. That holds from the first week and stays true in every later phase.</p>
+<div class="note">
+<p>Two milestones can look alike and are different. The week 1 to 2 change is an immediate registration-path decoupling: the portal stops depending on the CRM, so a CRM failure can no longer reject a customer. It ships in Phase 0 and needs no identity service. The later milestone, days 46 to 75, is consuming identity results: the CRM and the portal start receiving and storing <code>person_key</code> from the service. The first removes a dependency. The second adds a consumer. The first never waits for the second.</p>
+</div>
+<p>The repository supplied with the case is a local CSV replay with an in-memory CRM stand-in. Every code reference below points into that replay. How production reaches these systems is not known, so each step that touches a production system carries an assumption in <a href="#dependencies">the dependencies section</a>.</p>
+<div class="tiles">
+  <div class="tile"><b>14 days</b><span>to stop the rejections, the email overwrites and the wrong-account matches in the current code</span></div>
+  <div class="tile"><b>8 gates</b><span>each with a named role that decides and a fallback if the answer is no</span></div>
+  <div class="tile"><b>0 writes</b><span>from the identity service to production systems before day 46</span></div>
+  <div class="tile"><b>1 flag</b><span>per consumer cutover, so each can be reversed alone</span></div>
+  <div class="tile"><b>0 blocked</b><span>kit registrations at any point after the portal change ships</span></div>
+  <div class="tile"><b>1 cycle</b><span>of matching decisions agreed before <code>legacy-sync</code> is retired</span></div>
+</div>
+</section>
+
+<section id="timeline">
+<h2>Timeline</h2>
+<figure class="diagram" data-svg="r-timeline">
+<svg viewBox="0 0 1100 400" role="img" aria-label="Ninety day rollout timeline: four phases across days 1 to 90, with lanes for registration, legacy-sync, the identity service, the current CRM and the replacement CRM. Decision gates are marked on the axis" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<line x1="40.0" y1="62" x2="40.0" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="40.0" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 0</text>
+<line x1="201.0" y1="62" x2="201.0" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="201.0" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 14</text>
+<line x1="385.0" y1="62" x2="385.0" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="385.0" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 30</text>
+<line x1="557.5" y1="62" x2="557.5" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="557.5" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 45</text>
+<line x1="730.0" y1="62" x2="730.0" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="730.0" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 60</text>
+<line x1="902.5" y1="62" x2="902.5" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="902.5" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 75</text>
+<line x1="1075.0" y1="62" x2="1075.0" y2="372" stroke="#dedede" stroke-width="1"/>
+<text x="1075.0" y="388" text-anchor="middle" font-size="11.5" fill="#62686d">day 90</text>
+<rect x="40.0" y="70" width="161.0" height="44" fill="#fbeaea" stroke="#c00000" stroke-width="1.5"/>
+<text x="120.5" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#202427">Phase 0</text>
+<text x="120.5" y="105" text-anchor="middle" font-size="11.5" fill="#62686d">Stop damage</text>
+<rect x="201.0" y="70" width="356.5" height="44" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="379.2" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#202427">Phase 1</text>
+<text x="379.2" y="105" text-anchor="middle" font-size="11.5" fill="#62686d">Identity in shadow</text>
+<rect x="557.5" y="70" width="345.0" height="44" fill="#fbeaea" stroke="#c00000" stroke-width="1.5"/>
+<text x="730.0" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#202427">Phase 2</text>
+<text x="730.0" y="105" text-anchor="middle" font-size="11.5" fill="#62686d">Consume identity</text>
+<rect x="902.5" y="70" width="172.5" height="44" fill="#fff3dc" stroke="#b97818" stroke-width="1.5"/>
+<text x="988.8" y="88" text-anchor="middle" font-size="13" font-weight="700" fill="#202427">Phase 3</text>
+<text x="988.8" y="105" text-anchor="middle" font-size="11.5" fill="#62686d">CRM replacement</text>
+<text x="40" y="142" font-size="12" font-weight="600" fill="#202427">Kit registration</text>
+<rect x="40.0" y="148" width="80.5" height="22" rx="3" fill="#fbeaea" stroke="#c00000" stroke-width="1.3"/>
+<text x="48.0" y="163" font-size="11.5" fill="#202427">CRM can block</text>
+<rect x="120.5" y="148" width="954.5" height="22" rx="3" fill="#fbeaea" stroke="#c00000" stroke-width="1.3"/>
+<text x="128.5" y="163" font-size="11.5" fill="#202427">Accepted by the portal first, resolved afterwards</text>
+<text x="40" y="190" font-size="12" font-weight="600" fill="#202427">legacy-sync</text>
+<rect x="40.0" y="196" width="701.5" height="22" rx="3" fill="#f3f3f3" stroke="#737373" stroke-width="1.3"/>
+<text x="48.0" y="211" font-size="11.5" fill="#202427">Runs production, with the Phase 0 fixes</text>
+<rect x="741.5" y="196" width="333.5" height="22" rx="3" fill="#fff3dc" stroke="#b97818" stroke-width="1.3"/>
+<text x="749.5" y="211" font-size="11.5" fill="#202427">Shadow, then retired</text>
+<text x="40" y="238" font-size="12" font-weight="600" fill="#202427">Identity service</text>
+<rect x="201.0" y="244" width="356.5" height="22" rx="3" fill="#f3f3f3" stroke="#737373" stroke-width="1.3"/>
+<text x="209.0" y="259" font-size="11.5" fill="#202427">Shadow, writes nothing</text>
+<rect x="557.5" y="244" width="517.5" height="22" rx="3" fill="#fbeaea" stroke="#c00000" stroke-width="1.3"/>
+<text x="565.5" y="259" font-size="11.5" fill="#202427">Consumers switch one at a time</text>
+<text x="40" y="286" font-size="12" font-weight="600" fill="#202427">Current CRM</text>
+<rect x="40.0" y="292" width="701.5" height="22" rx="3" fill="#f3f3f3" stroke="#737373" stroke-width="1.3"/>
+<text x="48.0" y="307" font-size="11.5" fill="#202427">Account still decides identity</text>
+<rect x="741.5" y="292" width="333.5" height="22" rx="3" fill="#fbeaea" stroke="#c00000" stroke-width="1.3"/>
+<text x="749.5" y="307" font-size="11.5" fill="#202427">Carries person_key, dual-run from day 76</text>
+<text x="40" y="334" font-size="12" font-weight="600" fill="#202427">Replacement CRM</text>
+<rect x="902.5" y="340" width="172.5" height="22" rx="3" fill="#fff3dc" stroke="#b97818" stroke-width="1.3"/>
+<text x="910.5" y="355" font-size="11.5" fill="#202427">Keyed on person_key</text>
+<path d="M201.0,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="201.0" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G1</text>
+<path d="M385.0,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="385.0" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G2</text>
+<path d="M557.5,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="557.5" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G3</text>
+<path d="M626.5,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="626.5" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G4</text>
+<path d="M741.5,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="741.5" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G5</text>
+<path d="M833.5,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="833.5" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G6</text>
+<path d="M902.5,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="902.5" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G7</text>
+<path d="M1075.0,56 l6,6 l-6,6 l-6,-6 z" fill="#c00000"/>
+<text x="1075.0" y="48" text-anchor="middle" font-size="11.5" font-weight="700" fill="#c00000">G8</text>
+</svg>
+<div class="legend"><span class="step">Current behaviour</span><span class="system">Target state</span><span class="new">Identity service</span><span class="ext">Transition</span><span class="risk">Decision gate or exposure</span></div></figure>
+<p class="caption">Red diamonds mark the eight decision gates described in the decision log. The registration lane turns teal when the portal stops depending on the CRM, by day 7 at the latest.</p>
+<div class="scroll"><table>
+<tr><th>Phase</th><th>Days</th><th>Theme</th><th>What ships</th><th>Gate at the end</th></tr>
+<tr><td>Phase 0</td><td>1 to 14</td><td>Stop the damage</td><td>The six code, test and rule changes, with the portal change first</td><td>G1, day 14</td></tr>
+<tr><td>Phase 1</td><td>15 to 45</td><td>Identity in shadow</td><td>Event ingest, matcher, review queue, daily comparison, labelled validation set</td><td>G2, day 30 and G3, day 45</td></tr>
+<tr><td>Phase 2</td><td>46 to 75</td><td>Consume identity</td><td>Marketing, then CRM key, then portal and EHR key, then audited clean-up</td><td>G4 day 51, G5 day 61, G6 day 69 and G7 day 75</td></tr>
+<tr><td>Phase 3</td><td>76 to 90</td><td>CRM replacement and retirement</td><td>New CRM on <code>person_key</code>, dual-run, account mapping, <code>legacy-sync</code> retired</td><td>G8, day 90</td></tr>
+</table></div>
+</section>
+
+<section id="invariants">
+<h2>What never changes during rollout</h2>
+<ul>
+  <li>Orders keep flowing through the existing sync until the consumer that replaces it has matched its decisions for a full cycle. No phase turns the order feed off.</li>
+  <li>A kit registration is accepted the moment the customer submits it. After Phase 0 no CRM outcome and no identity outcome can reject it.</li>
+  <li>EHR chart creation stays as it is, from name and birthdate. The EHR gains an identifier in Phase 2 and no new workflow.</li>
+  <li>The lab integration and the result-by-barcode flow are untouched.</li>
+  <li>Nothing clinical crosses to the commercial side. Systems outside the health-data boundary receive the key, contact details, consent and a kit stage only.</li>
+  <li>Nothing is deleted to create identity. Every merge is an audited event that can be undone.</li>
+  <li>The files in <code>data/</code> and the supplied <code>legacy-sync</code> history are evidence and are not edited. Every fix below is a change to make in the live service.</li>
+</ul>
+</section>
+
+<section id="phase0">
+<h2>Phase 0: stop the damage, days 1 to 14</h2>
+<p>This phase changes the live sync and the registration path only. No identity service exists yet and none is needed. It is the immediate registration-path decoupling named in the summary. It is distinct from the later work that consumes identity results.</p>
+<div class="scroll"><table>
+<tr><th>Item</th><th>Detail</th></tr>
+<tr><td>Goal</td><td>No customer is rejected because of a CRM outcome. The sync stops creating new wrong-account matches and new email overwrites. The nurture stops chasing customers who have registered.</td></tr>
+<tr><td>Who is affected</td><td>Customers who register a kit, who stop seeing rejections. Support, who see fewer manual moves and merges but gain a follow-up queue for registrations the CRM could not take. CRM administrators, who change the duplicate rule setting and see more duplicate accounts for a while. Marketing, who add a suppression rule.</td></tr>
+<tr><td>Entry criteria</td><td>Gate G0 on day 1: the head of engineering and the head of operations agree the scope. Access to the portal, the sync job, the CRM settings and the marketing platform rules is confirmed. A rollback owner is named for each change.</td></tr>
+<tr><td>Exit criteria</td><td>For seven consecutive days after the last change ships: zero registrations returned as failed to a customer, zero orders matched by surname and zip, zero orders that overwrite an existing account email, zero consent flags lost in a merge test and zero "please register" sends to kits with a registration or a result. The rewritten test passes. The oldest item in the follow-up queue for CRM-rejected registrations is under 2 working days old. Gate G1 on day 14.</td></tr>
+<tr><td>Rollback</td><td>Each change has its own switch. Change (a) is reverted as one pair: the fallback setting and the duplicate rule action go back together. Change (b) is a single code revert, with the additional contacts kept. Change (c) is a flag on the portal call that restores the synchronous CRM step. Changes (d) and (e) are code and test reverts. Change (f) is one rule in the marketing platform. No change deletes data.</td></tr>
+<tr><td>Risks</td><td>More duplicate accounts are created while the duplicate rule only alerts. They wait for the audited clean-up in Phase 2. Orders that used to land on a relative&#39;s account now create their own, which is correct and shows up as new accounts. Queued registrations pile up if nobody works the follow-up queue. Where the portal stores a registration before calling the CRM is assumed, not known.</td></tr>
+</table></div>
+<h3>Changes shipped</h3>
+<div class="scroll"><table>
+<tr><th>Ref</th><th>Change</th><th>Code location</th><th>Why and what the replay shows</th></tr>
+<tr><td>a</td><td>Turn off the surname-and-zip address fallback and set the CRM duplicate rule to alert in the same release</td><td><code>legacy_sync/config.py:5</code> (<code>MATCH_FALLBACK_ADDRESS</code>), <code>legacy_sync/sync/order_sync.py:20-24</code>, <code>legacy_sync/config.py:9</code> (<code>DUPLICATE_RULE_ACTION</code>)</td><td>With the fallback off alone, 16 orders raise an uncaught <code>DuplicateDetected</code> in the replay and 11 kit registrations lose their opportunity. The fallback is hiding the duplicate rule from the order path. The two settings ship together or not at all</td></tr>
+<tr><td>b</td><td>Stop overwriting <code>primary_email</code> and <code>phone</code> on every order. Store the order email as an additional contact</td><td><code>legacy_sync/sync/order_sync.py:42</code>, which calls <code>update_contact_details</code> at <code>legacy_sync/crm/client.py:48-55</code></td><td>77 orders overwrote an account email in the replay and 19 accounts changed twice or more. The replay CRM has a <code>secondary_email</code> field. Where the production CRM keeps additional contacts is unknown</td></tr>
+<tr><td>c</td><td>The portal accepts a registration regardless of the CRM outcome. Catch and queue <code>RegistrationBlocked</code>, <code>IdentityConflict</code> and <code>InactiveOwner</code> instead of failing the customer</td><td><code>legacy_sync/registration/register.py:22-48</code>. <code>IdentityConflict</code> is raised at <code>:32</code> and <code>RegistrationBlocked</code> at <code>:43</code>. <code>InactiveOwner</code> comes from <code>legacy_sync/crm/client.py:57-61</code> through the move at <code>register.py:46</code></td><td>32 of 433 registrations were rejected in the replay, 10 of 25 gift registrations among them. This is the immediate registration-path decoupling. It does not use identity results and does not wait for Phase 1</td></tr>
+<tr><td>d</td><td>The merge utility carries <code>sms_opt_out</code> and <code>do_not_call</code> with the strictest value winning</td><td><code>legacy_sync/consent/merge.py:3-4</code> (<code>MERGE_FIELDS</code>) and the copy loop at <code>:10-12</code></td><td>The two flags are not on the field list, so the loser&#39;s opt-out is deleted with the account. 3 of the CRM file&#39;s duplicate pairs disagree on both flags. This must ship before any historic merge in Phase 2</td></tr>
+<tr><td>e</td><td>Rewrite the test that asserts the bug</td><td><code>tests/test_order_sync.py:24-28</code></td><td>The test <code>test_unmatched_order_reuses_household_account</code> expects an order to land on a relative&#39;s account. It becomes a test that an unmatched order creates its own account and leaves the other person&#39;s email intact</td></tr>
+<tr><td>f</td><td>Pause the "please register your kit" nurture for any kit that has a registration or a result, keyed by kit barcode</td><td>The rule lives in the marketing platform. The repo helper <code>legacy_sync/marketing/stage.py:6-14</code> works per CRM account and nothing in the repo calls it</td><td>Estimated 60 resulted kits whose purchasing account still reads as bought, under the replay&#39;s attribution assumption. Suppression by barcode needs no identity and no CRM account</td></tr>
+</table></div>
+<h3>Order of work inside the phase</h3>
+<p>Change (c) and change (f) ship first, by day 7, because they protect customers directly and depend on nothing else. Changes (d) and (e) follow with no customer-facing effect. Changes (a) and (b) ship last, by day 14, with (a) as one release so the duplicate rule and the fallback never differ. A replay of the supplied data with the changes applied is the acceptance test: the 16 uncaught duplicate errors must be zero.</p>
+<h3>Reliability contract for the registration change</h3>
+<p>The adversarial review asked for an explicit contract behind "registration never waits". The assumption here is that the portal has its own durable store. If it does not, the first task of Phase 0 is to add one.</p>
+<ul>
+  <li>Acceptance boundary: the registration is accepted when the portal has written it to its own store. The customer sees success at that moment.</li>
+  <li>The portal writes a work item in the same transaction as the registration. The registration ID is the idempotency key, so a double submit or a retry creates one record and one CRM action.</li>
+  <li>A worker calls the CRM after acceptance. A rejected call is retried with growing delays. After a fixed number of attempts the item moves to a dead-letter list that support works by hand.</li>
+  <li>Replay: any item or range of items can be re-run by registration ID. A repeated run is safe.</li>
+  <li>If the work queue is unavailable the registration is still stored. A nightly sweep finds stored registrations with no CRM action and creates the missing items.</li>
+</ul>
+</section>
+
+<section id="phase1">
+<h2>Phase 1: identity service in shadow mode, days 15 to 45</h2>
+<p>The service reads events and makes decisions. It writes nothing to production systems. Its output is compared with <code>legacy-sync</code> every day, so the first time anyone relies on it is after its errors have been counted.</p>
+<div class="scroll"><table>
+<tr><th>Item</th><th>Detail</th></tr>
+<tr><td>Goal</td><td>Show with measured numbers that the matcher is safe to trust. Have a staffed review queue ready before any production system consumes a result.</td></tr>
+<tr><td>Changes shipped</td><td>Event ingest for orders, registrations and results (feed or webhook, whichever production offers). The matcher and the identity store described in the target architecture. The review queue and its screen, with reason codes and no names in the list view. The append-only event log. A daily comparison report of identity decisions against <code>legacy-sync</code> placement. A hand-labelled validation set.</td></tr>
+<tr><td>Who is affected</td><td>Support, who staff the review queue. Engineering, who run the comparison. Clinical operations, who are told how chart-pair review items will reach them. Customers and every production system are unaffected. The service has read access to events only.</td></tr>
+<tr><td>Entry criteria</td><td>G1 passed. A named owner and at least two trained reviewers for the queue. The privacy officer has approved the store, its access scopes and its logging as part of the health-data boundary.</td></tr>
+<tr><td>Exit criteria</td><td>Gate G3 on day 45. The validation set holds at least 600 labelled automatic links, drawn as a simple random sample of every record pair at or above the threshold and labelled independently by two reviewers, with disagreements settled by a third. Separate random samples of the review queue and of pairs just under the threshold are labelled as well and are reported separately. Auto-link precision and false-match rate are reported with a 95 percent interval. With no false match in 600 labelled automatic links the upper bound of the Wilson interval is about 0.6 percent, which is why 600 is the floor. Every rule family without enough labelled pairs is set to review and does not auto-link. The queue has run for at least 14 days with its oldest open item under 2 working days. The daily comparison has an explained cause for every difference.</td></tr>
+<tr><td>Rollback</td><td>Stop the ingest and switch the service off. Nothing in production depends on it, so there is nothing to undo. The store is kept for analysis.</td></tr>
+<tr><td>Risks</td><td>The labelled set is not representative, so precision is overstated. Reviewers are not available and the queue backs up. Event feeds arrive late or incomplete in production, which skews the comparison. Review screens expose more health information than the role needs.</td></tr>
+</table></div>
+<h3>Rules that hold until the numbers exist</h3>
+<ul>
+  <li>Until auto-link precision and the false-match rate have been measured on the validation set, the uncertain rule families go to review and do not auto-link. These are the ones the adversarial review named: plus-tag removal in email, last-ten-digit phone comparison across country codes and the birthdate transposition exception.</li>
+  <li>The 0.90 and 0.60 thresholds in the target architecture are starting values. G3 is the first moment a threshold is trusted. It is trusted only for the rule families that passed.</li>
+  <li>The kit barcode links are deterministic and need no threshold. Every other family waits for its measurement, including exact email with a matching birthdate.</li>
+</ul>
+<h3>Daily comparison</h3>
+<p>Each day the report lists orders where the identity service would have placed the opportunity on a different person than <code>legacy-sync</code> did, registrations the service would resolve differently and the review items opened. Differences are sorted into three causes: the service is right, <code>legacy-sync</code> is right or both are wrong. Only the second and third cause lead to a change in the matcher.</p>
+</section>
+
+<section id="phase2">
+<h2>Phase 2: consume identity results, days 46 to 75</h2>
+<p>This is the later milestone that the summary separates from the Phase 0 decoupling. Consumers start reading the identity result. Each cutover sits behind its own flag, runs in parallel with the old behaviour first and has a written rollback.</p>
+<div class="scroll"><table>
+<tr><th>Item</th><th>Detail</th></tr>
+<tr><td>Goal</td><td>Move the decision about who a person is out of the CRM and into the identity service, one consumer at a time, starting with the most visible failure.</td></tr>
+<tr><td>Who is affected</td><td>Marketing, whose sends change from per-account stage to per-kit and per-person stage with consent per channel. CRM administrators and reps, who see <code>person_key</code> on accounts and a pending-review flag. Portal and EHR teams, who add a field. Support, who run historic clean-up through the review screen. Customers see fewer wrong messages and nothing else.</td></tr>
+<tr><td>Entry criteria</td><td>G3 passed. A flag exists for each cutover. Change (d) from Phase 0 has run in production. The vendor terms for the marketing platform are settled (see dependencies).</td></tr>
+<tr><td>Exit criteria</td><td>Gate G7 on day 75. All three consumers are on the flag set to identity. The CRM no longer decides identity: its duplicate rule only alerts and its account is a view of a person. Sends to kits with a registration or a result are zero. Every account linked above threshold carries a <code>person_key</code> and the rest are listed in the queue. Every historic merge in the audit log has an actor, a reason and a working undo.</td></tr>
+<tr><td>Rollback</td><td>Per flag, in under one working day: the consumer returns to its previous input. Marketing returns to the suppression rule from Phase 0. The CRM ignores <code>person_key</code> and runs on the Phase 0 sync. The portal and EHR keep the stored key, which is harmless. A merge is undone from the audit log.</td></tr>
+<tr><td>Risks</td><td>A wrong auto-link now reaches a customer. A marketing vendor that is not covered by the right agreement receives a stage word. Custom fields on the production CRM or the EHR turn out not to be possible. Reviewers cannot keep up with clean-up volume next to day-to-day items.</td></tr>
+</table></div>
+<h3>Order of cutovers</h3>
+<div class="scroll"><table>
+<tr><th>Cutover</th><th>Days</th><th>What changes</th><th>Why in this order</th></tr>
+<tr><td>1. Marketing</td><td>46 to 55</td><td>Stage per kit and per person, consent per channel address, "please register" only for kits with no registration event. Parallel send comparison for four days, then the flag. Gate G4 on day 51.</td><td>Marketing was the visible failure and needs only a key, a stage and consent. It depends on nothing else.</td></tr>
+<tr><td>2. CRM receives <code>person_key</code></td><td>56 to 65</td><td>Key stored on every account. Opportunities placed through the identity result. Order and registration handling become a consumer of identity events. Duplicate rule stays on alert. Gate G5 on day 61. <code>legacy-sync</code> moves to shadow here.</td><td>The CRM stops being the place identity is decided. Contact details come from the identity store with their source.</td></tr>
+<tr><td>3. Portal and EHR store the key</td><td>66 to 75</td><td>Portal stores the key on the registrant. EHR stores it as an external identifier on the chart, with the chart ID read back. Gate G6 on day 69.</td><td>Smallest change for each system and no change to chart creation. Chart pairs that score as one person go to clinical operations as review items. Code never merges charts.</td></tr>
+</table></div>
+<h3>Historic clean-up</h3>
+<p>Clean-up starts on day 60 in batches, after change (d) has shipped and the CRM carries the key. It never edits an account in place.</p>
+<ul>
+  <li>Purchases filed on a relative&#39;s account are moved by an audited identity merge or a role correction. A relative is split out as a separate person with a household relationship. The replay shows 43 orders matched by surname and zip, 29 of them onto an account with a different first name.</li>
+  <li>Duplicate accounts are merged through the service, with the strictest consent value kept for each channel address.</li>
+  <li>Each batch is sampled before it is applied. A batch is applied only if the sample shows no false merge. Every merge carries an actor, a reason and an undo.</li>
+  <li>Accounts held by inactive owners are handled in the same flow. Identity links and role changes never check ownership.</li>
+</ul>
+</section>
+
+<section id="phase3">
+<h2>Phase 3: CRM replacement and retirement, days 76 to 90</h2>
+<p>The replacement CRM starts keyed on <code>person_key</code>, so it does not inherit the account-as-person model. The current CRM and the new one run as consumers of the same identity events.</p>
+<div class="scroll"><table>
+<tr><th>Item</th><th>Detail</th></tr>
+<tr><td>Goal</td><td>Cut over to the replacement CRM without recreating the identity problems. Retire <code>legacy-sync</code> once the identity consumer has matched it for a full cycle.</td></tr>
+<tr><td>Changes shipped</td><td>The replacement CRM keyed on <code>person_key</code> from its first record. Dual-run: both CRMs consume the same events and a daily diff compares them. A migration mapping from old <code>account_id</code> to <code>person_key</code>, built from the identity store and kept after cutover. <code>legacy-sync</code> retired. Flags and the comparison job removed after the retirement.</td></tr>
+<tr><td>Who is affected</td><td>Reps and support, who work in the new CRM. Marketing and the portal, which read the key and do not change. The CRM vendor or implementation team, who must accept the key as a required field. Customers are unaffected.</td></tr>
+<tr><td>Entry criteria</td><td>G7 passed on day 75. The replacement CRM has a staging instance that accepts a person key field and event-driven writes. The mapping has been run on a copy and every account either maps to a key or sits in the review queue.</td></tr>
+<tr><td>Exit criteria</td><td>Gate G8 on day 90. Dual-run has produced 14 consecutive days with zero unexplained differences between the two CRMs for opportunity placement and consent. The identity consumer has matched <code>legacy-sync</code> placement for one full cycle, which is assumed to mean 14 consecutive days after the CRM cutover on day 61 with every difference explained. The mapping covers every active account. Nothing reads from <code>legacy-sync</code>.</td></tr>
+<tr><td>Rollback</td><td>Before retirement, <code>legacy-sync</code> can be switched back on as the order feed within one working day, because it has run in shadow and kept its state. Before the final CRM cutover, users return to the old CRM, which is still receiving events. After retirement the rollback is a restore of the last <code>legacy-sync</code> release from version control, accepted as slower.</td></tr>
+<tr><td>Risks</td><td>The replacement schedule does not match these days. The new CRM cannot hold an external key. A diff between the two CRMs is dominated by field naming and hides real differences. Users switch late and keep working in the old CRM after cutover, so their edits go to a system that is no longer fed.</td></tr>
+</table></div>
+<h3>If the replacement CRM date is different</h3>
+<p>The schedule is unknown, so the plan bends in two directions. If the replacement arrives later than day 90, Phase 3 reduces to retiring <code>legacy-sync</code> and the current CRM keeps its key. If it arrives earlier, Phase 2 step 2 targets the new CRM directly and the old CRM is fed only until its own retirement. Either way nothing in Phase 0 or Phase 1 changes.</p>
+<h3>What remains after day 90</h3>
+<ul>
+  <li>Decommissioning the old CRM after its dual-run window, on the replacement schedule.</li>
+  <li>The review queue as steady-state work with an owner, a daily age target and a monthly recalibration from the decisions.</li>
+  <li>Review of suspected duplicate EHR charts by clinical operations. That never reaches code.</li>
+  <li>Rule families still in review because their labelled set was small. Each one is promoted to auto-link only by a new measurement and a gate decision.</li>
+  <li>Retention, audit access reviews and the vendor agreement renewal cycle.</li>
+  <li>Phone sales and other entry points outside the extract, which raise the same event an order does.</li>
+</ul>
+</section>
+
+<section id="metrics">
+<h2>Success metrics</h2>
+<p>Baselines come from the replay of the supplied data. Each is a count on a reconstructed history, not a measurement of production. The same measurement is repeated in production at each gate once the feeds exist.</p>
+<div class="scroll"><table>
+<tr><th>Metric</th><th>Baseline from the replay</th><th>Target</th><th>By</th></tr>
+<tr><td>Registrations rejected</td><td>32 of 433 (20 duplicate rule, 11 identity conflict, 1 inactive owner)</td><td>0 rejected to a customer from day 7. Follow-up queue items resolved within 2 working days</td><td>End of Phase 0</td></tr>
+<tr><td>Gift registrations rejected</td><td>10 of 25</td><td>0</td><td>End of Phase 0</td></tr>
+<tr><td>Orders matched by surname and zip</td><td>43 of 905</td><td>0</td><td>End of Phase 0</td></tr>
+<tr><td>Orders that overwrote an account email</td><td>77</td><td>0, with order emails stored as additional contacts</td><td>End of Phase 0</td></tr>
+<tr><td>Resulted kits whose purchasing account still reads as bought</td><td>Estimated 60 of 406 kits with a final result, under the stated attribution assumption (nothing in the repo calls the stage helper)</td><td>0 sends of "please register" to a kit with a registration or a result</td><td>Pause on day 7, stage per kit by day 55</td></tr>
+<tr><td>Opt-outs lost on merge</td><td>Read from the code, not observed in the replay. 3 CRM duplicate pairs disagree on both flags</td><td>0 in the merge test and in every historic merge</td><td>Before the first merge in Phase 2</td></tr>
+<tr><td>Auto-link precision and false-match rate</td><td>Not measured</td><td>Reported with a 95 percent interval on a random sample of at least 600 labelled automatic links. Proposed target is a false-match upper bound under 1 percent. The final figure is set by the privacy officer at G3</td><td>Day 45</td></tr>
+<tr><td>Review queue age</td><td>No queue exists</td><td>Oldest open item under 2 working days for 14 consecutive days</td><td>Day 45 and after</td></tr>
+<tr><td>Differences between identity and <code>legacy-sync</code></td><td>Not measured</td><td>Every daily difference has a recorded cause</td><td>Day 45 and after</td></tr>
+<tr><td>Accounts carrying <code>person_key</code></td><td>0</td><td>All accounts linked above threshold, with the rest listed in the queue</td><td>Day 65</td></tr>
+<tr><td>Retirement readiness</td><td><code>legacy-sync</code> is the only order feed</td><td>14 consecutive days of matching decisions agreed, then retired</td><td>Day 90</td></tr>
+</table></div>
+<p>The 77 orders that overwrote an email and the 45 accounts whose email changed once or more are two views of the same events. The first counts orders. The second counts accounts, 19 of which changed twice or more. The target for both is zero from the end of Phase 0.</p>
+</section>
+
+<section id="gates">
+<h2>Decision log</h2>
+<p>Each gate has one deciding role. Other roles are consulted and their objections are recorded. If the answer is no, the stated fallback applies and the next phase does not start.</p>
+<div class="scroll"><table>
+<tr><th>Gate</th><th>Day</th><th>Decision</th><th>Decided by</th><th>Evidence needed</th><th>If no</th></tr>
+<tr><td>G0</td><td>Day 1</td><td>Start Phase 0 with this scope</td><td>Head of engineering, with the head of operations</td><td>Rollback owner named for every change</td><td>Hold. Nothing else starts</td></tr>
+<tr><td>G1</td><td>Day 14</td><td>Exit Phase 0 and start Phase 1</td><td>Head of operations</td><td>Seven clean days on every Phase 0 exit criterion</td><td>Extend Phase 0. Phase 1 can prepare but not ingest</td></tr>
+<tr><td>G2</td><td>Day 30</td><td>Review queue is staffed and the labelling is on track</td><td>Head of customer support</td><td>Named reviewers, queue age, half the labelled pairs done</td><td>Add reviewers or narrow the labelling scope. G3 moves out</td></tr>
+<tr><td>G3</td><td>Day 45</td><td>Matcher results may be consumed</td><td>Privacy officer, with the head of engineering</td><td>600 randomly sampled automatic links labelled, measured precision and false-match rate, every rule family marked auto-link or review</td><td>Keep failing families on review. If none passes, stay in shadow</td></tr>
+<tr><td>G4</td><td>Day 51</td><td>Marketing reads identity results</td><td>Head of marketing, with the privacy officer</td><td>Four-day parallel send comparison, vendor agreement confirmed</td><td>Marketing stays on the Phase 0 suppression rule</td></tr>
+<tr><td>G5</td><td>Day 61</td><td>CRM receives <code>person_key</code> and <code>legacy-sync</code> goes to shadow</td><td>Head of operations, with the CRM administrator</td><td>No loss of opportunities in the parallel run, flag and rollback tested</td><td>CRM stays on the Phase 0 sync. Phase 2 step 3 can still proceed</td></tr>
+<tr><td>G6</td><td>Day 69</td><td>Portal and EHR store the key</td><td>Clinical operations lead, with the portal product owner</td><td>Staging test of the identifier field, chart creation unchanged</td><td>The mapping stays in the identity store only</td></tr>
+<tr><td>G7</td><td>Day 75</td><td>Exit Phase 2 and start Phase 3. Accept the historic clean-up</td><td>Head of operations</td><td>Audit sample of merges with no false merge, all flags on</td><td>Pause clean-up. Phase 3 can still start the dual-run on the key</td></tr>
+<tr><td>G8</td><td>Day 90</td><td>Retire <code>legacy-sync</code></td><td>Head of engineering, with the head of operations</td><td>14 clean days of decisions matched, mapping complete, restore procedure written</td><td>Keep it in shadow past day 90 until the criteria hold</td></tr>
+</table></div>
+</section>
+
+<section id="dependencies">
+<h2>Dependencies and open questions</h2>
+<p>The supplied repository is a local CSV replay with an in-memory CRM stand-in. How orders, registrations and results reach each system in production is not established by it. The assumptions below are written down so they can be corrected early.</p>
+<div class="scroll"><table>
+<tr><th>Question</th><th>Assumed here</th></tr>
+<tr><td>How do orders reach <code>legacy-sync</code> in production and how late?</td><td>A polling job, up to 30 minutes behind. The identity service reads the same feed or a webhook with the same event shape. Phase 1 needs one of the two</td></tr>
+<tr><td>Does the portal call registration synchronously and does it have its own store?</td><td>Yes to the call, as the code reads. The portal has a durable store. If not, adding one is the first task of Phase 0</td></tr>
+<tr><td>Where does the production CRM keep additional contacts and can it hold a custom key field?</td><td>It can hold a custom field for <code>person_key</code> and an additional email. The replay uses <code>secondary_email</code></td></tr>
+<tr><td>What can the marketing platform do?</td><td>It can suppress by a rule on a kit barcode attribute and take a daily feed of key, stage and consent. Vendor name and capabilities are inferred only</td></tr>
+<tr><td>Is the marketing platform covered by the right agreement?</td><td>Not known. If it is not, it receives the registered stage only and never a results-ready stage</td></tr>
+<tr><td>What replaces the CRM and when?</td><td>Phased, with the new CRM ready for dual-run from about day 76. A different date is handled as described in Phase 3</td></tr>
+<tr><td>Can the EHR and the portal store an external person key?</td><td>Yes, as an extra field with no change to chart creation. If not, the mapping lives in the identity store</td></tr>
+<tr><td>Who staffs the review queue and with how many people?</td><td>Support, at least two trained reviewers, with a 2 working day age target</td></tr>
+<tr><td>What counts as a full cycle for <code>legacy-sync</code> retirement?</td><td>14 consecutive days with every daily difference explained. Production volume may justify a longer cycle, such as one month end</td></tr>
+<tr><td>How large is the real population?</td><td>Unknown. The sample holds about 2,000 customer records. The 600 labelled automatic links are a floor for the false-match bound and are revisited against real volumes</td></tr>
+<tr><td>Are phone sales in scope?</td><td>They exist outside the extract. Rep-created accounts raise the same event an order does, from the day the CRM consumes identity events</td></tr>
+</table></div>
+</section>
+
+<section id="risks">
+<h2>Risk register</h2>
+<div class="scroll"><table>
+<tr><th>Risk</th><th>Likelihood</th><th>Impact</th><th>Mitigation</th><th>Owner role</th></tr>
+<tr><td>More duplicate accounts after the rule moves to alert</td><td>High</td><td>Low</td><td>Accepted until the Phase 2 clean-up. Accounts are counted weekly and become merge candidates</td><td>Head of operations</td></tr>
+<tr><td>Registrations queue up behind a CRM failure and nobody works them</td><td>Medium</td><td>Medium</td><td>Dead-letter list with an owner and a 2 working day age alert from day 1</td><td>Head of customer support</td></tr>
+<tr><td>A wrong auto-link exposes one person&#39;s health information to another</td><td>Low</td><td>High</td><td>Uncertain families on review until measured. Sampled audit after every batch. Undo from the audit log</td><td>Privacy officer</td></tr>
+<tr><td>The labelled set does not represent the population</td><td>Medium</td><td>High</td><td>Stratified by rule family, two independent reviewers, interval reported with every figure</td><td>Head of engineering</td></tr>
+<tr><td>Review queue backs up during clean-up</td><td>Medium</td><td>Medium</td><td>Clean-up batches paced to queue age. Day-to-day items take priority</td><td>Head of customer support</td></tr>
+<tr><td>Marketing vendor outside the right agreement</td><td>Medium</td><td>High</td><td>Stage word limited to registered until the agreement is confirmed</td><td>Privacy officer</td></tr>
+<tr><td>Replacement CRM schedule slips or arrives early</td><td>High</td><td>Medium</td><td>Phase 3 bends as described. Nothing before it depends on the date</td><td>Head of operations</td></tr>
+<tr><td>Production feeds differ from the assumptions</td><td>Medium</td><td>Medium</td><td>Phase 1 ingest accepts a feed or a webhook. The first week of Phase 1 is a feed test</td><td>Head of engineering</td></tr>
+<tr><td>Users keep working in the old CRM after cutover</td><td>Medium</td><td>Medium</td><td>Old CRM set to read-only on cutover day. The dual-run diff watches for edits</td><td>CRM administrator</td></tr>
+</table></div>
+</section>
+
+<p class="foot">The company, systems and records in this case study are fictional. The data is treated as protected health information for the design. Counts come from a replay of the supplied CSV files against an in-memory CRM stand-in. Production transports, vendor capabilities, the CRM replacement schedule and privacy terms need confirming before any of this is scheduled.</p>
+</main>
+</body>
+</html>

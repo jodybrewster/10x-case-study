@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Health | Legacy sync today</title>
+<style>
+  :root {
+      --neutral-code: #737373;
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000;
+    color-scheme: light;
+    --ink: #202427; --muted: #62686d;  --line: #dedede; --paper: #f5f5f5; --pale: #fbeaea;
+    --heading: #292d31; --link: #980000; --code-bg: #f3f3f3;
+    --brand-black: #111111;  --brand-grey: #f4f4f4;
+     --amber: #b97818; --amber-ink: #94550b;
+    --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); scroll-behavior: smooth; scroll-padding-top: 56px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; color: var(--ink); font: 15px/1.5 var(--sans); counter-reset: fig sym; }
+  a { color: var(--link); text-underline-offset: .18em; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--brand-red); outline-offset: 3px; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line);
+    overflow-x: auto; white-space: nowrap; padding: 11px max(16px, calc((100vw - 1120px) / 2)); font-size: 13px; }
+  nav a { color: var(--muted); text-decoration: none; margin-right: 20px; }
+  nav a:hover { color: var(--ink); }
+  main { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: .58in .62in .5in; background: #fff;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, .08); }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 12px;
+    border-bottom: 3px solid var(--brand-red); color: var(--muted); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; }
+  .wordmark { color: var(--brand-black); font: 700 14px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+  header { max-width: 720px; margin: 0 0 34px; }
+  .eyebrow { margin: 30px 0 9px; color: var(--brand-red); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 37px; font-weight: 580; line-height: 1.06; letter-spacing: -.045em; }
+  header p:not(.eyebrow) { margin: 13px 0 0; color: var(--muted); }
+  header h1 + p { font-size: 17px; line-height: 1.4; }
+  section { display: grid; grid-template-columns: 168px minmax(0, 1fr); column-gap: 34px; padding: 20px 0 26px;
+    border-top: 1px solid var(--line); }
+  section > h2 { grid-column: 1; grid-row: 1 / span 200; align-self: start; position: sticky; top: 60px; margin: 0;
+    color: var(--heading); font-size: 17px; font-weight: 580; line-height: 1.25; letter-spacing: -.018em; }
+  section > :not(h2) { grid-column: 2; }
+  section > .diagram { grid-column: 1 / -1; }
+  h3 { margin: 26px 0 7px; color: var(--heading); font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+  section > h2 + h3, section > h2 + p { margin-top: 0; }
+  p, li { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  ul { margin: 0 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  code { padding: 1px 5px; border-radius: 3px; background: var(--code-bg); font: 12.5px/1.4 var(--mono); overflow-wrap: break-word; }
+  td code { white-space: nowrap; }
+  pre.cmd { max-width: 70ch; padding: 13px 15px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 var(--mono); }
+  .scroll { overflow-x: auto; margin: 10px 0 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { border-bottom: 2px solid var(--brand-red); color: var(--heading); font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+  td:first-child { min-width: 9em; font-weight: 600; }
+  td.num, th.num { padding-right: 20px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 18px; margin: 16px 0 8px; }
+  .tile { padding-top: 9px; border-top: 3px solid var(--brand-red); }
+  .tile b { display: block; font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tile span { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.38; }
+  figure { margin: 0; }
+  .diagram { margin: 14px 0 8px; padding: 18px 16px 14px; overflow-x: auto; border: 1px solid var(--line); background: #fff; counter-increment: fig; }
+  .diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .diagram pre { margin: 0; min-width: 640px; font: 12px var(--mono); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 2px 0; color: var(--muted); font-size: 12.5px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 7px; border-radius: 2px; background: #fff; border: 2px solid var(--ink); vertical-align: -2px; box-sizing: border-box; }
+  .legend .code::before { background: var(--neutral-pale); border-color: var(--neutral-code); }
+  .legend .new::before { background: var(--neutral-pale); }
+  .legend .ext::before { background: #fff3dc; border-color: var(--amber); }
+  .legend .risk::before { background: var(--brand-red-pale); border-color: var(--brand-red); }
+  .legend .step::before { border-color: #737373; }
+  .legend .person::before { background: var(--neutral-pale); border-color: #737373; border-radius: 5px; }
+  .caption { max-width: 84ch; margin: 0 0 22px; color: var(--muted); font-size: 12.5px; }
+  .diagram + .caption::before { content: "Figure " counter(fig) ". "; color: var(--ink); font-weight: 650; }
+  .symptom { counter-increment: sym; display: grid; grid-template-columns: 34px 1fr; column-gap: 10px; padding: 15px 0 6px; border-top: 1px solid var(--line); }
+  .symptom::before { content: counter(sym); color: var(--brand-red); font-size: 24px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .symptom h3 { grid-column: 2; margin: 2px 0 8px; }
+  .symptom dl { grid-column: 2; display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin: 0; }
+  .symptom dt { padding-top: 1px; color: var(--muted); font-size: 12.5px; }
+  .symptom dd { max-width: 74ch; margin: 0; }
+  .tag { font-weight: 650; white-space: nowrap; }
+  .tag::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 2px; background: currentColor; }
+  .known { color: var(--ink); } .inferred { color: var(--amber-ink); } .unknown { color: var(--brand-red); }
+  .note { max-width: 70ch; margin: 16px 0; padding: 14px 18px; border-left: 4px solid var(--brand-red); background: var(--pale); }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { padding: 10px 0; font-weight: 600; cursor: pointer; }
+  details .scroll { margin: 2px 0 16px; }
+  .foot { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+  @media (max-width: 780px) {
+    main { width: 100%; margin: 0; padding: 26px 20px; box-shadow: none; }
+    h1 { font-size: 32px; }
+    section { display: block; }
+    section > h2 { position: static; margin-bottom: 12px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .symptom dl { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { size: letter; margin: .5in; }
+    html, body { background: #fff; }
+    nav { display: none; }
+    main { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    section > h2 { position: static; }
+    .diagram, .symptom, tr { break-inside: avoid; }
+    .diagram { overflow: visible; }
+    details > .scroll { display: block; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#glance">At a glance</a>
+  <a href="#topology">Topology</a>
+  <a href="#journey">Customer journey</a>
+  <a href="#systems">Systems and transport</a>
+  <a href="#ids">IDs and data shape</a>
+  <a href="#code">Code map</a>
+  <a href="#flows">Workflows</a>
+  <a href="#problems">The six problems</a>
+  <a href="#more">Other findings</a>
+  <a href="#architect">Architect's notes</a>
+  <a href="#history">History</a>
+  <a href="#repro">Reproduce</a>
+  <a href="target-architecture.html">Target architecture</a>
+  <a href="build-spec.html">Build specification</a>
+  <a href="rollout.html">90-day rollout</a>
+  <a href="executive-summary.html">Executive summary</a>
+  <a href="solution-design.html">Solution design</a>
+  <a href="worked-examples.html">Worked examples</a>
+</nav>
+<main>
+<div class="topline"><span class="wordmark" aria-label="Lumen Health">LUMEN HEALTH</span><span>Solution architect case study</span></div>
+<header>
+  <p class="eyebrow">Current system and diagnosis</p>
+  <h1>How legacy-sync works today and why it misfiles people</h1>
+  <p>Lumen Health case study. Built from <code>legacy-sync</code> at commit <code>f6bf641</code> and the eight files in <code>data/</code>.</p>
+  <p>Every count on this page comes from running the legacy code over the data with <code>claude/analysis/legacy_trace.py</code>, or from the CSV files directly. Each claim says which.</p>
+</header>
+
+<section id="glance">
+<h2>At a glance</h2>
+<p>Four systems each keep their own copy of the customer. A small Python service, <code>legacy-sync</code>, copies e-commerce orders and portal kit registrations into the CRM. It decides which CRM account an order or a registration belongs to with three lookups: the e-commerce customer ID, the email address, then last name plus zip code.</p>
+<p>The last lookup puts purchases on relatives' accounts. Every order then overwrites the account's email. Registration looks people up by email only, so once an email has been overwritten the rightful owner can no longer be found and the CRM rejects them as a duplicate of themselves. Marketing reads its stage from the CRM account, so it misses registrations the CRM rejected or filed elsewhere.</p>
+<div class="tiles">
+  <div class="tile"><b>1,994</b><span>customer records across four systems (533 + 689 + 433 + 339)</span></div>
+  <div class="tile"><b>43</b><span>of 905 orders matched by last name and zip</span></div>
+  <div class="tile"><b>77</b><span>orders that overwrote an account's email</span></div>
+  <div class="tile"><b>32</b><span>of 433 kit registrations rejected</span></div>
+  <div class="tile"><b>10 of 25</b><span>gift registrations rejected</span></div>
+  <div class="tile"><b>60</b><span>kits with results whose buyer still reads as "bought"</span></div>
+</div>
+<p class="caption">Replay counts, in the order the shipped replay tool processes events. The <a href="#counts">counts table</a> also gives them in true time order.</p>
+</section>
+
+<section id="topology">
+<h2>Topology</h2>
+<p>Who acts on which system, what crosses each hop and which identity fields travel with it. Cylinders hold data. Solid arrows are code in the repo, dotted arrows are described in the brief or implied by the data. The merge utility and the stage helper are left out because nothing in the repo calls them; see the <a href="#code">code map</a>.</p>
+<figure class="diagram" data-svg="topology">
+<svg viewBox="0 0 1100 660" role="img" aria-label="Topology: people, the commercial and clinical zones, legacy-sync between them and the identity fields that cross each hop" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="740" y="100" width="340" height="440" rx="10" fill="none" stroke="#c00000" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="754" y="118" font-size="12.5" font-weight="700" fill="#c00000">Clinical systems</text>
+<rect x="470" y="150" width="220" height="230" rx="10" fill="none" stroke="#737373" stroke-opacity="0.6" stroke-dasharray="6 5"/>
+<text x="484" y="168" font-size="12.5" font-weight="700" fill="#62686d">legacy-sync</text>
+<rect x="20" y="100" width="330" height="450" rx="10" fill="none" stroke="#737373" stroke-opacity="0.6" stroke-dasharray="6 5"/>
+<text x="34" y="118" font-size="12.5" font-weight="700" fill="#62686d">Commercial systems</text>
+<rect x="450" y="16" width="200" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="550.0" y="36.0" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Customer or gift recipient</tspan></text>
+<path d="M50,149 v66 a95.0,9 0 0 0 190,0 v-66" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="145.0" cy="149" rx="95.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="145.0" y="178.0" text-anchor="middle" dominant-baseline="middle"><tspan x="145.0" dy="0" font-size="15" font-weight="700" fill="#202427">E-commerce</tspan><tspan x="145.0" dy="17" font-size="12.5" fill="#62686d">customers, orders, kits</tspan></text>
+<path d="M50,339 v78 a105.0,9 0 0 0 210,0 v-78" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="155.0" cy="339" rx="105.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="155.0" y="365.5" text-anchor="middle" dominant-baseline="middle"><tspan x="155.0" dy="0" font-size="15" font-weight="700" fill="#202427">CRM</tspan><tspan x="155.0" dy="17" font-size="12.5" fill="#62686d">accounts, opportunities,</tspan><tspan x="155.0" dy="17" font-size="12.5" fill="#62686d">consent flags</tspan></text>
+<rect x="50" y="480" width="210" height="44" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="155.0" y="502.0" text-anchor="middle" dominant-baseline="middle"><tspan x="155.0" dy="0" font-size="15" font-weight="700" fill="#202427">Nurture messages</tspan></text>
+<rect x="500" y="190" width="160" height="46" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="580.0" y="213.0" text-anchor="middle" dominant-baseline="middle"><tspan x="580.0" dy="0" font-size="15" font-weight="700" fill="#202427">Order sync</tspan></text>
+<rect x="500" y="300" width="160" height="46" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="580.0" y="323.0" text-anchor="middle" dominant-baseline="middle"><tspan x="580.0" dy="0" font-size="15" font-weight="700" fill="#202427">Registration</tspan></text>
+<path d="M760,149 v66 a90.0,9 0 0 0 180,0 v-66" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="850.0" cy="149" rx="90.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="850.0" y="178.0" text-anchor="middle" dominant-baseline="middle"><tspan x="850.0" dy="0" font-size="15" font-weight="700" fill="#202427">Member portal</tspan><tspan x="850.0" dy="17" font-size="12.5" fill="#62686d">registrations</tspan></text>
+<path d="M755,339 v66 a75.0,9 0 0 0 150,0 v-66" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<ellipse cx="830.0" cy="339" rx="75.0" ry="9" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="830.0" y="368.0" text-anchor="middle" dominant-baseline="middle"><tspan x="830.0" dy="0" font-size="15" font-weight="700" fill="#202427">EHR</tspan><tspan x="830.0" dy="17" font-size="12.5" fill="#62686d">charts</tspan></text>
+<rect x="765" y="470" width="130" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="830.0" y="490.0" text-anchor="middle" dominant-baseline="middle"><tspan x="830.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Lab partner</tspan></text>
+<rect x="470" y="480" width="200" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="570.0" y="500.0" text-anchor="middle" dominant-baseline="middle"><tspan x="570.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Sales rep, account owner</tspan></text>
+<rect x="470" y="550" width="130" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="535.0" y="570.0" text-anchor="middle" dominant-baseline="middle"><tspan x="535.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Support</tspan></text>
+<rect x="50" y="590" width="160" height="40" rx="20.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="130.0" y="610.0" text-anchor="middle" dominant-baseline="middle"><tspan x="130.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Marketing team</tspan></text>
+<path d="M450,36.0 L145,36 L145.0,140" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="153" y="90.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="153" dy="0" font-size="11.5" fill="#62686d" font-weight="600">buys</tspan></text>
+<path d="M650,36.0 L850,36 L850.0,140" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="858" y="90.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="858" dy="0" font-size="11.5" fill="#62686d" font-weight="600">registers a kit</tspan></text>
+<path d="M240,172.0 L420,172 L420,213 L500,213.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="330" y="133.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="330" dy="0" font-size="11.5" fill="#62686d" font-weight="600">order: customer_id, email,</tspan><tspan x="330" dy="17" font-size="11.5" fill="#62686d" font-weight="600">ship name and address, is_gift</tspan></text>
+<path d="M500,225.0 L440,225 L440,340 L260,340.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="330" y="242.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="330" dy="0" font-size="11.5" fill="#62686d" font-weight="600">account: ecom_customer_id,</tspan><tspan x="330" dy="17" font-size="11.5" fill="#62686d" font-weight="600">email, phone</tspan><tspan x="330" dy="17" font-size="11.5" fill="#62686d" font-weight="600">opportunity: order_id</tspan></text>
+<path d="M760,192.0 L715,192 L715,323 L660,323.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="723" y="233.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="723" dy="0" font-size="11.5" fill="#62686d" font-weight="600">registration: kit barcode,</tspan><tspan x="723" dy="17" font-size="11.5" fill="#62686d" font-weight="600">email, name, birthdate</tspan></text>
+<path d="M500,335.0 L420,335 L420,392 L260,392.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="320" y="351.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="320" dy="0" font-size="11.5" fill="#62686d" font-weight="600">account by email,</tspan><tspan x="320" dy="17" font-size="11.5" fill="#62686d" font-weight="600">gift opportunity moved</tspan></text>
+<path d="M820.0,224 L820.0,330" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="828" y="302.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="828" dy="0" font-size="11.5" fill="#94550b" font-weight="600">chart: name, birthdate</tspan></text>
+<path d="M830.0,470 L830.0,414" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="838" y="425.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="838" dy="0" font-size="11.5" fill="#94550b" font-weight="600">result: kit barcode, chart_id,</tspan><tspan x="838" dy="17" font-size="11.5" fill="#94550b" font-weight="600">name, birthdate</tspan></text>
+<path d="M875.0,330 L890.0,224" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="883" y="250.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="883" dy="0" font-size="11.5" fill="#94550b" font-weight="600">results to view</tspan></text>
+<path d="M470,500.0 L330,500 L330,416 L260,416.0" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="338" y="438.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="338" dy="0" font-size="11.5" fill="#94550b" font-weight="600">phone sales,</tspan><tspan x="338" dy="17" font-size="11.5" fill="#94550b" font-weight="600">owns accounts</tspan></text>
+<path d="M470,570.0 L300,570 L300,416" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7"/>
+<text x="350" y="531.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="350" dy="0" font-size="11.5" fill="#94550b" font-weight="600">moves purchases,</tspan><tspan x="350" dy="17" font-size="11.5" fill="#94550b" font-weight="600">merges duplicates</tspan></text>
+<path d="M155.0,426 L155.0,480" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="165.0" y="453.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="165.0" dy="0" font-size="11.5" fill="#94550b" font-weight="600">stage per account</tspan></text>
+<path d="M155.0,524 L130.0,590" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="code">Code in the repo</span><span class="ext">Described, no code in the repo</span><span class="person">Person</span></div></figure>
+<p class="caption">The dashed red box is where the clinical records live. Health information also reaches the CRM, which stores birthdates and the test each person bought. It reaches marketing through the results_ready stage.</p>
+
+<h3>Who acts on what</h3>
+<div class="scroll"><table>
+<tr><th>Actor</th><th>Touches</th><th>What they do</th><th>Symptoms they meet</th></tr>
+<tr><td>Customer</td><td>E-commerce, portal</td><td>Buys kits and supplements, registers kits, reads results</td><td>3</td></tr>
+<tr><td>Gift recipient</td><td>Portal</td><td>Registers a kit someone else bought. 9 of 25 gift registrations used the buyer's email</td><td>3, 4</td></tr>
+<tr><td>Sales rep</td><td>CRM</td><td>Owns accounts, sells by phone. Two inactive reps still own 54 accounts</td><td>1, 2</td></tr>
+<tr><td>Support</td><td>CRM</td><td>Moves purchases between accounts, merges duplicates</td><td>4, 6</td></tr>
+<tr><td>Marketing team</td><td>CRM, nurture tool</td><td>Sends a message per stage</td><td>5</td></tr>
+<tr><td>Lab partner</td><td>EHR</td><td>Returns a result per kit barcode</td><td>None</td></tr>
+<tr><td>Integration user</td><td>CRM</td><td>The identity legacy-sync writes as. Created all 905 opportunities</td><td>Causes 1 to 5</td></tr>
+</table></div>
+
+<h3>Links that exist today without matching</h3>
+<p>Where a shared key already joins two systems and how far it reaches. Everything not listed here has to be matched on names, emails, phones and birthdates.</p>
+<div class="scroll"><table>
+<tr><th>From</th><th>To</th><th>Key</th><th>Coverage</th><th>Caveat</th></tr>
+<tr><td>E-commerce customer</td><td>CRM account</td><td><code>ecom_customer_id</code></td><td>518 of 533 customers, 520 of 689 accounts</td><td>Written by the sync, including onto relatives' accounts. Two customers sit on two accounts each</td></tr>
+<tr><td>E-commerce order</td><td>CRM opportunity</td><td><code>ecom_order_id</code></td><td>905 of 905</td><td>The opportunity's account is the sync's guess</td></tr>
+<tr><td>E-commerce order</td><td>Kit</td><td><code>order_id</code></td><td>547 kit orders</td><td>Supplement orders have no kit</td></tr>
+<tr><td>Kit</td><td>Portal registration</td><td><code>kit_barcode</code></td><td>433 of 547 kits</td><td>The registrant may not be the buyer</td></tr>
+<tr><td>Kit</td><td>Lab result</td><td><code>kit_barcode</code></td><td>406 of 547 kits</td><td></td></tr>
+<tr><td>Portal registration</td><td>EHR chart</td><td>Result for the same kit</td><td>406 of 433 registrations, 323 of 339 charts</td><td>The 16 charts with no result all match a registration on name and birthdate</td></tr>
+<tr><td>Portal registration</td><td>E-commerce buyer</td><td>Kit, then order</td><td>433 of 433</td><td>Registrant email equals the buyer's for 397. Of the other 36, 16 are gifts and 20 are the buyer under another email</td></tr>
+<tr><td>CRM account</td><td>Portal registration</td><td>None</td><td>Email alone finds an account for 426 of 433. Name and birthdate for 292</td><td>Email can belong to a relative or have been overwritten</td></tr>
+<tr><td>CRM account</td><td>EHR chart</td><td>None</td><td>Email for 334 of 339. Name and birthdate for 228</td><td>241 accounts have no usable birthdate</td></tr>
+<tr><td>E-commerce customer</td><td>EHR chart</td><td>None</td><td>Email for 326 of 339</td><td></td></tr>
+</table></div>
+<p>Of the 169 CRM accounts with no e-commerce ID, 68 carry an email that belongs to an e-commerce customer. The rest are candidates for rep-created accounts or older duplicates.</p>
+
+<h3>Who holds the truth for each attribute today</h3>
+<div class="scroll"><table>
+<tr><th>Attribute</th><th>Where it is entered</th><th>Where it is copied</th><th>Who can change it</th></tr>
+<tr><td>Purchase</td><td>E-commerce order</td><td>CRM opportunity</td><td>Nobody after the sync, except a gift move</td></tr>
+<tr><td>Email</td><td>E-commerce, one per customer. Portal, per registration. EHR, per chart</td><td>CRM primary_email</td><td>Every order rewrites the CRM copy</td></tr>
+<tr><td>Name</td><td>Typed separately into all four</td><td></td><td>CRM carries nicknames</td></tr>
+<tr><td>Date of birth</td><td>Portal at registration</td><td>EHR chart, lab result, CRM on registration-created accounts</td><td>CRM copy is blank on order-created accounts</td></tr>
+<tr><td>Address</td><td>E-commerce, default and per order</td><td>CRM mailing address, taken from the first order</td><td>Not updated afterwards</td></tr>
+<tr><td>Phone</td><td>All four</td><td>CRM copy overwritten by every order</td><td>Only the EHR normalises it</td></tr>
+<tr><td>Consent</td><td>CRM flags only</td><td></td><td>Lost on merge</td></tr>
+<tr><td>Kit lifecycle</td><td>E-commerce shipped and delivered, portal registered, lab resulted</td><td>Nowhere in one place</td><td>Stage is derived per account instead</td></tr>
+<tr><td>Clinical result</td><td>EHR</td><td>Portal view</td><td>Lab</td></tr>
+<tr><td>Account owner</td><td>CRM</td><td></td><td>Can be an inactive user</td></tr>
+</table></div>
+</section>
+
+<section id="journey">
+<h2>Customer journey and touchpoints</h2>
+<p>What a customer does, in order, with the system behind each step and the identity record each step leaves behind. Timings are medians from the data. Solid arrows are the customer's path, dotted arrows are the messages marketing sends from the CRM stage.</p>
+<figure class="diagram" data-svg="journey">
+<svg viewBox="0 0 1140 440" role="img" aria-label="Customer journey: buy, CRM copy, ship, register, chart, sample, result, view, with the marketing messages each stage triggers" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="20" y="100" width="160" height="96" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="100.0" y="122.5" text-anchor="middle" dominant-baseline="middle"><tspan x="100.0" dy="0" font-size="15" font-weight="700" fill="#202427">Buy online</tspan><tspan x="100.0" dy="17" font-size="12.5" fill="#62686d">e-commerce checkout</tspan><tspan x="100.0" dy="17" font-size="12.5" fill="#62686d">gives email, name,</tspan><tspan x="100.0" dy="17" font-size="12.5" fill="#62686d">phone, address</tspan></text>
+<rect x="210" y="100" width="160" height="96" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="290.0" y="131.0" text-anchor="middle" dominant-baseline="middle"><tspan x="290.0" dy="0" font-size="15" font-weight="700" fill="#202427">Order copied to CRM</tspan><tspan x="290.0" dy="17" font-size="12.5" fill="#62686d">about 30 minutes later</tspan><tspan x="290.0" dy="17" font-size="12.5" fill="#62686d">account found or created</tspan></text>
+<rect x="400" y="100" width="160" height="96" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="480.0" y="131.0" text-anchor="middle" dominant-baseline="middle"><tspan x="480.0" dy="0" font-size="15" font-weight="700" fill="#202427">Kit ships</tspan><tspan x="480.0" dy="17" font-size="12.5" fill="#62686d">with a barcode</tspan><tspan x="480.0" dy="17" font-size="12.5" fill="#62686d">delivered after 4 days</tspan></text>
+<rect x="590" y="100" width="160" height="96" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="670.0" y="114.0" text-anchor="middle" dominant-baseline="middle"><tspan x="670.0" dy="0" font-size="15" font-weight="700" fill="#202427">Register the kit</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">member portal,</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">1 day after delivery</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">gives email, name,</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">birthdate, phone</tspan></text>
+<rect x="780" y="100" width="160" height="96" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="860.0" y="139.5" text-anchor="middle" dominant-baseline="middle"><tspan x="860.0" dy="0" font-size="15" font-weight="700" fill="#202427">Mail the sample</tspan><tspan x="860.0" dy="17" font-size="12.5" fill="#62686d">to the lab</tspan></text>
+<rect x="970" y="100" width="160" height="96" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="1050.0" y="122.5" text-anchor="middle" dominant-baseline="middle"><tspan x="1050.0" dy="0" font-size="15" font-weight="700" fill="#202427">Result filed</tspan><tspan x="1050.0" dy="17" font-size="12.5" fill="#62686d">to the chart, 11 days</tspan><tspan x="1050.0" dy="17" font-size="12.5" fill="#62686d">after registration,</tspan><tspan x="1050.0" dy="17" font-size="12.5" fill="#62686d">linked by kit barcode</tspan></text>
+<rect x="210" y="250" width="160" height="50" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="290.0" y="266.5" text-anchor="middle" dominant-baseline="middle"><tspan x="290.0" dy="0" font-size="15" font-weight="700" fill="#202427">Message</tspan><tspan x="290.0" dy="17" font-size="12.5" fill="#62686d">please register your kit</tspan></text>
+<rect x="575" y="250" width="190" height="84" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="670.0" y="266.5" text-anchor="middle" dominant-baseline="middle"><tspan x="670.0" dy="0" font-size="15" font-weight="700" fill="#202427">Registration to CRM</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">account found by email,</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">or created</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">the portal waits for the answer</tspan></text>
+<rect x="590" y="370" width="160" height="44" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="670.0" y="383.5" text-anchor="middle" dominant-baseline="middle"><tspan x="670.0" dy="0" font-size="15" font-weight="700" fill="#202427">Message</tspan><tspan x="670.0" dy="17" font-size="12.5" fill="#62686d">registered</tspan></text>
+<rect x="780" y="250" width="160" height="60" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="860.0" y="271.5" text-anchor="middle" dominant-baseline="middle"><tspan x="860.0" dy="0" font-size="15" font-weight="700" fill="#202427">Chart created in EHR</tspan><tspan x="860.0" dy="17" font-size="12.5" fill="#62686d">from name and birthdate</tspan></text>
+<rect x="970" y="250" width="160" height="50" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="1050.0" y="266.5" text-anchor="middle" dominant-baseline="middle"><tspan x="1050.0" dy="0" font-size="15" font-weight="700" fill="#202427">View results</tspan><tspan x="1050.0" dy="17" font-size="12.5" fill="#62686d">member portal</tspan></text>
+<rect x="970" y="370" width="160" height="44" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2" stroke-dasharray="6 5"/>
+<text x="1050.0" y="383.5" text-anchor="middle" dominant-baseline="middle"><tspan x="1050.0" dy="0" font-size="15" font-weight="700" fill="#202427">Message</tspan><tspan x="1050.0" dy="17" font-size="12.5" fill="#62686d">results ready</tspan></text>
+<path d="M180,148.0 L210,148.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M370,148.0 L400,148.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M560,148.0 L590,148.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M750,148.0 L780,148.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M940,148.0 L970,148.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M290.0,196 L290.0,250" fill="none" stroke="#c00000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-risk)"/>
+<path d="M670.0,196 L670.0,250" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<path d="M670.0,334 L670.0,370" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<path d="M730.0,196 L730,222 L860,222 L860.0,250" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<path d="M1050.0,196 L1050.0,250" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<path d="M1050.0,300 L1050.0,370" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<path d="M100.0,100 L100,60 L1050,60 L1050.0,100" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7"/>
+<text x="575" y="50.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="575" dy="0" font-size="11.5" fill="#202427" font-weight="600">the kit barcode travels the whole way</tspan></text>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="code">Code in the repo</span><span class="ext">Described, no code in the repo</span><span class="risk">Where it fails</span></div></figure>
+<p class="caption">The two red steps are where customers feel the symptoms: the registration call can reject them. The message after a purchase is the one marketing gets wrong. The chart, the sample and the result steps are from the brief, with no code in the repo.</p>
+
+<h3>Touchpoints</h3>
+<div class="scroll"><table>
+<tr><th>Step</th><th>Channel</th><th>The customer gives</th><th>Records created</th><th>legacy-sync does</th><th>Timing</th><th>What can go wrong</th></tr>
+<tr><td>Buy online</td><td>E-commerce checkout</td><td>Email, name, phone, shipping address, gift flag</td><td>E-commerce customer (a new one for every new email), order, CRM account and opportunity</td><td>Three lookups, create or stamp the account, overwrite email and phone, create the opportunity</td><td>CRM copy 1 to 30 minutes after the order</td><td>Purchase filed on a relative (1). Account email rewritten (2). A customer using a new email becomes a second customer</td></tr>
+<tr><td>Buy by phone</td><td>Sales rep in the CRM</td><td>Whatever the rep types</td><td>CRM account owned by the rep</td><td>Nothing in the repo</td><td>Unknown</td><td>169 accounts have no e-commerce ID. The data has no phone orders, so how a phone sale becomes a kit is not visible</td></tr>
+<tr><td>Kit ships</td><td>Fulfilment</td><td>Nothing</td><td>Kit barcode tied to the order</td><td>Nothing</td><td>Delivered 2 to 7 days after the order, median 4</td><td>Nothing visible in the data</td></tr>
+<tr><td>Register the kit</td><td>Member portal</td><td>Kit barcode, email, name, birthdate, phone</td><td>Registration. EHR chart. A CRM account when the email finds none</td><td><code>register_kit</code>, synchronously inside the request: find by email, check surname and birthdate, else create, then move a gift purchase</td><td>Median 1 day after delivery, up to 32</td><td>Rejected as a possible duplicate (3). Rejected as an identity conflict. Gift registration fails (4). Accepted onto a relative's account when the account has no birthdate</td></tr>
+<tr><td>Mail the sample</td><td>Lab partner</td><td>The sample, identified by barcode</td><td>Nothing until the result</td><td>Nothing</td><td>Inside the registration-to-result window</td><td>Nothing visible in the data</td></tr>
+<tr><td>Get results</td><td>EHR, then the portal</td><td>Nothing</td><td>Lab result linked to kit and chart</td><td>Nothing</td><td>7 to 14 days after registration, median 11</td><td>Nothing visible. All 406 results name the registrant</td></tr>
+<tr><td>Hear from marketing</td><td>Email or text, from the CRM stage</td><td>Consent, as two CRM flags</td><td>Stage per account</td><td><code>stage_for_account</code>, caller unknown</td><td>Unknown cadence</td><td>"Please register" after results exist (5). Texts after opting out, once accounts are merged (6)</td></tr>
+<tr><td>Contact support</td><td>Support in the CRM</td><td>Whatever is needed to prove who they are</td><td>A merged account, or a moved purchase</td><td><code>merge_accounts</code> and <code>move_opportunity</code>, run by hand</td><td></td><td>Purchase cannot move to an account with an inactive owner (4). Merge drops the loser's opt-outs (6)</td></tr>
+</table></div>
+
+<h3>The gift journey</h3>
+<p>Gifts follow the same path with two people in it. The buyer orders with <code>is_gift</code> set and the kit ships to the recipient. The purchase is filed on the buyer's account, because the sync has no field for a recipient. When the recipient registers, the sync looks them up by the email they typed. 16 of 25 gift registrants used their own email, so the sync finds or creates their account and then moves the purchase across, which fails when that account has an inactive owner. 9 used the buyer's email, so the sync finds the buyer's account, sees a different birthdate and rejects the registration as an identity conflict. In the replay 15 of 25 gift registrations were accepted.</p>
+<p>In this data every gift goes to someone with the buyer's surname and zip code. Real gifts will often go to another household, where the surname-and-zip lookup behaves differently again.</p>
+
+<h3>What the customer never sees</h3>
+<ul>
+  <li>Which CRM account holds their purchase, so a misfiled purchase is invisible until a message or a rejection reveals it.</li>
+  <li>That the CRM rejected their registration while the portal, EHR and lab carried on. In the replay, 24 kits with a final result had no registration in the CRM.</li>
+  <li>That their CRM email flips between family members as each one orders. 19 accounts changed email two or more times.</li>
+</ul>
+</section>
+
+<section id="systems">
+<h2>Systems and transport</h2>
+<figure class="diagram" data-svg="context">
+<svg viewBox="0 0 1040 420" role="img" aria-label="Orders and registrations flow through legacy-sync into the CRM; the portal, lab and EHR exchange records outside the repo" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="300" y="20" width="240" height="240" rx="10" fill="none" stroke="#737373" stroke-opacity="0.6" stroke-dasharray="6 5"/>
+<text x="314" y="38" font-size="12.5" font-weight="700" fill="#62686d">legacy-sync</text>
+<rect x="20" y="40" width="190" height="72" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="115.0" y="59.0" text-anchor="middle" dominant-baseline="middle"><tspan x="115.0" dy="0" font-size="15" font-weight="700" fill="#202427">E-commerce</tspan><tspan x="115.0" dy="17" font-size="12.5" fill="#62686d">533 customers</tspan><tspan x="115.0" dy="17" font-size="12.5" fill="#62686d">905 orders, 547 kits</tspan></text>
+<rect x="20" y="180" width="190" height="60" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="115.0" y="201.5" text-anchor="middle" dominant-baseline="middle"><tspan x="115.0" dy="0" font-size="15" font-weight="700" fill="#202427">Member portal</tspan><tspan x="115.0" dy="17" font-size="12.5" fill="#62686d">433 kit registrations</tspan></text>
+<rect x="20" y="330" width="190" height="50" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="115.0" y="346.5" text-anchor="middle" dominant-baseline="middle"><tspan x="115.0" dy="0" font-size="15" font-weight="700" fill="#202427">Lab partner</tspan><tspan x="115.0" dy="17" font-size="12.5" fill="#62686d">406 results</tspan></text>
+<rect x="330" y="50" width="180" height="56" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="420.0" y="69.5" text-anchor="middle" dominant-baseline="middle"><tspan x="420.0" dy="0" font-size="15" font-weight="700" fill="#202427">Order sync</tspan><tspan x="420.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">sync/order_sync.py</tspan></text>
+<rect x="330" y="180" width="180" height="56" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="420.0" y="199.5" text-anchor="middle" dominant-baseline="middle"><tspan x="420.0" dy="0" font-size="15" font-weight="700" fill="#202427">Kit registration</tspan><tspan x="420.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">registration/register.py</tspan></text>
+<rect x="600" y="90" width="180" height="72" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="690.0" y="109.0" text-anchor="middle" dominant-baseline="middle"><tspan x="690.0" dy="0" font-size="15" font-weight="700" fill="#202427">CRM</tspan><tspan x="690.0" dy="17" font-size="12.5" fill="#62686d">689 accounts</tspan><tspan x="690.0" dy="17" font-size="12.5" fill="#62686d">905 opportunities</tspan></text>
+<rect x="870" y="90" width="160" height="72" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="950.0" y="117.5" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">Marketing nurture</tspan><tspan x="950.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">marketing/stage.py</tspan></text>
+<rect x="600" y="300" width="180" height="70" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="690.0" y="326.5" text-anchor="middle" dominant-baseline="middle"><tspan x="690.0" dy="0" font-size="15" font-weight="700" fill="#202427">EHR</tspan><tspan x="690.0" dy="17" font-size="12.5" fill="#62686d">339 charts</tspan></text>
+<path d="M210,76.0 L330,78.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="270.0" y="67.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="270.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">each order</tspan></text>
+<path d="M510,78.0 L580,78 L580,110 L600,110.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="640" y="18.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="640" dy="0" font-size="11.5" fill="#62686d" font-weight="600">find or create account</tspan><tspan x="640" dy="17" font-size="11.5" fill="#62686d" font-weight="600">overwrite email and phone</tspan><tspan x="640" dy="17" font-size="11.5" fill="#62686d" font-weight="600">create opportunity</tspan></text>
+<path d="M210,210.0 L330,208.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="270.0" y="199.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="270.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">each registration</tspan></text>
+<path d="M510,208.0 L580,208 L580,142 L600,142.0" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-code)"/>
+<text x="655" y="183.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="655" dy="0" font-size="11.5" fill="#62686d" font-weight="600">find or create account</tspan><tspan x="655" dy="17" font-size="11.5" fill="#62686d" font-weight="600">move gift opportunity</tspan></text>
+<path d="M115.0,240 L115,290 L580,290 L580,312 L600,312.0" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="360" y="280.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="360" dy="0" font-size="11.5" fill="#94550b" font-weight="600">chart from name and birthdate</tspan></text>
+<path d="M210,355.0 L600,355.0" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="400" y="345.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="400" dy="0" font-size="11.5" fill="#94550b" font-weight="600">result by kit barcode</tspan></text>
+<path d="M730.0,300 L730,270 L250,270 L250,225 L210,225.0" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="500" y="260.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="500" dy="0" font-size="11.5" fill="#94550b" font-weight="600">results shown to the customer</tspan></text>
+<path d="M780,126.0 L870,126.0" fill="none" stroke="#b97818" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 7" marker-end="url(#arrow-ext)"/>
+<text x="825.0" y="89.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="825.0" dy="0" font-size="11.5" fill="#94550b" font-weight="600">stage per</tspan><tspan x="825.0" dy="17" font-size="11.5" fill="#94550b" font-weight="600">account</tspan></text>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="code">Code in the repo</span><span class="ext">Described, no code in the repo</span></div></figure>
+<p class="caption">Solid arrows are code in the repo. Dotted arrows are described in the brief or implied by the data, with no code to read.</p>
+
+<h3>What we know about transport</h3>
+<p>The brief says nothing about protocols, queues or schedules. The table separates what the code shows from what I am inferring.</p>
+<div class="scroll"><table>
+<tr><th>Hop</th><th>What we can say</th><th>Basis</th><th>Status</th></tr>
+<tr><td>E-commerce to legacy-sync</td><td>A job handles one order at a time. In the CRM file every opportunity is created between 1 and 30 minutes after its order (median 16), which fits a job polling on a schedule of about 30 minutes.</td><td><code>README.md:3</code> says "Jobs". Timestamps in <code>crm_opportunities.csv</code> against <code>ecom_orders.csv</code>.</td><td><span class="tag inferred">Inferred</span></td></tr>
+<tr><td>legacy-sync to CRM</td><td>API calls through a client object: three lookups, create account, update contact details, move opportunity. Calls are synchronous with no retry, no idempotency key and no transaction.</td><td><code>legacy_sync/crm/client.py:1</code> calls itself an "in-memory stand-in for the CRM API".</td><td><span class="tag known">Known</span> that it is an API. Protocol <span class="tag unknown">unknown</span></td></tr>
+<tr><td>Portal to legacy-sync</td><td>Synchronous, inside the customer's registration request. The CRM account has to be resolved before the kit is accepted, so a CRM failure is a failed registration.</td><td><code>legacy_sync/registration/register.py:23-24</code> and the three exceptions it raises.</td><td><span class="tag known">Known</span></td></tr>
+<tr><td>Portal to EHR</td><td>A chart is created from the registrant's name and date of birth. The data agrees: 337 distinct name and birthdate combinations in registrations, 337 in charts.</td><td>Brief, page 1, with no code to read</td><td>Behaviour <span class="tag known">known</span>. Transport <span class="tag unknown">unknown</span></td></tr>
+<tr><td>Lab to EHR</td><td>Each result carries the kit barcode, a chart ID and the patient's name and birthdate. Healthcare feeds like this are usually HL7 v2 or FHIR, which is a guess here.</td><td><code>lab_results.csv</code> only, with no code to read</td><td><span class="tag unknown">Unknown</span></td></tr>
+<tr><td>CRM to marketing</td><td>A helper computes a stage per CRM account. Nothing in the repo calls it, so how and when marketing reads it is not visible.</td><td><code>legacy_sync/marketing/stage.py:6-14</code></td><td><span class="tag unknown">Unknown</span></td></tr>
+<tr><td>Data handed to us</td><td>CSV exports. Timestamps are ISO 8601 with no time zone.</td><td><code>data/</code></td><td><span class="tag known">Known</span></td></tr>
+</table></div>
+
+<h3>What the systems resemble</h3>
+<p>The brief says every system is fictional. The naming still points at familiar products, which helps when reasoning about realistic integration options. Treat this as analogy.</p>
+<ul>
+  <li>The CRM looks like Salesforce. Account IDs start with <code>001</code> and opportunity IDs with <code>006</code>, which are Salesforce's prefixes for those objects. The brief says "person accounts". The code models duplicate rules with block and alert actions, record owners who can be inactive, an integration user and a "Closed Won" stage.</li>
+  <li>E-commerce looks like Shopify. Order names look like <code>#100001</code>, customer IDs are long integers, there is one customer per email and the address columns are named <code>default_address1</code>.</li>
+</ul>
+<p>If those analogies hold, the realistic transports are order webhooks or an admin API on the e-commerce side and REST, bulk API or change events on the CRM side. That is a question for the review, with the polling job as the written assumption.</p>
+</section>
+
+<section id="ids">
+<h2>IDs and data shape</h2>
+<h3>Identifiers</h3>
+<div class="scroll"><table>
+<tr><th>System</th><th>Record</th><th>Column</th><th>Format</th><th>Example</th><th class="num">Rows</th><th>Notes</th></tr>
+<tr><td>E-commerce</td><td>Customer</td><td><code>customer_id</code></td><td>7 digits</td><td><code>7000326</code></td><td class="num">533</td><td>One per email address. A new email creates a new customer.</td></tr>
+<tr><td>E-commerce</td><td>Order</td><td><code>order_id</code></td><td># and 6 digits</td><td><code>#100541</code></td><td class="num">905</td><td>The # needs escaping in URLs and shells.</td></tr>
+<tr><td>E-commerce</td><td>Kit</td><td><code>kit_barcode</code></td><td>KT and 7 digits</td><td><code>KT0000326</code></td><td class="num">547</td><td>One kit per kit order. The only ID shared by e-commerce, portal and lab.</td></tr>
+<tr><td>CRM</td><td>Account</td><td><code>account_id</code></td><td>001A and 6 digits</td><td><code>001A000213</code></td><td class="num">689</td><td>The replay creates <code>001N</code> IDs (<code>client.py:42</code>).</td></tr>
+<tr><td>CRM</td><td>Opportunity</td><td><code>opportunity_id</code></td><td>006A and 6 digits</td><td><code>006A000541</code></td><td class="num">905</td><td>One per order. The replay creates <code>006R</code> IDs.</td></tr>
+<tr><td>CRM</td><td>Owner</td><td><code>owner_id</code></td><td>U and 3 digits</td><td><code>U007</code></td><td class="num">8</td><td>Two are inactive (U007, U008) and own 54 accounts.</td></tr>
+<tr><td>Portal</td><td>Registration</td><td><code>registration_id</code></td><td>R and 6 digits</td><td><code>R000285</code></td><td class="num">433</td><td>One per kit. Carries no account, customer or chart ID.</td></tr>
+<tr><td>EHR</td><td>Chart</td><td><code>chart_id</code></td><td>CH and 6 digits</td><td><code>CH050205</code></td><td class="num">339</td><td>Created from name and birthdate.</td></tr>
+<tr><td>Lab</td><td>Result</td><td><code>result_id</code></td><td>LR and 6 digits</td><td><code>LR000242</code></td><td class="num">406</td><td>Links a kit to a chart.</td></tr>
+</table></div>
+<p>The deliverable <code>identities.csv</code> needs one row for each customer, account, registration and chart: 533 + 689 + 433 + 339 = 1,994 rows.</p>
+
+<h3>How the records relate</h3>
+<figure class="diagram" data-svg="er">
+<svg viewBox="0 0 1040 660" role="img" aria-label="How the eight data files relate: the kit barcode links e-commerce, portal and lab; the sync writes the only link between e-commerce and CRM" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="40" y="30" width="250" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,56 V36 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="165.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">ecom_customers</text>
+<text x="50" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">customer_id</text>
+<text x="280" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">email</text>
+<text x="280" y="84.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">unique</text>
+<text x="50" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">first_name, last_name</text>
+<text x="50" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">phone</text>
+<text x="280" y="122.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">four formats</text>
+<text x="50" y="141.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">default_zip</text>
+<rect x="40" y="240" width="250" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,266 V246 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V266 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="165.0" y="254.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">ecom_orders</text>
+<text x="50" y="275.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_id</text>
+<text x="280" y="275.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="294.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">customer_id</text>
+<text x="280" y="294.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="50" y="313.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_email</text>
+<text x="50" y="332.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ship_name, ship_zip</text>
+<text x="50" y="351.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">is_gift</text>
+<text x="280" y="351.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">30 true</text>
+<rect x="40" y="460" width="250" height="64" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,486 V466 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V486 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="165.0" y="474.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">kits</text>
+<text x="50" y="495.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="280" y="495.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="514.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_id</text>
+<text x="280" y="514.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="252" y="514.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">one kit per order</text>
+<rect x="400" y="30" width="260" height="159" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M400,56 V36 a6,6 0 0 1 6,-6 H654 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="530.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">crm_accounts</text>
+<text x="410" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">account_id</text>
+<text x="650" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="410" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">primary_email</text>
+<text x="650" y="84.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">58 shared</text>
+<text x="410" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">birthdate</text>
+<text x="650" y="103.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">241 unusable</text>
+<text x="410" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">mailing_zip</text>
+<text x="410" y="141.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ecom_customer_id</text>
+<text x="650" y="141.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">169 blank</text>
+<text x="410" y="160.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">owner_active</text>
+<text x="650" y="160.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">54 false</text>
+<text x="410" y="179.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sms_opt_out, do_not_call</text>
+<rect x="400" y="260" width="260" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M400,286 V266 a6,6 0 0 1 6,-6 H654 a6,6 0 0 1 6,6 V286 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="530.0" y="274.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">crm_opportunities</text>
+<text x="410" y="295.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">opportunity_id</text>
+<text x="650" y="295.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="410" y="314.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">account_id</text>
+<text x="650" y="314.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="410" y="333.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ecom_order_id</text>
+<text x="650" y="333.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="410" y="352.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">gift_recipient_account_id</text>
+<text x="650" y="352.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">always blank</text>
+<rect x="400" y="460" width="260" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M400,486 V466 a6,6 0 0 1 6,-6 H654 a6,6 0 0 1 6,6 V486 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="530.0" y="474.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">portal_registrations</text>
+<text x="410" y="495.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">registration_id</text>
+<text x="650" y="495.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="410" y="514.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="650" y="514.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="410" y="533.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">email</text>
+<text x="650" y="533.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">341 distinct</text>
+<text x="410" y="552.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">first_name, last_name</text>
+<text x="410" y="571.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">birthdate</text>
+<rect x="770" y="30" width="240" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M770,56 V36 a6,6 0 0 1 6,-6 H1004 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="890.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">ehr_patients</text>
+<text x="780" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">chart_id</text>
+<text x="1000" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="780" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">first_name, last_name</text>
+<text x="780" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">birthdate</text>
+<text x="780" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sex</text>
+<rect x="770" y="260" width="240" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M770,286 V266 a6,6 0 0 1 6,-6 H1004 a6,6 0 0 1 6,6 V286 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="890.0" y="274.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">lab_results</text>
+<text x="780" y="295.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">result_id</text>
+<text x="1000" y="295.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="780" y="314.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="1000" y="314.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="780" y="333.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">chart_id</text>
+<text x="1000" y="333.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="780" y="352.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">patient_birthdate</text>
+<path d="M165.0,151 L165.0,240" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="175.0" y="195.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="175.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">customer_id</tspan></text>
+<text x="155" y="158.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="155" y="232.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+<path d="M165.0,361 L165.0,460" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="175.0" y="410.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="175.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">order_id</tspan></text>
+<text x="155" y="355.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="155" y="452.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<path d="M290,50.5 L345,85 L345,112 L400,119.5" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="345" y="121.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="345" dy="0" font-size="11.5" fill="#62686d" font-weight="600">ecom_customer_id</tspan><tspan x="345" dy="17" font-size="11.5" fill="#62686d" font-weight="600">written by the sync</tspan></text>
+<text x="300" y="73.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<text x="392" y="100.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="392" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+<path d="M530.0,189 L530.0,260" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="540.0" y="224.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">account_id</tspan></text>
+<text x="540" y="203.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="540" y="252.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+<path d="M290,280.5 L345,305 L345,335 L400,311.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="345" y="320.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="345" dy="0" font-size="11.5" fill="#62686d" font-weight="600">ecom_order_id</tspan></text>
+<text x="300" y="293.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="392" y="347.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="392" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<path d="M290,484.0 L345,496 L345,515 L400,520.5" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="345" y="506.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="345" dy="0" font-size="11.5" fill="#62686d" font-weight="600">kit_barcode</tspan></text>
+<text x="300" y="484.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="392" y="528.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="392" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<path d="M165.0,524 L165,610 L740,610 L740,340 L770,311.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="450" y="600.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="450" dy="0" font-size="11.5" fill="#62686d" font-weight="600">kit_barcode</tspan></text>
+<text x="175" y="560.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="175" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="760" y="328.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<path d="M890.0,132 L890.0,260" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="900.0" y="196.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="900.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">chart_id</tspan></text>
+<text x="900" y="125.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="900" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="900" y="252.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="900" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+</svg>
+</figure>
+<p class="caption">A registration reaches a chart only through the lab result for the same kit. In all 406 results the patient name and birthdate equal the registration's, so that path is a reliable link between portal and EHR.</p>
+
+<h3>Which system knows what about a person</h3>
+<div class="scroll"><table>
+<tr><th>Field</th><th>E-commerce</th><th>CRM</th><th>Portal</th><th>EHR</th></tr>
+<tr><td>Name</td><td>Yes</td><td>Yes, often a nickname</td><td>Yes, as typed</td><td>Yes</td></tr>
+<tr><td>Email</td><td>Yes, unique per customer</td><td>Yes. 58 emails sit on more than one account. <code>secondary_email</code> is never filled.</td><td>Yes. 341 distinct across 433 registrations</td><td>Yes. 5 emails sit on more than one chart</td></tr>
+<tr><td>Phone</td><td>Yes, four formats</td><td>Yes, four formats</td><td>Yes, four formats</td><td>Yes, digits only</td></tr>
+<tr><td>Date of birth</td><td>No</td><td>448 real, 101 placeholder <code>1920-01-01</code>, 140 blank</td><td>Yes, all 433</td><td>Yes, all 339</td></tr>
+<tr><td>Address</td><td>Default address, plus a shipping address per order</td><td>Mailing address</td><td>No</td><td>No</td></tr>
+<tr><td>Sex</td><td>No</td><td>No</td><td>No</td><td>Yes</td></tr>
+<tr><td>Consent</td><td>No</td><td><code>sms_opt_out</code>, <code>do_not_call</code>. 10 accounts each</td><td>No</td><td>No</td></tr>
+</table></div>
+<p>Date of birth is the field that best separates relatives who share a surname, an address or a phone. It is missing from e-commerce and unusable on 241 of 689 CRM accounts. The address is missing from the two systems that always have a date of birth.</p>
+
+<h3>One person, eight records</h3>
+<p>These rows are in the data as shown. I read them as one person because name, phone, address and birthdate all agree. The data has no answer key, so that is a judgment.</p>
+<div class="scroll"><table>
+<tr><th>System</th><th>Record</th><th>Email</th><th>Phone as stored</th><th>Other</th></tr>
+<tr><td>E-commerce</td><td><code>7000326</code></td><td>twilliams@summitlaw.com</td><td>(310) 960-2362</td><td>273 Sunset St, Miami FL 33157</td></tr>
+<tr><td>E-commerce</td><td><code>7000327</code></td><td>tyler@williamsrealty.com</td><td>3109602362</td><td>Same address</td></tr>
+<tr><td>E-commerce</td><td><code>7000328</code></td><td>tyler.williams@icloud.com</td><td>+1 310-960-2362</td><td>Same address</td></tr>
+<tr><td>CRM</td><td><code>001A000213</code></td><td>tyler.williams@icloud.com</td><td>(310) 960-2362</td><td>Born 1969-03-15. Linked to customer 7000326, whose email is the law firm one</td></tr>
+<tr><td>CRM</td><td><code>001A000497</code></td><td>twilliams@summitlaw.com</td><td>310.960.2362</td><td>Born 1969-03-15, with a blank e-commerce ID and a different owner</td></tr>
+<tr><td>Portal</td><td><code>R000285</code></td><td>tyler.williams@icloud.com</td><td>310.960.2362</td><td>Born 1969-03-15. Kit KT0000326</td></tr>
+<tr><td>Portal</td><td><code>R000286</code></td><td>twilliams@summitlaw.com</td><td>310.960.2362</td><td>Born 1969-03-15. Kit KT0000327</td></tr>
+<tr><td>EHR</td><td><code>CH050205</code></td><td>tyler.williams@icloud.com</td><td>3109602362</td><td>Born 1969-03-15, M. Two results</td></tr>
+</table></div>
+
+<h3>Format quirks that matter for matching</h3>
+<ul>
+  <li>Phones come in four formats: <code>3109602362</code>, <code>310.960.2362</code>, <code>(310) 960-2362</code> and <code>+1 310-960-2362</code>. The EHR stores digits only.</li>
+  <li>Emails are already lower case with no plus tags. The variation is dots and wholly different addresses: <code>richardmoore@gmail.com</code> against <code>richard.moore@gmail.com</code>, a work address against a personal one.</li>
+  <li>Nicknames appear in the CRM: Tony for Anthony, Rick for Richard, Bob for Robert, Jess for Jessica, Bill for William, Matt for Matthew, Joe for Joseph, Drew for Andrew, Jen for Jennifer.</li>
+  <li>Relatives share surname and zip: 77 surname and zip pairs cover more than one e-commerce customer, 39 phone numbers are shared by more than one customer and 8 registration emails were used by more than one person.</li>
+  <li>Dates of birth are ISO dates. The CRM uses <code>1920-01-01</code> as a placeholder (<code>config.py:15</code>).</li>
+  <li>Booleans are the strings <code>true</code> and <code>false</code>. Amounts are strings with two decimals. Zip codes are five digits. There are seven states.</li>
+  <li>Some columns never vary: <code>channel</code> is always <code>online</code>, <code>stage</code> always <code>Closed Won</code>, <code>created_by</code> always <code>integration_user</code>, <code>status</code> always <code>final</code>. The brief mentions phone sales, but the data has no phone orders.</li>
+</ul>
+<div class="note">Three patterns look like artefacts of how the synthetic data was generated. Matching code should not lean on them. Consecutive customer IDs often belong to the same person (15 adjacent pairs). All 30 gift orders ship to someone with the buyer's surname and zip. 129 registrations are timestamped before the kit's delivery.</div>
+
+<h3>Column reference</h3>
+<details><summary>ecom_customers.csv, 533 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>customer_id</code></td><td class="num">533</td><td class="num">533</td><td>7000001</td><td>Key</td></tr>
+<tr><td><code>email</code></td><td class="num">533</td><td class="num">533</td><td>olivia.scott@acmecorp.com</td><td>Unique. Mostly five consumer domains, a few work domains</td></tr>
+<tr><td><code>first_name</code>, <code>last_name</code></td><td class="num">533</td><td class="num">60, 48</td><td>Olivia, Scott</td><td>54 full names occur more than once</td></tr>
+<tr><td><code>phone</code></td><td class="num">533</td><td class="num">523</td><td>491.519.3076</td><td>Four formats</td></tr>
+<tr><td><code>created_at</code></td><td class="num">533</td><td class="num">533</td><td>2026-06-28T17:29:38</td><td>No time zone</td></tr>
+<tr><td><code>default_address1</code>, <code>default_city</code>, <code>default_state</code>, <code>default_zip</code></td><td class="num">533</td><td class="num">440 streets</td><td>3612 Maple Ln, Scottsdale, AZ, 85278</td><td>75 street and zip pairs are shared</td></tr>
+</table></div></details>
+<details><summary>ecom_orders.csv, 905 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>order_id</code></td><td class="num">905</td><td class="num">905</td><td>#100001</td><td>Key</td></tr>
+<tr><td><code>customer_id</code></td><td class="num">905</td><td class="num">533</td><td>7000001</td><td>Every customer has 1 to 4 orders</td></tr>
+<tr><td><code>order_email</code></td><td class="num">905</td><td class="num">533</td><td>olivia.scott@acmecorp.com</td><td>Always equals the customer's email</td></tr>
+<tr><td><code>created_at</code></td><td class="num">905</td><td class="num">905</td><td>2026-06-27T11:08:08</td><td>2026-06-15 to 2026-09-28</td></tr>
+<tr><td><code>sku</code>, <code>product_name</code>, <code>amount</code></td><td class="num">905</td><td class="num">4</td><td>KIT-GENE, Genetic Wellness Kit, 399.00</td><td>Also KIT-METH 299.00, SUP-MULTI 49.00, SUP-OMEGA 39.00. 547 kit orders, 358 supplement orders</td></tr>
+<tr><td><code>ship_name</code></td><td class="num">905</td><td class="num">475</td><td>Olivia Scott</td><td>One string. The sync takes the last word as the surname</td></tr>
+<tr><td><code>ship_address1</code>, <code>ship_city</code>, <code>ship_state</code>, <code>ship_zip</code></td><td class="num">905</td><td class="num">346 zips</td><td>3612 Maple Ln, Scottsdale, AZ, 85278</td><td></td></tr>
+<tr><td><code>is_gift</code></td><td class="num">905</td><td class="num">2</td><td>false</td><td>30 gifts, all Methylation kits</td></tr>
+<tr><td><code>channel</code></td><td class="num">905</td><td class="num">1</td><td>online</td><td>Never varies</td></tr>
+</table></div></details>
+<details><summary>kits.csv, 547 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>kit_barcode</code></td><td class="num">547</td><td class="num">547</td><td>KT0000001</td><td>Key</td></tr>
+<tr><td><code>order_id</code></td><td class="num">547</td><td class="num">547</td><td>#100001</td><td>One kit per order</td></tr>
+<tr><td><code>shipped_at</code>, <code>delivered_at</code></td><td class="num">547</td><td class="num">547</td><td>2026-06-27T23:08:08</td><td>Delivery 2 to 7 days after the order</td></tr>
+</table></div></details>
+<details><summary>crm_accounts.csv, 689 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>account_id</code></td><td class="num">689</td><td class="num">689</td><td>001A000001</td><td>Key</td></tr>
+<tr><td><code>first_name</code>, <code>last_name</code></td><td class="num">689</td><td class="num">73, 48</td><td>Richard, White</td><td>More first names than e-commerce because of nicknames. 87 first, last and zip combinations occur more than once</td></tr>
+<tr><td><code>primary_email</code></td><td class="num">689</td><td class="num">631</td><td>richard.white@outlook.com</td><td>58 emails sit on more than one account</td></tr>
+<tr><td><code>secondary_email</code></td><td class="num">0</td><td class="num">0</td><td></td><td>Always blank. Only the merge utility writes it</td></tr>
+<tr><td><code>phone</code></td><td class="num">689</td><td class="num">655</td><td>(906) 783-4829</td><td>Four formats</td></tr>
+<tr><td><code>birthdate</code></td><td class="num">549</td><td class="num">402</td><td>1995-04-28</td><td>101 of the filled values are the placeholder 1920-01-01</td></tr>
+<tr><td><code>mailing_street</code>, <code>mailing_city</code>, <code>mailing_state</code>, <code>mailing_zip</code></td><td class="num">689</td><td class="num">377 zips</td><td>2177 Valley Ave, Phoenix, AZ, 85033</td><td></td></tr>
+<tr><td><code>ecom_customer_id</code></td><td class="num">520</td><td class="num">518</td><td>7000473</td><td>Blank on 169. Two customer IDs each sit on two accounts</td></tr>
+<tr><td><code>owner_id</code>, <code>owner_active</code></td><td class="num">689</td><td class="num">8</td><td>U004, true</td><td>54 accounts have an inactive owner</td></tr>
+<tr><td><code>sms_opt_out</code>, <code>do_not_call</code></td><td class="num">689</td><td class="num">2</td><td>false</td><td>10 accounts true for each</td></tr>
+<tr><td><code>created_at</code></td><td class="num">689</td><td class="num">689</td><td>2026-02-14T05:43:59</td><td>2025-05-11 to 2026-09-29. 553 predate the replay cutoff of 2026-06-15</td></tr>
+</table></div></details>
+<details><summary>crm_opportunities.csv, 905 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>opportunity_id</code></td><td class="num">905</td><td class="num">905</td><td>006A000001</td><td>Key</td></tr>
+<tr><td><code>account_id</code></td><td class="num">905</td><td class="num">522</td><td>001A000194</td><td>167 accounts have no opportunity</td></tr>
+<tr><td><code>ecom_order_id</code></td><td class="num">905</td><td class="num">905</td><td>#100001</td><td>One per order</td></tr>
+<tr><td><code>product</code>, <code>amount</code></td><td class="num">905</td><td class="num">4</td><td>Genetic Wellness Kit, 399.00</td><td>The product name reveals which test was bought</td></tr>
+<tr><td><code>stage</code>, <code>created_by</code></td><td class="num">905</td><td class="num">1</td><td>Closed Won, integration_user</td><td>Never vary</td></tr>
+<tr><td><code>created_at</code></td><td class="num">905</td><td class="num">905</td><td>2026-06-27T11:11:08</td><td>1 to 30 minutes after the order</td></tr>
+<tr><td><code>gift_recipient_account_id</code></td><td class="num">0</td><td class="num">0</td><td></td><td>Always blank and untouched by the code</td></tr>
+</table></div></details>
+<details><summary>portal_registrations.csv, 433 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>registration_id</code></td><td class="num">433</td><td class="num">433</td><td>R000001</td><td>Key. IDs have gaps</td></tr>
+<tr><td><code>kit_barcode</code></td><td class="num">433</td><td class="num">433</td><td>KT0000001</td><td>79% of the 547 kits are registered</td></tr>
+<tr><td><code>email</code></td><td class="num">433</td><td class="num">341</td><td>olivia.scott@acmecorp.com</td><td>36 differ from the buyer's email, 16 of those on gifts</td></tr>
+<tr><td><code>first_name</code>, <code>last_name</code>, <code>birthdate</code></td><td class="num">433</td><td class="num">337 people</td><td>Olivia, Scott, 1969-09-18</td><td>No placeholders or blanks</td></tr>
+<tr><td><code>phone</code></td><td class="num">433</td><td class="num">407</td><td>4915193076</td><td>Four formats</td></tr>
+<tr><td><code>registered_at</code></td><td class="num">433</td><td class="num">433</td><td>2026-07-03T11:08:08</td><td>2026-06-19 to 2026-09-29</td></tr>
+</table></div></details>
+<details><summary>ehr_patients.csv, 339 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>chart_id</code></td><td class="num">339</td><td class="num">339</td><td>CH050001</td><td>Key. 16 charts have no result</td></tr>
+<tr><td><code>first_name</code>, <code>last_name</code>, <code>birthdate</code></td><td class="num">339</td><td class="num">337 people</td><td>Olivia, Scott, 1969-09-18</td><td>Two name and birthdate combinations have two charts</td></tr>
+<tr><td><code>sex</code></td><td class="num">339</td><td class="num">2</td><td>F</td><td>Only the EHR has it</td></tr>
+<tr><td><code>phone</code></td><td class="num">339</td><td class="num">325</td><td>4915193076</td><td>Digits only</td></tr>
+<tr><td><code>email</code></td><td class="num">339</td><td class="num">333</td><td>olivia.scott@acmecorp.com</td><td>12 charts have registrations under more than one email</td></tr>
+</table></div></details>
+<details><summary>lab_results.csv, 406 rows</summary><div class="scroll"><table>
+<tr><th>Column</th><th class="num">Filled</th><th class="num">Distinct</th><th>Example</th><th>Notes</th></tr>
+<tr><td><code>result_id</code></td><td class="num">406</td><td class="num">406</td><td>LR000001</td><td>Key</td></tr>
+<tr><td><code>kit_barcode</code></td><td class="num">406</td><td class="num">406</td><td>KT0000001</td><td>One result per kit. Every resulted kit is registered</td></tr>
+<tr><td><code>chart_id</code></td><td class="num">406</td><td class="num">323</td><td>CH050001</td><td>70 charts have more than one result</td></tr>
+<tr><td><code>patient_first</code>, <code>patient_last</code>, <code>patient_birthdate</code></td><td class="num">406</td><td class="num"></td><td>Olivia, Scott, 1969-09-18</td><td>Always equal to the registration for the same kit</td></tr>
+<tr><td><code>resulted_at</code>, <code>status</code></td><td class="num">406</td><td class="num"></td><td>2026-07-17T11:08:08, final</td><td>7 to 14 days after registration. The file holds a status without result values</td></tr>
+</table></div></details>
+</section>
+
+<section id="code">
+<h2>Code map</h2>
+<p>The service is 365 lines of Python with no third-party dependencies. Paths are relative to <code>legacy-sync/</code>.</p>
+<div class="scroll"><table>
+<tr><th>File</th><th class="num">Lines</th><th>What it does</th><th>Called by</th></tr>
+<tr><td><code>legacy_sync/replay.py</code></td><td class="num">54</td><td>Loads the CSVs, seeds the CRM with accounts created before 2026-06-15 (line 22), runs every order (line 29) then every registration (line 36) and prints a summary. It also creates the opportunities (lines 31-33).</td><td>Command line</td></tr>
+<tr><td><code>legacy_sync/sync/order_sync.py</code></td><td class="num">43</td><td><code>resolve_account</code> finds an account for an order. <code>sync_order</code> creates one if needed and overwrites contact details.</td><td><code>replay.py:30</code></td></tr>
+<tr><td><code>legacy_sync/registration/register.py</code></td><td class="num">48</td><td><code>register_kit</code> finds or creates the registrant's account and moves a gift opportunity. <code>_same_person</code> is its identity check.</td><td><code>replay.py:38</code></td></tr>
+<tr><td><code>legacy_sync/crm/client.py</code></td><td class="num">61</td><td>In-memory CRM: lookups by e-commerce ID, email and surname with zip, plus create, update contact details and move opportunity.</td><td>Both jobs</td></tr>
+<tr><td><code>legacy_sync/crm/duplicate_rules.py</code></td><td class="num">11</td><td>Treats an exact match on first name, last name and zip as a duplicate. Skipped when any of the three is blank (lines 8-9).</td><td><code>client.py:38</code></td></tr>
+<tr><td><code>legacy_sync/config.py</code></td><td class="num">15</td><td>Four settings: address fallback on, duplicate rule action "block", the duplicate rule fields and the birthdate placeholder.</td><td>Sync, registration, CRM</td></tr>
+<tr><td><code>legacy_sync/store.py</code></td><td class="num">20</td><td>CSV loader. Email normalising is trim and lower case. Phone normalising keeps the last ten digits.</td><td>Replay, client, matcher</td></tr>
+<tr><td><code>legacy_sync/consent/merge.py</code></td><td class="num">18</td><td>Merges two accounts into a survivor.</td><td>Nothing</td></tr>
+<tr><td><code>legacy_sync/marketing/stage.py</code></td><td class="num">14</td><td>Returns bought, registered or results_ready for an account.</td><td>Nothing</td></tr>
+<tr><td><code>legacy_sync/identity/matcher_v1.py</code></td><td class="num">25</td><td>Unfinished fuzzy matcher scoring name, email, phone and birthdate.</td><td>Nothing</td></tr>
+<tr><td><code>tests/</code></td><td class="num">56</td><td>Four tests. All pass. One asserts that an order from Ana lands on Carlos's account (<code>tests/test_order_sync.py:24-28</code>).</td><td>pytest</td></tr>
+</table></div>
+<p>Three modules have no caller: the merge utility, the stage helper and the matcher. They are either run by hand or called from code we were not given.</p>
+</section>
+
+<section id="flows">
+<h2>Workflows</h2>
+<h3>Order sync</h3>
+<figure class="diagram" data-svg="order-sync">
+<svg viewBox="0 0 840 830" role="img" aria-label="Order sync: lookup by e-commerce ID, then email, then surname and zip, then create; every path overwrites the account&#x27;s email" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="300" y="20" width="240" height="50" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="420.0" y="36.5" text-anchor="middle" dominant-baseline="middle"><tspan x="420.0" dy="0" font-size="15" font-weight="700" fill="#202427">Order arrives</tspan><tspan x="420.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">replay.py:29-30</tspan></text>
+<polygon points="420,102.0 555.0,150 420,198.0 285.0,150" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="420" y="133.0" text-anchor="middle" dominant-baseline="middle"><tspan x="420" dy="0" font-size="13.5" font-weight="700" fill="#202427">Account with this</tspan><tspan x="420" dy="17" font-size="13.5" fill="#62686d">ecom_customer_id?</tspan><tspan x="420" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:12</tspan></text>
+<polygon points="420,252.0 555.0,300 420,348.0 285.0,300" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="420" y="283.0" text-anchor="middle" dominant-baseline="middle"><tspan x="420" dy="0" font-size="13.5" font-weight="700" fill="#202427">Account with this email,</tspan><tspan x="420" dy="17" font-size="13.5" fill="#62686d">primary or secondary?</tspan><tspan x="420" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:16</tspan></text>
+<polygon points="420,400.0 565.0,450 420,500.0 275.0,450" fill="#fbeaea" stroke="#c00000" stroke-width="2" stroke-linejoin="round"/>
+<text x="420" y="433.0" text-anchor="middle" dominant-baseline="middle"><tspan x="420" dy="0" font-size="13.5" font-weight="700" fill="#202427">Account with the shipment&#x27;s</tspan><tspan x="420" dy="17" font-size="13.5" fill="#62686d">surname and zip?</tspan><tspan x="420" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:20-24</tspan></text>
+<rect x="120" y="560" width="230" height="64" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="235.0" y="575.0" text-anchor="middle" dominant-baseline="middle"><tspan x="235.0" dy="0" font-size="15" font-weight="700" fill="#202427">Stamp ecom_customer_id</tspan><tspan x="235.0" dy="17" font-size="12.5" fill="#62686d">if the account has none</tspan><tspan x="235.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:39-40</tspan></text>
+<rect x="490" y="560" width="250" height="64" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="615.0" y="575.0" text-anchor="middle" dominant-baseline="middle"><tspan x="615.0" dy="0" font-size="15" font-weight="700" fill="#202427">Create account, birthdate blank</tspan><tspan x="615.0" dy="17" font-size="12.5" fill="#62686d">duplicate rule applies, not caught</tspan><tspan x="615.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:32-38</tspan></text>
+<rect x="280" y="670" width="300" height="70" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="430.0" y="688.0" text-anchor="middle" dominant-baseline="middle"><tspan x="430.0" dy="0" font-size="15" font-weight="700" fill="#202427">Overwrite primary_email and phone</tspan><tspan x="430.0" dy="17" font-size="12.5" fill="#62686d">with the order&#x27;s values</tspan><tspan x="430.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:42</tspan></text>
+<rect x="280" y="780" width="300" height="44" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="430.0" y="793.5" text-anchor="middle" dominant-baseline="middle"><tspan x="430.0" dy="0" font-size="15" font-weight="700" fill="#202427">Create opportunity on that account</tspan><tspan x="430.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">replay.py:31-33</tspan></text>
+<path d="M420.0,70 L420.0,102.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M420.0,198.0 L420.0,252.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="432.0" y="225.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="432.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no</tspan></text>
+<path d="M420.0,348.0 L420.0,400.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="432.0" y="374.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="432.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no</tspan></text>
+<path d="M285.0,150.0 L60,150 L60,705 L280,705.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="68" y="420.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="68" dy="0" font-size="11.5" fill="#62686d" font-weight="600">yes, 772 orders</tspan></text>
+<path d="M285.0,300.0 L200,300 L200,560" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="208" y="430.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="208" dy="0" font-size="11.5" fill="#62686d" font-weight="600">yes, 24</tspan></text>
+<path d="M275.0,450.0 L235,450 L235,560" fill="none" stroke="#c00000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-risk)"/>
+<text x="243" y="505.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="243" dy="0" font-size="11.5" fill="#980000" font-weight="600">yes, 43</tspan></text>
+<path d="M565.0,450.0 L615,450 L615,560" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="623" y="505.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="623" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no, 66</tspan></text>
+<path d="M235.0,624 L235,705 L280,705.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M615.0,624 L615,705 L580,705.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M430.0,740 L430.0,780" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="step">Step or decision</span><span class="risk">Where it fails</span></div></figure>
+<p class="caption">Red outlines mark the two steps behind symptoms 1 and 2. Each lookup takes the first account returned when there are several.</p>
+<ul>
+  <li>The docstring at <code>order_sync.py:9-10</code> says accounts are matched strictly by email. The code below it does something else.</li>
+  <li>The surname comes from the last word of <code>ship_name</code> (<code>order_sync.py:21</code>), so on a gift the lookup uses the recipient's surname.</li>
+  <li>Of the 43 address matches, 14 landed on an account with the buyer's first name and 29 on a different first name. A few of the 29 are nicknames, such as Jessica landing on Jess.</li>
+  <li>In 37 of the 43, the account already carried someone else's e-commerce ID, so the buyer's ID was not stored. That buyer's next order goes through the same guess again.</li>
+</ul>
+
+<h3>Kit registration</h3>
+<figure class="diagram" data-svg="registration">
+<svg viewBox="0 0 1000 1060" role="img" aria-label="Kit registration: find the account by email, check the person, else create and face the duplicate rule, then move a gift purchase" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="300" y="20" width="220" height="44" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="410.0" y="33.5" text-anchor="middle" dominant-baseline="middle"><tspan x="410.0" dy="0" font-size="15" font-weight="700" fill="#202427">Registration arrives</tspan><tspan x="410.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">replay.py:36-38</tspan></text>
+<rect x="290" y="100" width="240" height="50" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="410.0" y="116.5" text-anchor="middle" dominant-baseline="middle"><tspan x="410.0" dy="0" font-size="15" font-weight="700" fill="#202427">Find the kit&#x27;s order and opportunity</tspan><tspan x="410.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:25-26</tspan></text>
+<polygon points="410,190.0 540.0,235 410,280.0 280.0,235" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="410" y="218.0" text-anchor="middle" dominant-baseline="middle"><tspan x="410" dy="0" font-size="13.5" font-weight="700" fill="#202427">Account with the</tspan><tspan x="410" dy="17" font-size="13.5" fill="#62686d">registrant&#x27;s email?</tspan><tspan x="410" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:28</tspan></text>
+<polygon points="180,344.0 345.0,400 180,456.0 15.0,400" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="180" y="374.5" text-anchor="middle" dominant-baseline="middle"><tspan x="180" dy="0" font-size="13.5" font-weight="700" fill="#202427">Same person?</tspan><tspan x="180" dy="17" font-size="13.5" fill="#62686d">surname, plus birthdate</tspan><tspan x="180" dy="17" font-size="13.5" fill="#62686d">when the account has one</tspan><tspan x="180" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:15-19</tspan></text>
+<rect x="560" y="360" width="250" height="72" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="685.0" y="370.5" text-anchor="middle" dominant-baseline="middle"><tspan x="685.0" dy="0" font-size="15" font-weight="700" fill="#202427">Create an account from the</tspan><tspan x="685.0" dy="17" font-size="12.5" fill="#62686d">registration and the order&#x27;s</tspan><tspan x="685.0" dy="17" font-size="12.5" fill="#62686d">shipping address</tspan><tspan x="685.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:36-41</tspan></text>
+<polygon points="685,490.0 825.0,540 685,590.0 545.0,540" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="685" y="523.0" text-anchor="middle" dominant-baseline="middle"><tspan x="685" dy="0" font-size="13.5" font-weight="700" fill="#202427">CRM duplicate rule: same</tspan><tspan x="685" dy="17" font-size="13.5" fill="#62686d">first name, last name, zip?</tspan><tspan x="685" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">client.py:38-40</tspan></text>
+<rect x="15" y="560" width="200" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="115.0" y="573.0" text-anchor="middle" dominant-baseline="middle"><tspan x="115.0" dy="0" font-size="15" font-weight="700" fill="#202427">IdentityConflict</tspan><tspan x="115.0" dy="17" font-size="12.5" fill="#62686d">11 rejected</tspan><tspan x="115.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:32-33</tspan></text>
+<rect x="770" y="660" width="210" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="875.0" y="673.0" text-anchor="middle" dominant-baseline="middle"><tspan x="875.0" dy="0" font-size="15" font-weight="700" fill="#202427">RegistrationBlocked</tspan><tspan x="875.0" dy="17" font-size="12.5" fill="#62686d">20 rejected as duplicates</tspan><tspan x="875.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:42-43</tspan></text>
+<polygon points="410,645.0 545.0,690 410,735.0 275.0,690" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="410" y="673.0" text-anchor="middle" dominant-baseline="middle"><tspan x="410" dy="0" font-size="13.5" font-weight="700" fill="#202427">Gift order sitting on</tspan><tspan x="410" dy="17" font-size="13.5" fill="#62686d">a different account?</tspan><tspan x="410" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:45</tspan></text>
+<polygon points="410,797.0 535.0,840 410,883.0 285.0,840" fill="#ffffff" stroke="#737373" stroke-width="2" stroke-linejoin="round"/>
+<text x="410" y="823.0" text-anchor="middle" dominant-baseline="middle"><tspan x="410" dy="0" font-size="13.5" font-weight="700" fill="#202427">Recipient&#x27;s account</tspan><tspan x="410" dy="17" font-size="13.5" fill="#62686d">owner active?</tspan><tspan x="410" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">client.py:59</tspan></text>
+<rect x="60" y="920" width="200" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="160.0" y="933.0" text-anchor="middle" dominant-baseline="middle"><tspan x="160.0" dy="0" font-size="15" font-weight="700" fill="#202427">InactiveOwner</tspan><tspan x="160.0" dy="17" font-size="12.5" fill="#62686d">1 failed</tspan><tspan x="160.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">client.py:60</tspan></text>
+<rect x="580" y="920" width="220" height="60" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="690.0" y="933.0" text-anchor="middle" dominant-baseline="middle"><tspan x="690.0" dy="0" font-size="15" font-weight="700" fill="#202427">Move the opportunity</tspan><tspan x="690.0" dy="17" font-size="12.5" fill="#62686d">to the recipient</tspan><tspan x="690.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">client.py:61</tspan></text>
+<rect x="300" y="1000" width="220" height="44" rx="8" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="410.0" y="1022.0" text-anchor="middle" dominant-baseline="middle"><tspan x="410.0" dy="0" font-size="15" font-weight="700" fill="#202427">Accepted, 401</tspan></text>
+<path d="M410.0,64 L410.0,100" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M410.0,150 L410.0,190.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M280.0,235.0 L180,235 L180.0,344.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="188" y="300.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="188" dy="0" font-size="11.5" fill="#62686d" font-weight="600">yes</tspan></text>
+<path d="M540.0,235.0 L685,235 L685.0,360" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="693" y="300.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="693" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no</tspan></text>
+<path d="M130.0,456.0 L115.0,560" fill="none" stroke="#c00000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-risk)"/>
+<text x="122" y="520.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="122" dy="0" font-size="11.5" fill="#980000" font-weight="600">no</tspan></text>
+<path d="M230.0,456.0 L230,630 L410,630 L410.0,645.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="238" y="580.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="238" dy="0" font-size="11.5" fill="#62686d" font-weight="600">yes, 391</tspan></text>
+<path d="M685.0,432 L685.0,490.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M825.0,540.0 L875,590 L875.0,660" fill="none" stroke="#c00000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-risk)"/>
+<text x="883" y="625.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="883" dy="0" font-size="11.5" fill="#980000" font-weight="600">yes</tspan></text>
+<path d="M685.0,590.0 L685,630 L410,630" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="693" y="612.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="693" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no, 10</tspan></text>
+<path d="M545.0,690.0 L600,690 L600,1022 L520,1022.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="608" y="760.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="608" dy="0" font-size="11.5" fill="#62686d" font-weight="600">no</tspan></text>
+<path d="M410.0,735.0 L410.0,797.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="422.0" y="766.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="422.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">yes</tspan></text>
+<path d="M285.0,840.0 L160,840 L160.0,920" fill="none" stroke="#c00000" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-risk)"/>
+<text x="168" y="880.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="168" dy="0" font-size="11.5" fill="#980000" font-weight="600">no</tspan></text>
+<path d="M535.0,840.0 L690,840 L690.0,920" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="698" y="880.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="698" dy="0" font-size="11.5" fill="#62686d" font-weight="600">yes, 12</tspan></text>
+<path d="M690.0,980 L690,990 L470,990 L470.0,1000" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+</svg>
+<div class="legend"><span class="system">System record</span><span class="step">Step or decision</span><span class="risk">Where it fails</span></div></figure>
+<p class="caption">All three red exits are raised to the caller, so the customer's registration fails. Of the 401 accepted, 391 matched an account by email and 10 created a new one.</p>
+
+<h3>Marketing stage and account merge</h3>
+<p><code>stage_for_account</code> (<code>marketing/stage.py:6-14</code>) answers for one CRM account: results_ready if any result is attached to it, else registered if any registration is, else bought if it holds an opportunity. The unit is the account. A kit is never looked at on its own.</p>
+<p><code>merge_accounts</code> (<code>consent/merge.py:7-18</code>) deletes the losing account, fills blank fields on the survivor from a fixed list, keeps the loser's email as <code>secondary_email</code> and moves the loser's opportunities across.</p>
+
+<h3 id="counts">Replay counts</h3>
+<p>The shipped replay runs every order first, then every registration. Production would have interleaved them, so the second column replays both in timestamp order. The story is the same either way.</p>
+<div class="scroll"><table>
+<tr><th>Outcome</th><th class="num">Shipped replay order</th><th class="num">Time order</th></tr>
+<tr><td>Orders matched by e-commerce ID, email, address, new account</td><td class="num">772, 24, 43, 66</td><td class="num">772, 24, 43, 66</td></tr>
+<tr><td>Orders that overwrote an account's email</td><td class="num">77</td><td class="num">77</td></tr>
+<tr><td>Accounts whose email changed once or more, twice or more</td><td class="num">45, 19</td><td class="num">45, 19</td></tr>
+<tr><td>Registrations accepted</td><td class="num">401</td><td class="num">403</td></tr>
+<tr><td>Registrations blocked by the duplicate rule</td><td class="num">20</td><td class="num">17</td></tr>
+<tr><td>Registrations blocked by identity conflict</td><td class="num">11</td><td class="num">12</td></tr>
+<tr><td>Registrations failed on an inactive owner</td><td class="num">1</td><td class="num">1</td></tr>
+<tr><td>Gift registrations rejected</td><td class="num">10 of 25</td><td class="num">10 of 25</td></tr>
+<tr><td>Kits with a result whose purchasing account is not at results_ready</td><td class="num">60</td><td class="num">53</td></tr>
+<tr><td>Accounts that would get the wrong nurture message</td><td class="num">46</td><td class="num">40</td></tr>
+</table></div>
+</section>
+
+<section id="problems">
+<h2>The six problems</h2>
+<p>The six symptoms are mostly one chain. A hotfix in June started guessing accounts by surname and zip. A change in July started overwriting emails. Registration, added between the two, trusts email alone.</p>
+<figure class="diagram" data-svg="chain">
+<svg viewBox="0 0 1000 900" role="img" aria-label="The six symptoms as one causal chain from the June hotfix, plus the separate merge path for consent" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="40" y="20" width="220" height="60" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="150.0" y="33.0" text-anchor="middle" dominant-baseline="middle"><tspan x="150.0" dy="0" font-size="15" font-weight="700" fill="#202427">June hotfix</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">match on surname and zip</tspan><tspan x="150.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:20-24</tspan></text>
+<rect x="40" y="130" width="220" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="150.0" y="143.0" text-anchor="middle" dominant-baseline="middle"><tspan x="150.0" dy="0" font-size="15" font-weight="700" fill="#202427">Symptom 1</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">Purchase lands on</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">a relative&#x27;s account</tspan></text>
+<rect x="40" y="240" width="220" height="60" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="150.0" y="253.0" text-anchor="middle" dominant-baseline="middle"><tspan x="150.0" dy="0" font-size="15" font-weight="700" fill="#202427">Every order overwrites</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">the account&#x27;s email</tspan><tspan x="150.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">order_sync.py:42</tspan></text>
+<rect x="40" y="350" width="220" height="50" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="150.0" y="366.5" text-anchor="middle" dominant-baseline="middle"><tspan x="150.0" dy="0" font-size="15" font-weight="700" fill="#202427">Symptom 2</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">CRM emails change</tspan></text>
+<rect x="40" y="450" width="220" height="60" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="150.0" y="463.0" text-anchor="middle" dominant-baseline="middle"><tspan x="150.0" dy="0" font-size="15" font-weight="700" fill="#202427">Registration looks up</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">by email only</tspan><tspan x="150.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">register.py:28</tspan></text>
+<rect x="40" y="580" width="220" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="150.0" y="593.0" text-anchor="middle" dominant-baseline="middle"><tspan x="150.0" dy="0" font-size="15" font-weight="700" fill="#202427">Symptom 3</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">Duplicate rule rejects</tspan><tspan x="150.0" dy="17" font-size="12.5" fill="#62686d">the new account</tspan></text>
+<rect x="310" y="580" width="190" height="50" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="405.0" y="596.5" text-anchor="middle" dominant-baseline="middle"><tspan x="405.0" dy="0" font-size="15" font-weight="700" fill="#202427">Identity conflict</tspan><tspan x="405.0" dy="17" font-size="12.5" fill="#62686d">same email, other birthdate</tspan></text>
+<rect x="540" y="450" width="200" height="50" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="640.0" y="475.0" text-anchor="middle" dominant-baseline="middle"><tspan x="640.0" dy="0" font-size="15" font-weight="700" fill="#202427">Gift recipient registers</tspan></text>
+<rect x="540" y="540" width="200" height="60" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="640.0" y="553.0" text-anchor="middle" dominant-baseline="middle"><tspan x="640.0" dy="0" font-size="15" font-weight="700" fill="#202427">Recipient&#x27;s account has</tspan><tspan x="640.0" dy="17" font-size="12.5" fill="#62686d">an inactive owner</tspan><tspan x="640.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">client.py:59-60</tspan></text>
+<rect x="540" y="650" width="200" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="640.0" y="663.0" text-anchor="middle" dominant-baseline="middle"><tspan x="640.0" dy="0" font-size="15" font-weight="700" fill="#202427">Symptom 4</tspan><tspan x="640.0" dy="17" font-size="12.5" fill="#62686d">Gift registration fails,</tspan><tspan x="640.0" dy="17" font-size="12.5" fill="#62686d">purchase cannot move</tspan></text>
+<rect x="310" y="700" width="200" height="56" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="410.0" y="719.5" text-anchor="middle" dominant-baseline="middle"><tspan x="410.0" dy="0" font-size="15" font-weight="700" fill="#202427">CRM holds no registration</tspan><tspan x="410.0" dy="17" font-size="12.5" fill="#62686d">for the kit</tspan></text>
+<rect x="790" y="450" width="200" height="56" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="890.0" y="469.5" text-anchor="middle" dominant-baseline="middle"><tspan x="890.0" dy="0" font-size="15" font-weight="700" fill="#202427">Purchase and registration</tspan><tspan x="890.0" dy="17" font-size="12.5" fill="#62686d">on different accounts</tspan></text>
+<rect x="310" y="810" width="200" height="60" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="410.0" y="823.0" text-anchor="middle" dominant-baseline="middle"><tspan x="410.0" dy="0" font-size="15" font-weight="700" fill="#202427">Symptom 5</tspan><tspan x="410.0" dy="17" font-size="12.5" fill="#62686d">Register your kit</tspan><tspan x="410.0" dy="17" font-size="12.5" fill="#62686d">sent after results</tspan></text>
+<rect x="790" y="20" width="190" height="50" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="885.0" y="45.0" text-anchor="middle" dominant-baseline="middle"><tspan x="885.0" dy="0" font-size="15" font-weight="700" fill="#202427">Duplicate accounts</tspan></text>
+<rect x="790" y="130" width="190" height="70" rx="8" fill="#ffffff" stroke="#737373" stroke-width="2"/>
+<text x="885.0" y="148.0" text-anchor="middle" dominant-baseline="middle"><tspan x="885.0" dy="0" font-size="15" font-weight="700" fill="#202427">Merge keeps only the</tspan><tspan x="885.0" dy="17" font-size="12.5" fill="#62686d">survivor&#x27;s consent flags</tspan><tspan x="885.0" dy="17" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="11.5" fill="#62686d">merge.py:3-4</tspan></text>
+<rect x="790" y="260" width="190" height="50" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="885.0" y="276.5" text-anchor="middle" dominant-baseline="middle"><tspan x="885.0" dy="0" font-size="15" font-weight="700" fill="#202427">Symptom 6</tspan><tspan x="885.0" dy="17" font-size="12.5" fill="#62686d">Opt-outs lost</tspan></text>
+<path d="M150.0,80 L150.0,130" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M150.0,190 L150.0,240" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M150.0,300 L150.0,350" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M150.0,400 L150.0,450" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M260,160.0 L765,160 L765,478 L790,478.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M540,475.0 L260,480.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="400.0" y="467.5" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="400.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">also looks up by email</tspan></text>
+<path d="M110.0,510 L110.0,580" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="102.0" y="545.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="102.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">finds nobody</tspan></text>
+<path d="M190.0,510 L190,540 L405,540 L405.0,580" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<text x="300" y="530.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11.5" fill="#62686d" font-weight="600">finds a relative</tspan></text>
+<path d="M640.0,500 L640.0,540" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M640.0,600 L640.0,650" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M150.0,640 L150,728 L310,728.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M405.0,630 L410.0,700" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M640.0,710 L640,728 L510,728.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M410.0,756 L410.0,810" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M890.0,506 L890,840 L510,840.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M885.0,70 L885.0,130" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+<path d="M885.0,200 L885.0,260" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-step)"/>
+</svg>
+<div class="legend"><span class="step">Step or decision</span><span class="risk">Where it fails</span></div></figure>
+
+<h3>One household, five days</h3>
+<p>This is the legacy code run over real rows from the data, in timestamp order. Elizabeth Hall owns account <code>001A000417</code>. Thomas Hall shares her surname and zip code 85226.</p>
+<figure class="diagram"><pre class="mermaid">
+sequenceDiagram
+  participant E as Elizabeth
+  participant T as Thomas
+  participant L as legacy-sync
+  participant C as CRM account 001A000417
+  Note over C: Elizabeth Hall, ehall@yahoo.com, born 1988-09-16
+  E->>L: Jul 25, orders a kit
+  L->>C: matched by e-commerce ID 7000500
+  T->>L: Jul 26, orders a kit as hall.thomas@gmail.com
+  L->>C: no ID match, no email match, surname and zip match
+  Note over C: Symptom 1. Thomas's purchase is on Elizabeth's account
+  L->>C: primary_email set to hall.thomas@gmail.com
+  Note over C: Symptom 2. Elizabeth's email has changed
+  E->>L: Jul 28, registers kit KT0000481 as ehall@yahoo.com
+  L->>C: email lookup finds nobody, tries to create Elizabeth Hall 85226
+  C-->>L: possible duplicate of 001A000417
+  L-->>E: registration rejected
+  Note over E,L: Symptom 3. She is blocked as a duplicate of herself
+  E->>L: Jul 30, orders again
+  L->>C: matched by ID, email set back to ehall@yahoo.com
+  Note over C: Aug 7, her result is final in the EHR.<br/>The CRM has no registration for that kit,<br/>so the account still reads as bought. Symptom 5
+</pre></figure>
+<p class="caption">Orders #100820, #100687 and #100821, registration R000424, result LR000360. In <code>crm_opportunities.csv</code> Thomas's order sits on his own account, which was created three weeks later, so the files show a later state than this replay does.</p>
+
+<div class="symptom">
+<h3>Purchases show up on a family member's account</h3>
+<dl>
+<dt>Cause</dt><dd>When the e-commerce ID and the email both miss, the order sync takes the first account with the shipment's surname and zip code. It never compares first names.</dd>
+<dt>Where</dt><dd><code>legacy_sync/sync/order_sync.py:20-24</code>, <code>legacy_sync/crm/client.py:32-34</code>, switched on at <code>legacy_sync/config.py:5</code>. Added by commit <code>87aff62</code>.</dd>
+<dt>Evidence</dt><dd>Replay: 43 orders matched this way, 29 onto an account with a different first name. CRM file: 23 opportunities sit on an account whose first name differs from the buyer's. About 13 of those are a relative and 9 are a nickname of the same person. Order #100021 from Mary Rodriguez is on Kevin Rodriguez's account while #100050 from Kevin is on Mary's.</dd>
+</dl></div>
+
+<div class="symptom">
+<h3>Email addresses in the CRM change unexpectedly</h3>
+<dl>
+<dt>Cause</dt><dd>After every order, matched or not, the sync writes the order's email and phone over the account's.</dd>
+<dt>Where</dt><dd><code>legacy_sync/sync/order_sync.py:42</code>, <code>legacy_sync/crm/client.py:48-55</code>. Added by commit <code>11cc1ab</code>.</dd>
+<dt>Evidence</dt><dd>Replay: 77 orders changed an email, 43 of them after an address match. 19 accounts changed two or more times, flipping between two people's addresses as each one orders. CRM file: 15 accounts hold an email that differs from their linked e-commerce customer's. In the file those 15 are all the same person under a second address.</dd>
+</dl></div>
+
+<div class="symptom">
+<h3>Kit registrations rejected as a possible duplicate</h3>
+<dl>
+<dt>Cause</dt><dd>Registration looks for the account by email only. When that misses, it tries to create an account and the CRM's duplicate rule blocks any create whose first name, last name and zip match an existing account. The existing account is usually the registrant's own.</dd>
+<dt>Where</dt><dd><code>legacy_sync/registration/register.py:28</code> and <code>:36-43</code>, <code>legacy_sync/crm/client.py:38-40</code>, <code>legacy_sync/crm/duplicate_rules.py:4-11</code>, <code>legacy_sync/config.py:9-12</code>. Added by commit <code>f4adca0</code>.</dd>
+<dt>Evidence</dt><dd>Replay: 20 blocked. In 16 the blocking account used to hold the registrant's email until an order overwrote it. In the other 4 the registrant used an email the CRM never had. A further 11 are rejected as identity conflicts: the email belongs to an account with the same surname and a different birthdate. 6 of those accounts got that email from an overwrite.</dd>
+</dl></div>
+
+<div class="symptom">
+<h3>Gift registrations fail and support cannot move the purchase</h3>
+<dl>
+<dt>Cause</dt><dd>A gift purchase is filed on the buyer's account and moved to the recipient only when the recipient registers. The move is refused when the recipient's account belongs to an inactive owner. The exception fails the whole registration. Support hits the same check. The CRM has a <code>gift_recipient_account_id</code> column that nothing uses.</dd>
+<dt>Where</dt><dd><code>legacy_sync/registration/register.py:45-46</code>, <code>legacy_sync/crm/client.py:57-61</code>.</dd>
+<dt>Evidence</dt><dd>Replay: 10 of 25 gift registrations are rejected: 1 on an inactive owner, 4 by the duplicate rule and 5 by identity conflict, against 22 of 408 for other registrations. 54 of 689 accounts have an inactive owner, so the single failure understates the exposure. R000459: Joseph Harris registers a gift from Lisa Harris, his account is owned by inactive user U007 and the purchase stays on Lisa's account.</dd>
+</dl></div>
+
+<div class="symptom">
+<h3>"Please register your kit" sent to customers who have results</h3>
+<dl>
+<dt>Cause</dt><dd>The stage is worked out per CRM account. The purchase can sit on one account while the registration and result sit on another, or the CRM can have rejected the registration while the portal, EHR and lab carried on. Only gift purchases are ever moved to the registrant.</dd>
+<dt>Where</dt><dd><code>legacy_sync/marketing/stage.py:6-14</code>, <code>legacy_sync/registration/register.py:45</code>.</dd>
+<dt>Evidence</dt><dd>Replay: of 406 kits with a final result, the purchasing account reads results_ready for 346, bought for 59 and registered for 1. Of the 60 wrong ones, 36 have the registration on another account, 15 were blocked by the duplicate rule and 9 by identity conflict. Nothing in the repo calls the stage helper, so I attached each registration and result to the account that registration resolved to. That wiring is my assumption.</dd>
+</dl></div>
+
+<div class="symptom">
+<h3>Text opt-outs lost when duplicate accounts are merged</h3>
+<dl>
+<dt>Cause</dt><dd>The merge copies a fixed list of fields from the losing account. <code>sms_opt_out</code> and <code>do_not_call</code> are not on the list, so the survivor's values stand and the loser's opt-out is deleted with it.</dd>
+<dt>Where</dt><dd><code>legacy_sync/consent/merge.py:3-4</code> and <code>:9-12</code>. Added by commit <code>444e526</code>.</dd>
+<dt>Evidence</dt><dd>Read from the code. The replay never merges. CRM file: 58 emails are held by more than one account and 3 of those pairs disagree on both consent flags. Accounts 001A000126 and 001A000560 are both Matthew Anderson, one opted out and one not. Merging into the second would opt him back in.</dd>
+</dl></div>
+</section>
+
+<section id="more">
+<h2>Other findings</h2>
+<p>These are not among the six symptoms. They matter for the fix or for the live code review.</p>
+<ul>
+  <li>The address fallback cannot be switched off by itself. With <code>MATCH_FALLBACK_ADDRESS</code> off, 16 orders raise <code>DuplicateDetected</code> inside <code>sync_order</code>, which <code>replay.py:30</code> does not catch. 11 kit registrations then have no opportunity to attach to. The fallback is hiding the duplicate rule from the order path. My guess is that this was the "June backlog" the hotfix names.</li>
+  <li>A test protects the bug. <code>tests/test_order_sync.py:24-28</code> asserts that Ana's order lands on Carlos's account and calls it reusing the household account. Fixing symptom 1 means changing that test.</li>
+  <li>Registrations can be accepted onto the wrong person silently. When the account's birthdate is blank or the placeholder, <code>_same_person</code> compares surnames only (<code>register.py:17-18</code>). Accounts created by the order sync always have a blank birthdate (<code>order_sync.py:34</code>). In the replay 11 registrations were accepted onto an account with a different first name. 7 of them passed on surname alone, such as R000465 for Nina Martinez accepted onto Mary Martinez's account.</li>
+  <li>The first match wins everywhere: <code>order_sync.py:14</code>, <code>:18</code>, <code>:24</code> and <code>register.py:30</code>. In the replay 39 registrations matched more than one account by email and 10 address matches had more than one candidate.</li>
+  <li>Nothing is atomic or idempotent. Registration can create an account (<code>register.py:36</code>) and then fail on the move (<code>register.py:46</code>) with no rollback. Running an order twice creates two opportunities.</li>
+  <li>Lookups ignore phone, although <code>store.py:18-20</code> can normalise it. Email normalising is trim and lower case, so <code>richardmoore@</code> and <code>richard.moore@</code> are different people to the sync.</li>
+  <li>The unfinished matcher should not be adopted as it stands. Two missing phones or two missing emails count as a match (<code>matcher_v1.py:17-19</code>). Without an email match the best possible score is 0.70 against a threshold of 0.75. A father and son with the same name who share an email and a phone score 0.80 and match.</li>
+  <li>The replay is a reconstruction. It seeds from accounts created before 2026-06-15 and ends with 629 accounts where the CRM file has 689. Of 726 opportunities that can be compared, 704 land on the same account. 85 opportunities in the file sit on an account created after the opportunity, so the files are an end state that includes changes we cannot see.</li>
+  <li>There is no logging, no audit trail and no access control anywhere in the service. Exception messages carry account and registration IDs but no names.</li>
+</ul>
+</section>
+
+<section id="architect">
+<h2>Architect's notes</h2>
+<h3>Volumes and timing in the sample</h3>
+<div class="scroll"><table>
+<tr><th>Measure</th><th>Value</th></tr>
+<tr><td>Order window</td><td>2026-06-15 to 2026-09-28, 905 orders, about 60 a week</td></tr>
+<tr><td>Kits ordered, registered, resulted</td><td>547, then 433 (79%), then 406 (94% of registered)</td></tr>
+<tr><td>Order to delivery</td><td>2 to 7 days, median 4</td></tr>
+<tr><td>Delivery to registration</td><td>Median 1 day, up to 32</td></tr>
+<tr><td>Registration to result</td><td>7 to 14 days, median 11</td></tr>
+<tr><td>Orders per customer</td><td>253 with one, 192 with two, 84 with three, 4 with four</td></tr>
+<tr><td>Repeat testing</td><td>70 charts have more than one result</td></tr>
+</table></div>
+<p>Real volumes are unknown. The repeat testing matters for marketing: a per-account stage cannot tell a second kit that needs registering from a first kit that already has results.</p>
+
+<h3>Where the health information is</h3>
+<p>The brief says to treat the data as protected health information.</p>
+<ul>
+  <li><code>ehr_patients.csv</code> and <code>lab_results.csv</code> are clinical records. The results file has a status but no values.</li>
+  <li><code>portal_registrations.csv</code> ties a name, birthdate, email and phone to a specific test kit.</li>
+  <li>Orders and CRM opportunities name the product, so "Genetic Wellness Kit" next to a person is health information once it is linked to an identity.</li>
+  <li>A marketing stage of results_ready tells whoever receives it that the person took a test.</li>
+  <li>Today the CRM is where all of this meets, with sales reps as record owners.</li>
+</ul>
+
+<h3>Constraints the current design creates</h3>
+<ul>
+  <li>Registration depends on the CRM being reachable and willing. The brief's fixed rule is that registration must never wait on identity, which is the opposite of <code>register.py:23-24</code>.</li>
+  <li>The CRM is being replaced. Identity that lives in CRM account IDs and CRM duplicate rules will not survive that.</li>
+  <li>The CRM's own rules reach into the customer journey: a duplicate rule set to block and an ownership rule can each stop a kit registration.</li>
+  <li>A purchase has one account slot. Buyer and recipient cannot both be recorded, so gifts need a move that can fail.</li>
+  <li>Consent is two flags on an account, with no channel address, timestamp or source.</li>
+</ul>
+
+<h3>Open questions, with the assumption to write down</h3>
+<div class="scroll"><table>
+<tr><th>Question</th><th>Assumption if nobody answers</th></tr>
+<tr><td>How do orders reach legacy-sync and how late?</td><td>A polling job, up to 30 minutes behind</td></tr>
+<tr><td>Does the portal call registration synchronously?</td><td>Yes, as the code reads</td></tr>
+<tr><td>Can the EHR and the portal store an external person key?</td><td>Yes, as an extra field, with no change to how charts are created</td></tr>
+<tr><td>What replaces the CRM and when within the 90 days?</td><td>Phased. Old and new run side by side for a while</td></tr>
+<tr><td>Where are phone sales? The data has only online orders. 169 accounts have no e-commerce ID.</td><td>Those accounts were created by reps. Phone orders exist but are outside this extract</td></tr>
+<tr><td>Who merges accounts, with what tool and how often?</td><td>Operations, by hand, with <code>merge_accounts</code> or the CRM's own merge</td></tr>
+<tr><td>Is the CRM the system of record for consent? Is there an email opt-out?</td><td>CRM flags are the only record and email has no opt-out</td></tr>
+<tr><td>May one person register a kit for another, such as a parent for a child?</td><td>Yes. A shared email does not mean a shared identity</td></tr>
+<tr><td>What does the marketing tool receive and under what agreement?</td><td>A person key and a stage only, with no product or result detail</td></tr>
+</table></div>
+</section>
+
+<section id="history">
+<h2>History</h2>
+<p>Seven commits in six months, by three authors. Each symptom traces to one of them.</p>
+<div class="scroll"><table>
+<tr><th>Date</th><th>Commit</th><th>Author</th><th>Message</th><th>Effect</th></tr>
+<tr><td>2026-03-02</td><td><code>0ff47ac</code></td><td>Dana Whitfield</td><td>Order sync: create CRM opportunities from e-commerce orders</td><td>Match by e-commerce ID, then email. Duplicate rule set to block</td></tr>
+<tr><td>2026-06-19</td><td><code>87aff62</code></td><td>Marco Feld</td><td>Hotfix: fall back to shipping address for unmatched orders (June backlog)</td><td>Symptom 1, plus the test that asserts it</td></tr>
+<tr><td>2026-07-08</td><td><code>f4adca0</code></td><td>Dana Whitfield</td><td>Resolve the registrant's CRM account before accepting a kit registration</td><td>Symptoms 3 and 4</td></tr>
+<tr><td>2026-07-21</td><td><code>11cc1ab</code></td><td>Marco Feld</td><td>Keep CRM contact details current from the latest order</td><td>Symptom 2, which feeds symptom 3</td></tr>
+<tr><td>2026-08-05</td><td><code>444e526</code></td><td>Priya Raman</td><td>Add merge utility for duplicate accounts</td><td>Symptom 6</td></tr>
+<tr><td>2026-08-12</td><td><code>5f93c6e</code></td><td>Priya Raman</td><td>WIP: fuzzy person matcher</td><td>Unused</td></tr>
+<tr><td>2026-08-28</td><td><code>f6bf641</code></td><td>Dana Whitfield</td><td>Replay tool and marketing stage helper</td><td>Symptom 5</td></tr>
+</table></div>
+</section>
+
+<section id="repro">
+<h2>Reproduce</h2>
+<pre class="cmd">cd legacy-sync
+python3 -m legacy_sync.replay --data ../data            # the shipped summary
+uv run --no-project --with pytest python -m pytest      # 4 passed
+
+cd ../claude
+python3 analysis/legacy_trace.py                        # every replay count on this page
+python3 analysis/legacy_trace.py --interleave           # the time order column
+python3 analysis/legacy_trace.py --no-address-fallback  # the what-if under other findings</pre>
+<p>The trace script imports the legacy code and wraps each call with counters. It changes nothing in <code>legacy-sync/</code> or <code>data/</code>. "Different first name" is a plain string comparison, so it counts nicknames as different.</p>
+</section>
+<p class="foot">The company, systems and records in this case study are fictional. The data is treated as protected health information for the design. Production transports, vendor contracts and privacy terms need confirming before any of this is built.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.min.js"></script>
+<script>
+  (function () {
+    if (!window.mermaid) return;
+    var forced = document.documentElement.getAttribute("data-theme");
+    var dark = forced ? forced === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    mermaid.initialize({ startOnLoad: true, theme: dark ? "dark" : "neutral", securityLevel: "strict",
+      themeVariables: { fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif", fontSize: "13px" },
+      sequence: { useMaxWidth: true } });
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Browser index for the Lumen Health solution architect case study and its review materials.">
+  <title>Lumen Health case study | Review index</title>
+  <style>
+    :root {
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --neutral-code: #737373;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000;
+      color-scheme: light;
+      --ink: #202427;
+      --muted: #62686d;
+      
+      --line: #dedede;
+      --paper: #f5f5f5;
+      --pale: #fbeaea;
+      --white: #fff;
+    }
+    * { box-sizing: border-box; }
+    html { background: var(--paper); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    a { color: #980000; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { color: #810000; }
+    a:focus-visible { outline: 3px solid #c00000; outline-offset: 3px; border-radius: 2px; }
+    .page { width: min(1040px, calc(100% - 36px)); margin: 30px auto; }
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: baseline;
+      padding-bottom: 12px;
+      border-bottom: 3px solid #c00000;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .wordmark { color: #111; font-size: 14px; letter-spacing: .04em; }
+    header { padding: 34px 0 24px; }
+    .eyebrow {
+      margin: 0 0 9px;
+      color: var(--brand-red);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 { max-width: 760px; margin: 0; font-size: clamp(32px, 5vw, 45px); font-weight: 580; line-height: 1.06; letter-spacing: -.045em; }
+    .dek { max-width: 700px; margin: 13px 0 0; color: var(--muted); font-size: 17px; }
+    .active-note { margin: 22px 0 28px; padding: 14px 18px; border-left: 4px solid var(--brand-red); background: var(--pale); }
+    .active-note strong { display: block; margin-bottom: 2px; }
+    section { margin: 0 0 30px; }
+    .section-head { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+    h2 { margin: 0; color: #292d31; font-size: 18px; font-weight:580; letter-spacing: -.02em; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .item { min-height: 104px; padding: 15px 17px; border: 1px solid var(--line); background: var(--white); }
+    .item a { display: inline-block; margin-bottom: 5px; font-size: 16px; font-weight: 650; }
+    .item p { margin: 0; color: var(--muted); font-size: 13.5px; }
+    .item p a { display: inline; margin: 0; font-size: inherit; font-weight: 600; }
+    .support + .support { margin-top: 10px; }
+    .support .label { flex-basis: 100%; color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .tag { display: inline-block; margin-left: 6px; padding: 3px 8px; border: 1px solid #e5b8b8; border-radius: 2px; color: #980000; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; vertical-align: 2px; }
+    .support { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 0; padding: 13px 16px; border: 1px solid var(--line); background: var(--white); list-style: none; }
+    .run { padding: 16px 18px; border: 1px solid var(--line); background: var(--white); }
+    .run p { margin: 0 0 9px; }
+    pre { overflow-x: auto; margin: 0 0 10px; padding: 12px 14px; background: #f3f3f3; color: var(--ink); font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .note { color: var(--muted); font-size: 13px; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); background: var(--white); }
+    table { width: 100%; min-width: 680px; border-collapse: collapse; font-size: 13.5px; }
+    th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    tr:last-child td { border-bottom: 0; }
+    td:first-child { color: var(--muted); width: 2em; }
+    .lede { margin: 0 0 10px; color: var(--muted); font-size: 13.5px; }
+    footer { margin-top: 34px; padding: 13px 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    @media (max-width: 650px) {
+      .page { width: min(100% - 28px, 520px); margin: 16px auto 26px; }
+      .topline { align-items: start; font-size: 11px; }
+      .grid { grid-template-columns: 1fr; }
+      .item { min-height: 0; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 3px; }
+    }
+    @media print {
+      html, body { background: #fff; }
+      .page { width: 100%; margin: 0; }
+      .item, .run, .support { break-inside: avoid; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline"><span class="wordmark">LUMEN HEALTH</span><span>Solution architect case study · Review index</span></div>
+
+    <header>
+      <p class="eyebrow">Lumen Health · Customer identity</p>
+      <h1>One customer, many systems</h1>
+      <p class="dek">Start with the executive summary, then follow the evidence, target design and rollout plan.
+      Claude's directory is the active submission; Codex's pages are included as an independent comparison.</p>
+    </header>
+
+    <div class="active-note">
+      <strong>Active work: Claude</strong>
+      The identity slice, build specification and rollout are in <code>claude/</code>.
+      The task tracker lists remaining review and packaging work.
+    </div>
+
+    <section aria-labelledby="claude-heading">
+      <div class="section-head">
+        <h2 id="claude-heading">Claude · Active submission</h2>
+        <p>Recommended review order</p>
+      </div>
+      <div class="grid">
+        <article class="item">
+          <a href="claude/docs/executive-summary.html">Executive summary</a>
+          <p>The business problem, recommendation, expected changes and sample impact.</p>
+        </article>
+        <article class="item">
+          <a href="claude/docs/current-system.html">Current system and diagnosis</a>
+          <p>Order and registration flows, six symptoms, code references and replay evidence.</p>
+        </article>
+        <article class="item">
+          <a href="claude/docs/target-architecture.html">Target architecture</a>
+          <p>Identity model, matching and uncertainty, system responsibilities and PHI handling.</p>
+        </article>
+        <article class="item">
+          <a href="claude/docs/build-spec.html">Build specification</a>
+          <p>Registration intake contract, transactional outbox, delivery, replay and acceptance criteria.</p>
+        </article>
+        <article class="item">
+          <a href="claude/docs/rollout.html">90-day rollout</a>
+          <p>Phases, decision gates, success measures, dependencies and fallback plans.</p>
+        </article>
+        <article class="item">
+          <a href="claude/README.md">Working slice and run instructions</a>
+          <p>Matching rules, current results and known limitations.
+          Outputs: <a href="claude/identities.csv">identities.csv</a> and <a href="claude/review_queue.csv">review_queue.csv</a>.</p>
+        </article>
+        <article class="item">
+          <a href="claude/AI_LOGS/AI_LOG.md">AI log</a><span class="tag">Draft</span>
+          <p>Tools used, where AI sped the work up, where it was wrong and how that was caught.
+          Transcripts are listed <a href="#ai-heading">below</a>.</p>
+        </article>
+        <article class="item">
+          <a href="claude/docs/solution-design.html">Solution design</a>
+          <p>One document that consolidates the diagnosis, architecture, build specification and rollout.</p>
+        </article>
+        <article class="item">
+          <a href="claude/docs/worked-examples.html">Worked examples</a>
+          <p>Ten people followed through the current system and the proposed design.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="codex-heading">
+      <div class="section-head">
+        <h2 id="codex-heading">Codex · Independent comparison</h2>
+        <p>Alternative written deliverables</p>
+      </div>
+      <div class="grid">
+        <article class="item">
+          <a href="codex/executive-summary.html">Executive summary</a>
+          <p>A concise alternative recommendation for the business audience.</p>
+        </article>
+        <article class="item">
+          <a href="codex/current-system-diagnosis.html">Current system diagnosis</a>
+          <p>An independent analysis of the legacy sync and its reported symptoms.</p>
+        </article>
+        <article class="item">
+          <a href="codex/future-state-target-architecture.html">Future-state target architecture</a>
+          <p>An independent identity design and migration approach.</p>
+        </article>
+        <article class="item">
+          <a href="codex/adversarial-review.md">Adversarial review of the Codex pages</a>
+          <p>A read of the three Codex pages against the brief, the legacy code and the data.</p>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="ai-heading">
+      <div class="section-head">
+        <h2 id="ai-heading">AI log and session transcripts</h2>
+        <p>Deliverable 7 and its evidence</p>
+      </div>
+      <p class="lede">The log is the written deliverable.
+      The transcripts are redacted exports of the sessions behind it: prompts, assistant replies and, for Claude, one line per tool call.</p>
+      <ul class="support">
+        <li class="label">Log</li>
+        <li><a href="claude/AI_LOGS/AI_LOG.md">AI log</a><span class="tag">Draft</span></li>
+        <li><a href="AGENTIC_REVIEWS.md">Agentic reviews: code, security, HIPAA and SOC 2</a></li>
+      </ul>
+      <ul class="support">
+        <li class="label">Claude Code sessions, in claude/AI_LOGS/</li>
+        <li><a href="claude/AI_LOGS/claude-session-08.md">Session 8, the main session</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-09.md">Session 9, the agentic reviews</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-01.md">Session 1</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-02.md">Session 2</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-03.md">Session 3</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-04.md">Session 4</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-05.md">Session 5</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-06.md">Session 6</a></li>
+        <li><a href="claude/AI_LOGS/claude-session-07.md">Session 7</a></li>
+      </ul>
+      <ul class="support">
+        <li class="label">Codex sessions, in claude/AI_LOGS/</li>
+        <li><a href="claude/AI_LOGS/codex-session-01.md">Codex session 1</a></li>
+        <li><a href="claude/AI_LOGS/codex-session-02.md">Codex session 2</a></li>
+        <li><a href="claude/AI_LOGS/codex-session-03.md">Codex session 3</a></li>
+        <li><a href="claude/AI_LOGS/codex-session-04.md">Codex session 4</a></li>
+      </ul>
+      <ul class="support">
+        <li class="label">Codex's own exports, in codex/AI_LOGS/</li>
+        <li><a href="codex/AI_LOGS/README.md">About these exports</a></li>
+        <li><a href="codex/AI_LOGS/codex-work-session-2026-11-09.md">Work session</a></li>
+        <li><a href="codex/AI_LOGS/codex-review-session-2026-11-09.md">Review session</a></li>
+        <li><a href="codex/AI_LOGS/this-session-2026-11-09.md">Latest session</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="assumptions-heading">
+      <div class="section-head">
+        <h2 id="assumptions-heading">Questions for Lumen Health and working assumptions</h2>
+        <p>What was assumed in place of an answer</p>
+      </div>
+      <p class="lede">There was no client to ask during the case study.
+      Each row is a question that would have been put to Lumen Health, the answer the design assumes and what changes if that answer is wrong.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Question</th><th>Working assumption</th><th>If the assumption is wrong</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Is Lumen Health itself bound by HIPAA, or only the lab and EHR partner?</td><td>Lumen Health handles all of the data as protected health information.</td><td>The boundary between marketing data and clinical data can relax or has to tighten.</td></tr>
+            <tr><td>2</td><td>Is the CRM replacement chosen? When does it arrive?</td><td>Not chosen. It arrives during or after the 90 days.</td><td>If the new platform has its own identity matching, the choice between buying and building reopens.</td></tr>
+            <tr><td>3</td><td>Which system is the authority for each field: name, birthdate, email and consent?</td><td>The EHR for name and birthdate, the portal for the login email and a separate store for consent.</td><td>Merge rules and conflict handling change.</td></tr>
+            <tr><td>4</td><td>Can family members legitimately share an email, phone or account? Can a parent register a kit for a child?</td><td>Sharing is normal, so a shared email or phone never merges two records without other evidence.</td><td>If accounts are per household, the model needs a household entity above the person.</td></tr>
+            <tr><td>5</td><td>On a gift, who is the customer and who may see the results?</td><td>The buyer owns the purchase. The recipient owns the kit and the results. The buyer never sees results.</td><td>Kit roles and portal access change.</td></tr>
+            <tr><td>6</td><td>What false-merge rate is acceptable? Who signs off on it?</td><td>The privacy officer signs off. The rate is near zero for any link that touches a chart.</td><td>The threshold moves and the size of the review queue moves with it.</td></tr>
+            <tr><td>7</td><td>Who works the review queue? How many items a day can they take?</td><td>Support does, at a volume in line with 26 items per 2,000 records.</td><td>With no staff, uncertain pairs stay separate permanently and every consumer has to tolerate that.</td></tr>
+            <tr><td>8</td><td>What are the daily order and registration volumes? How fresh must the marketing stage be?</td><td>Thousands a day. A delay of minutes is acceptable.</td><td>A real-time need or a much larger volume changes the matching approach.</td></tr>
+            <tr><td>9</td><td>Can each system store an external identity key?</td><td>Not reliably, so the identity service keeps the crosswalk and storing the key in a system is a late, optional step.</td><td>If every system can store it, lookups get simpler and the service does less.</td></tr>
+            <tr><td>10</td><td>Is consent recorded per person, per phone number or per channel?</td><td>Per person per channel. The most restrictive value wins on a merge.</td><td>Opt-outs tied to a number need different merge and split rules.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="review-heading">
+      <div class="section-head">
+        <h2 id="review-heading">Review notes and supporting material</h2>
+        <p>Status, assumptions and evidence</p>
+      </div>
+      <ul class="support">
+        <li><a href="claude/TASKS.md">Task tracker and open items</a></li>
+        <li><a href="claude/adversarial-review.md">Adversarial architecture review</a></li>
+        <li><a href="AGENTIC_REVIEWS.md">Agentic reviews and changes still needed</a></li>
+        <li><a href="claude/analysis/legacy_trace.py">Instrumented replay behind the counts</a></li>
+        <li><a href="README.md">Repository README</a></li>
+        <li><a href="BRIEF.md">Case study brief</a></li>
+        <li><a href="BRIEF.pdf">Original brief PDF</a></li>
+        <li><a href="OUTCOME.md">Initial findings and next steps</a></li>
+        <li><a href="legacy-sync/">Supplied legacy-sync service</a></li>
+        <li><a href="data/">Supplied data files</a></li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="run-heading">
+      <div class="section-head">
+        <h2 id="run-heading">Run the identity slice</h2>
+        <p>Python 3 standard library only</p>
+      </div>
+      <div class="run">
+        <p>From the repository root, generate the two CSV outputs with:</p>
+        <pre><code>cd claude
+python3 -m identity --data ../data --out .</code></pre>
+        <p class="note">The current snapshot has 1,994 source records, 610 person keys and 26 review items covering 132 supporting record pairs.
+        The 0.90 matching threshold is provisional, and scores are not calibrated probabilities.
+        See the working slice README for the test command and limitations.</p>
+      </div>
+    </section>
+
+    <footer>
+      The records are fictional, but the brief requires treating the supplied data as protected health information.
+      Treat derived identity outputs and review files as sensitive as well.
+      Keep <code>data/</code> and <code>legacy-sync/</code> unchanged; they are the case-study evidence.
+    </footer>
+  </main>
+</body>
+</html>

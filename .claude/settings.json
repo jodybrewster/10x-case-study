@@ -1,0 +1,16 @@
+{
+  "enabledPlugins": {
+    "pro-dev-starter@pro-dev-skillset": true,
+    "pro-core@pro-dev-skillset": true,
+    "pro-pdd@pro-dev-skillset": true,
+    "pro-execution@pro-dev-skillset": true,
+    "pro-quality@pro-dev-skillset": true,
+    "pro-design@pro-dev-skillset": true,
+    "pro-motion@pro-dev-skillset": true,
+    "pro-testing@pro-dev-skillset": true,
+    "pro-data@pro-dev-skillset": true,
+    "pro-research@pro-dev-skillset": true,
+    "pro-security@pro-dev-skillset": true,
+    "pro-ship@pro-dev-skillset": true
+  }
+}

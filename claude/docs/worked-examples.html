@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Health | Target architecture</title>
+<style>
+  :root {
+      --neutral-code: #737373;
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000;
+    color-scheme: light;
+    --ink: #202427; --muted: #62686d;  --line: #dedede; --paper: #f5f5f5; --pale: #fbeaea;
+    --heading: #292d31; --link: #980000; --code-bg: #f3f3f3;
+    --brand-black: #111111;  --brand-grey: #f4f4f4;
+     --amber: #b97818; --amber-ink: #94550b;
+    --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); scroll-behavior: smooth; scroll-padding-top: 56px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; color: var(--ink); font: 15px/1.5 var(--sans); counter-reset: fig sym; }
+  a { color: var(--link); text-underline-offset: .18em; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--brand-red); outline-offset: 3px; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line);
+    overflow-x: auto; white-space: nowrap; padding: 11px max(16px, calc((100vw - 1120px) / 2)); font-size: 13px; }
+  nav a { color: var(--muted); text-decoration: none; margin-right: 20px; }
+  nav a:hover { color: var(--ink); }
+  main { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: .58in .62in .5in; background: #fff;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, .08); }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 12px;
+    border-bottom: 3px solid var(--brand-red); color: var(--muted); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; }
+  .wordmark { color: var(--brand-black); font: 700 14px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+  header { max-width: 720px; margin: 0 0 34px; }
+  .eyebrow { margin: 30px 0 9px; color: var(--brand-red); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 37px; font-weight: 580; line-height: 1.06; letter-spacing: -.045em; }
+  header p:not(.eyebrow) { margin: 13px 0 0; color: var(--muted); }
+  header h1 + p { font-size: 17px; line-height: 1.4; }
+  section { display: grid; grid-template-columns: 168px minmax(0, 1fr); column-gap: 34px; padding: 20px 0 26px;
+    border-top: 1px solid var(--line); }
+  section > h2 { grid-column: 1; grid-row: 1 / span 200; align-self: start; position: sticky; top: 60px; margin: 0;
+    color: var(--heading); font-size: 17px; font-weight: 580; line-height: 1.25; letter-spacing: -.018em; }
+  section > :not(h2) { grid-column: 2; }
+  section > .diagram { grid-column: 1 / -1; }
+  h3 { margin: 26px 0 7px; color: var(--heading); font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+  section > h2 + h3, section > h2 + p { margin-top: 0; }
+  p, li { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  ul { margin: 0 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  code { padding: 1px 5px; border-radius: 3px; background: var(--code-bg); font: 12.5px/1.4 var(--mono); overflow-wrap: break-word; }
+  td code { white-space: nowrap; }
+  pre.cmd { max-width: 70ch; padding: 13px 15px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 var(--mono); }
+  .scroll { overflow-x: auto; margin: 10px 0 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { border-bottom: 2px solid var(--brand-red); color: var(--heading); font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+  td:first-child { min-width: 9em; font-weight: 600; }
+  td.num, th.num { padding-right: 20px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 18px; margin: 16px 0 8px; }
+  .tile { padding-top: 9px; border-top: 3px solid var(--brand-red); }
+  .tile b { display: block; font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tile span { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.38; }
+  figure { margin: 0; }
+  .diagram { margin: 14px 0 8px; padding: 18px 16px 14px; overflow-x: auto; border: 1px solid var(--line); background: #fff; counter-increment: fig; }
+  .diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .diagram pre { margin: 0; min-width: 640px; font: 12px var(--mono); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 2px 0; color: var(--muted); font-size: 12.5px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 7px; border-radius: 2px; background: #fff; border: 2px solid var(--ink); vertical-align: -2px; box-sizing: border-box; }
+  .legend .code::before { background: var(--neutral-pale); border-color: var(--neutral-code); }
+  .legend .new::before { background: var(--neutral-pale); }
+  .legend .ext::before { background: #fff3dc; border-color: var(--amber); }
+  .legend .risk::before { background: var(--brand-red-pale); border-color: var(--brand-red); }
+  .legend .step::before { border-color: #737373; }
+  .legend .person::before { background: var(--neutral-pale); border-color: #737373; border-radius: 5px; }
+  .caption { max-width: 84ch; margin: 0 0 22px; color: var(--muted); font-size: 12.5px; }
+  .diagram + .caption::before { content: "Figure " counter(fig) ". "; color: var(--ink); font-weight: 650; }
+  .symptom { counter-increment: sym; display: grid; grid-template-columns: 34px 1fr; column-gap: 10px; padding: 15px 0 6px; border-top: 1px solid var(--line); }
+  .symptom::before { content: counter(sym); color: var(--brand-red); font-size: 24px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .symptom h3 { grid-column: 2; margin: 2px 0 8px; }
+  .symptom dl { grid-column: 2; display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin: 0; }
+  .symptom dt { padding-top: 1px; color: var(--muted); font-size: 12.5px; }
+  .symptom dd { max-width: 74ch; margin: 0; }
+  .tag { font-weight: 650; white-space: nowrap; }
+  .tag::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 2px; background: currentColor; }
+  .known { color: var(--ink); } .inferred { color: var(--amber-ink); } .unknown { color: var(--brand-red); }
+  .note { max-width: 70ch; margin: 16px 0; padding: 14px 18px; border-left: 4px solid var(--brand-red); background: var(--pale); }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { padding: 10px 0; font-weight: 600; cursor: pointer; }
+  details .scroll { margin: 2px 0 16px; }
+  .foot { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+  @media (max-width: 780px) {
+    main { width: 100%; margin: 0; padding: 26px 20px; box-shadow: none; }
+    h1 { font-size: 32px; }
+    section { display: block; }
+    section > h2 { position: static; margin-bottom: 12px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .symptom dl { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { size: letter; margin: .5in; }
+    html, body { background: #fff; }
+    nav { display: none; }
+    main { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    section > h2 { position: static; }
+    .diagram, .symptom, tr { break-inside: avoid; }
+    .diagram { overflow: visible; }
+    details > .scroll { display: block; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#tyler">Tyler Williams</a>
+  <a href="#hall">Elizabeth and Thomas Hall</a>
+  <a href="#adams">Kevin Adams and Kevin Adams</a>
+  <a href="#harris">Lisa and Joseph Harris</a>
+  <a href="#thompson">Sofia Thompson</a>
+  <a href="#turner">Anthony Turner, known as Tony</a>
+  <a href="#anderson">Matthew Anderson</a>
+  <a href="#martin">Jennifer Martin</a>
+  <a href="#rodriguez">Mary and Kevin Rodriguez</a>
+  <a href="#miller">Lisa Miller and Lisa Miller</a>
+  <a href="solution-design.html">Solution design</a>
+  <a href="current-system.html">Current system</a>
+  <a href="target-architecture.html">Target architecture</a>
+</nav>
+<main>
+<div class="topline"><span class="wordmark" aria-label="Lumen Health">LUMEN HEALTH</span><span>Solution architect case study</span></div>
+<header>
+  <p class="eyebrow">Worked examples</p>
+  <h1>Ten people, followed through the current system and the design</h1>
+  <p>Each example is a real case in the supplied data. Together they cover the six reported symptoms and the matching problems the design has to solve.</p>
+  <p>Every name and record is fictional case data. Identifiers are shown so each example can be looked up in <code>data/</code>, <code>identities.csv</code> and <code>review_queue.csv</code>.</p>
+</header>
+
+<section id="overview">
+<h2>Overview</h2>
+<p>For each person the table gives four things: their records, what the current sync did, what the working prototype does today and what the target design would do. The current-system column comes from replaying <code>legacy-sync</code> in timestamp order, or from the CSV files where it says so. The prototype column is read from its output.</p>
+<div class="scroll"><table>
+<tr><th>Example</th><th>What it shows</th></tr>
+<tr><td><a href="#tyler">1. Tyler Williams</a></td><td>One person, three email addresses</td></tr>
+<tr><td><a href="#hall">2. Elizabeth and Thomas Hall</a></td><td>Two relatives at one address</td></tr>
+<tr><td><a href="#adams">3. Kevin Adams and Kevin Adams</a></td><td>Same name, same address, different birthdates</td></tr>
+<tr><td><a href="#harris">4. Lisa and Joseph Harris</a></td><td>A gift that could not be handed over</td></tr>
+<tr><td><a href="#thompson">5. Sofia Thompson</a></td><td>A shared email and two charts</td></tr>
+<tr><td><a href="#turner">6. Anthony Turner, known as Tony</a></td><td>A nickname</td></tr>
+<tr><td><a href="#anderson">7. Matthew Anderson</a></td><td>Three CRM accounts and one opt-out</td></tr>
+<tr><td><a href="#martin">8. Jennifer Martin</a></td><td>The same mailbox written two ways</td></tr>
+<tr><td><a href="#rodriguez">9. Mary and Kevin Rodriguez</a></td><td>Purchases swapped between relatives</td></tr>
+<tr><td><a href="#miller">10. Lisa Miller and Lisa Miller</a></td><td>Same name and email, different birthdates</td></tr>
+</table></div>
+<div class="note">The prototype resolves identity only. Roles per kit, consent, human review and the event log exist as design, so the target-design column describes intended behaviour that is not built. The prototype's match scores are not calibrated probabilities and its accuracy has not been measured.</div>
+</section>
+
+<section id="tyler">
+<h2>1. Tyler Williams</h2>
+<p>One person, three email addresses.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>E-commerce <code>7000326</code>, <code>7000327</code>, <code>7000328</code>. CRM <code>001A000213</code>, <code>001A000497</code>. Portal <code>R000285</code>, <code>R000286</code>. EHR <code>CH050205</code>.</td></tr>
+<tr><td>Current system</td><td>Each new email made a new e-commerce customer. In the time-ordered replay his order under a new address matched his CRM account on surname and zip, then overwrote its email. Three days later he registered a kit with the old address, was not found and was rejected as a possible duplicate of himself. Symptoms 2 and 3.</td></tr>
+<tr><td>Working prototype</td><td>All eight records resolve to one person. The registrations and the chart join on the kit barcode at 1.0. The three e-commerce customers score only 0.858 against each other, below the threshold. They are joined through records that carry his birthdate. The weakest link is 0.943.</td></tr>
+<tr><td>Target design</td><td>One person key. Every email is kept as an identifier with its source and date, with one marked preferred. A new email adds an identifier and never a new person.</td></tr>
+</table></div>
+</section>
+
+<section id="hall">
+<h2>2. Elizabeth and Thomas Hall</h2>
+<p>Two relatives at one address.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>Elizabeth: CRM <code>001A000417</code>, e-commerce <code>7000500</code>, two registrations, chart <code>CH050306</code>. Thomas: CRM <code>001A000652</code>, e-commerce <code>7000416</code>, registration <code>R000356</code>, chart <code>CH050261</code>.</td></tr>
+<tr><td>Current system</td><td>Thomas ordered with an email the CRM had not seen. The sync matched surname and zip, filed his purchase on Elizabeth's account and replaced her email with his. Two days later Elizabeth's registration was rejected as a duplicate. Her result arrived while her account still read as bought. Symptoms 1, 2, 3 and 5 in five days.</td></tr>
+<tr><td>Working prototype</td><td>Two persons, each with four or five records across all four systems. Different first names and different birthdates keep them apart. No review item is raised.</td></tr>
+<tr><td>Target design</td><td>Two persons joined by a household relationship. A shared surname, zip or phone is recorded as evidence that they live together, which the matcher treats as a reason not to merge.</td></tr>
+</table></div>
+</section>
+
+<section id="adams">
+<h2>3. Kevin Adams and Kevin Adams</h2>
+<p>Same name, same address, different birthdates.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>Born 1970: CRM <code>001A000551</code>, e-commerce <code>7000108</code>, registration <code>R000092</code>, chart <code>CH050061</code>. Born 1998: CRM <code>001A000686</code>, e-commerce <code>7000527</code>, registration <code>R000448</code>, chart <code>CH050321</code>.</td></tr>
+<tr><td>Current system</td><td>The younger Kevin's account was matched for the older Kevin's order and took his email. When the older Kevin registered, the email lookup found the younger one's account, the birthdates differed and the registration was rejected as an identity conflict.</td></tr>
+<tr><td>Working prototype</td><td>Two persons. The birthdate veto separates every record that has a birthdate. The e-commerce records have none, so one review item at 0.858 asks whether the two are the same, backed by seven record pairs.</td></tr>
+<tr><td>Target design</td><td>The veto holds with no exception for a likely typo. The reviewer answers once, a keep-apart rule is stored and the question is not asked again unless new evidence arrives.</td></tr>
+</table></div>
+</section>
+
+<section id="harris">
+<h2>4. Lisa and Joseph Harris</h2>
+<p>A gift that could not be handed over.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>Lisa, the buyer: CRM <code>001A000349</code>, e-commerce <code>7000094</code>. Joseph, the recipient: CRM <code>001A000350</code>, registration <code>R000459</code>, chart <code>CH050327</code>.</td></tr>
+<tr><td>Current system</td><td>Lisa bought a kit as a gift. When Joseph registered it, the sync tried to move the purchase to his account. His account belongs to an inactive sales rep, the CRM refused the move and the whole registration failed. Symptom 4.</td></tr>
+<tr><td>Working prototype</td><td>Two persons, four records each. The slice resolves identity only and does not model the gift.</td></tr>
+<tr><td>Target design</td><td>The kit carries three roles: Lisa as buyer, Joseph as registrant and patient. Nothing is moved between accounts and account ownership is never checked, so there is nothing to fail.</td></tr>
+</table></div>
+</section>
+
+<section id="thompson">
+<h2>5. Sofia Thompson</h2>
+<p>A shared email and two charts.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>CRM <code>001A000379</code>, e-commerce <code>7000324</code>, registrations <code>R000282</code> and <code>R000470</code>, charts <code>CH050203</code> and <code>CH050332</code>. Her relative Kevin registered <code>R000468</code> with her email address.</td></tr>
+<tr><td>Current system</td><td>Kevin registered a gift kit using Sofia's email. The lookup found Sofia's account, the birthdates differed and he was rejected. Separately the EHR holds two charts for Sofia with the same name and birthdate.</td></tr>
+<tr><td>Working prototype</td><td>Kevin is a separate person even though his registration carries Sofia's email. Sofia's records form two groups, one per chart, with a review item at 1.0 because two charts are never merged by code.</td></tr>
+<tr><td>Target design</td><td>A shared email is household evidence. The two-chart question goes to clinical operations, who merge charts in the EHR. The identity service links both charts to one person only after that decision.</td></tr>
+</table></div>
+</section>
+
+<section id="turner">
+<h2>6. Anthony Turner, known as Tony</h2>
+<p>A nickname.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>CRM <code>001A000482</code> under Tony. E-commerce <code>7000301</code>, registration <code>R000260</code> and chart <code>CH050188</code> under Anthony.</td></tr>
+<tr><td>Current system</td><td>Nothing went wrong for him. He is here because a plain comparison of first names counts him as a mismatch. The first pass of this analysis read 23 such cases as misfiled purchases. About 9 were nicknames like this one.</td></tr>
+<tr><td>Working prototype</td><td>One person with four records. The nickname table maps Tony to Anthony before names are compared.</td></tr>
+<tr><td>Target design</td><td>The nickname table is reference data with an owner. A nickname missing from it costs a review and never a false merge.</td></tr>
+</table></div>
+</section>
+
+<section id="anderson">
+<h2>7. Matthew Anderson</h2>
+<p>Three CRM accounts and one opt-out.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>CRM <code>001A000126</code> (opted out of texts and calls), <code>001A000487</code> under Matt, <code>001A000560</code> (not opted out). E-commerce <code>7000132</code>.</td></tr>
+<tr><td>Current system</td><td>The merge utility copies a fixed list of fields that leaves out both consent flags. Merging into the account that is not opted out would delete his opt-out and he would be texted again. Symptom 6. This is read from the code, since the replay never merges.</td></tr>
+<tr><td>Working prototype</td><td>One person with four records. The slice does not process consent.</td></tr>
+<tr><td>Target design</td><td>Consent is a record per channel address. On a merge, opted out beats unknown and unknown beats opted in, so his opt-out survives whichever account is kept.</td></tr>
+</table></div>
+</section>
+
+<section id="martin">
+<h2>8. Jennifer Martin</h2>
+<p>The same mailbox written two ways.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>E-commerce <code>7000316</code>, <code>7000317</code>. CRM <code>001A000163</code>, <code>001A000491</code>, <code>001A000618</code>. Registrations <code>R000273</code> to <code>R000275</code>. Chart <code>CH050198</code>.</td></tr>
+<tr><td>Current system</td><td>Her address appears as <code>jennifermartin83@</code> and <code>j.ennifermartin83@</code>, which made two e-commerce customers. In the replay her CRM email flipped between the two forms three times as she ordered.</td></tr>
+<tr><td>Working prototype</td><td>One person with nine records, the largest in the output. The dotted variant adds a small weight, with name, phone and birthdate doing the work.</td></tr>
+<tr><td>Target design</td><td>Both forms are kept as identifiers. Variant rules are measured before they count towards an automatic link. A rule that has not been measured sends the pair to review.</td></tr>
+</table></div>
+</section>
+
+<section id="rodriguez">
+<h2>9. Mary and Kevin Rodriguez</h2>
+<p>Purchases swapped between relatives.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>Mary: CRM <code>001A000354</code>, e-commerce <code>7000011</code>. Kevin: CRM <code>001A000355</code>, e-commerce <code>7000034</code>, registration <code>R000461</code>, chart <code>CH050328</code>.</td></tr>
+<tr><td>Current system</td><td>In the CRM file Mary's order <code>#100021</code> sits on Kevin's account and Kevin's order <code>#100050</code> sits on Mary's. Symptom 1, visible in the data without running anything.</td></tr>
+<tr><td>Working prototype</td><td>Two persons. Mary has no birthdate anywhere and no clinical records, so she is two records. The slice ignores which account an order was filed on unless the full name agrees.</td></tr>
+<tr><td>Target design</td><td>Each purchase belongs to its buyer. The historic swap is corrected as an audited change during the rollout, not edited in place.</td></tr>
+</table></div>
+</section>
+
+<section id="miller">
+<h2>10. Lisa Miller and Lisa Miller</h2>
+<p>Same name and email, different birthdates.</p>
+<div class="scroll"><table>
+<tr><td>Records</td><td>Born 1960: CRM <code>001A000155</code>, registrations <code>R000398</code> and <code>R000399</code>, chart <code>CH050288</code>. Born 1975: CRM <code>001A000423</code>. Both CRM accounts carry e-commerce customer <code>7000300</code>.</td></tr>
+<tr><td>Current system</td><td>Two accounts hold the same email and the same e-commerce ID. The order sync takes the first account it finds, so which Lisa receives a purchase depends on record order.</td></tr>
+<tr><td>Working prototype</td><td>Two persons. The e-commerce customer matches both on name and email, but joining would put two birthdates in one person, so the cluster rule blocks it and raises a review item at 0.989.</td></tr>
+<tr><td>Target design</td><td>The reviewer decides which Lisa the customer record belongs to. Until then the two stay apart and no result can be shown to the wrong one.</td></tr>
+</table></div>
+</section>
+
+<p class="foot">The company, systems and records in this case study are fictional. The data is treated as protected health information for the design.</p>
+</main>
+</body>
+</html>

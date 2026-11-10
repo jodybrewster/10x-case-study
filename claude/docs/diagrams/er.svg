@@ -1,0 +1,120 @@
+<svg viewBox="0 0 1040 660" role="img" aria-label="How the eight data files relate: the kit barcode links e-commerce, portal and lab; the sync writes the only link between e-commerce and CRM" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="40" y="30" width="250" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,56 V36 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="165.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">ecom_customers</text>
+<text x="50" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">customer_id</text>
+<text x="280" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">email</text>
+<text x="280" y="84.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">unique</text>
+<text x="50" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">first_name, last_name</text>
+<text x="50" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">phone</text>
+<text x="280" y="122.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">four formats</text>
+<text x="50" y="141.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">default_zip</text>
+<rect x="40" y="240" width="250" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,266 V246 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V266 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="165.0" y="254.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">ecom_orders</text>
+<text x="50" y="275.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_id</text>
+<text x="280" y="275.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="294.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">customer_id</text>
+<text x="280" y="294.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="50" y="313.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_email</text>
+<text x="50" y="332.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ship_name, ship_zip</text>
+<text x="50" y="351.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">is_gift</text>
+<text x="280" y="351.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">30 true</text>
+<rect x="40" y="460" width="250" height="64" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M40,486 V466 a6,6 0 0 1 6,-6 H284 a6,6 0 0 1 6,6 V486 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="165.0" y="474.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">kits</text>
+<text x="50" y="495.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="280" y="495.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="50" y="514.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">order_id</text>
+<text x="280" y="514.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="252" y="514.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">one kit per order</text>
+<rect x="400" y="30" width="260" height="159" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M400,56 V36 a6,6 0 0 1 6,-6 H654 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="530.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">crm_accounts</text>
+<text x="410" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">account_id</text>
+<text x="650" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="410" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">primary_email</text>
+<text x="650" y="84.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">58 shared</text>
+<text x="410" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">birthdate</text>
+<text x="650" y="103.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">241 unusable</text>
+<text x="410" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">mailing_zip</text>
+<text x="410" y="141.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ecom_customer_id</text>
+<text x="650" y="141.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">169 blank</text>
+<text x="410" y="160.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">owner_active</text>
+<text x="650" y="160.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">54 false</text>
+<text x="410" y="179.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sms_opt_out, do_not_call</text>
+<rect x="400" y="260" width="260" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M400,286 V266 a6,6 0 0 1 6,-6 H654 a6,6 0 0 1 6,6 V286 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="530.0" y="274.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">crm_opportunities</text>
+<text x="410" y="295.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">opportunity_id</text>
+<text x="650" y="295.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="410" y="314.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">account_id</text>
+<text x="650" y="314.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="410" y="333.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">ecom_order_id</text>
+<text x="650" y="333.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="410" y="352.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">gift_recipient_account_id</text>
+<text x="650" y="352.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">always blank</text>
+<rect x="400" y="460" width="260" height="121" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M400,486 V466 a6,6 0 0 1 6,-6 H654 a6,6 0 0 1 6,6 V486 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="530.0" y="474.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">portal_registrations</text>
+<text x="410" y="495.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">registration_id</text>
+<text x="650" y="495.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="410" y="514.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="650" y="514.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="410" y="533.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">email</text>
+<text x="650" y="533.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#62686d">341 distinct</text>
+<text x="410" y="552.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">first_name, last_name</text>
+<text x="410" y="571.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">birthdate</text>
+<rect x="770" y="30" width="240" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M770,56 V36 a6,6 0 0 1 6,-6 H1004 a6,6 0 0 1 6,6 V56 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="890.0" y="44.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">ehr_patients</text>
+<text x="780" y="65.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">chart_id</text>
+<text x="1000" y="65.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="780" y="84.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">first_name, last_name</text>
+<text x="780" y="103.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">birthdate</text>
+<text x="780" y="122.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">sex</text>
+<rect x="770" y="260" width="240" height="102" rx="6" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<path d="M770,286 V266 a6,6 0 0 1 6,-6 H1004 a6,6 0 0 1 6,6 V286 z" fill="#ffffff" stroke="#202427" stroke-width="1.5"/>
+<text x="890.0" y="274.0" text-anchor="middle" dominant-baseline="middle" font-size="13.5" font-weight="700" fill="#202427">lab_results</text>
+<text x="780" y="295.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">result_id</text>
+<text x="1000" y="295.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">PK</text>
+<text x="780" y="314.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">kit_barcode</text>
+<text x="1000" y="314.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="780" y="333.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">chart_id</text>
+<text x="1000" y="333.5" font-size="11" dominant-baseline="middle" text-anchor="end" fill="#202427" font-weight="700">FK</text>
+<text x="780" y="352.5" font-size="12" dominant-baseline="middle" fill="#202427" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">patient_birthdate</text>
+<path d="M165.0,151 L165.0,240" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="175.0" y="195.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="175.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">customer_id</tspan></text>
+<text x="155" y="158.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="155" y="232.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+<path d="M165.0,361 L165.0,460" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="175.0" y="410.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="175.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">order_id</tspan></text>
+<text x="155" y="355.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="155" y="452.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="155" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<path d="M290,50.5 L345,85 L345,112 L400,119.5" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="345" y="121.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="345" dy="0" font-size="11.5" fill="#62686d" font-weight="600">ecom_customer_id</tspan><tspan x="345" dy="17" font-size="11.5" fill="#62686d" font-weight="600">written by the sync</tspan></text>
+<text x="300" y="73.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<text x="392" y="100.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="392" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+<path d="M530.0,189 L530.0,260" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="540.0" y="224.5" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">account_id</tspan></text>
+<text x="540" y="203.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="540" y="252.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="540" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+<path d="M290,280.5 L345,305 L345,335 L400,311.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="345" y="320.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="345" dy="0" font-size="11.5" fill="#62686d" font-weight="600">ecom_order_id</tspan></text>
+<text x="300" y="293.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="392" y="347.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="392" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<path d="M290,484.0 L345,496 L345,515 L400,520.5" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="345" y="506.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="345" dy="0" font-size="11.5" fill="#62686d" font-weight="600">kit_barcode</tspan></text>
+<text x="300" y="484.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="300" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="392" y="528.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="392" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<path d="M165.0,524 L165,610 L740,610 L740,340 L770,311.0" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="450" y="600.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="450" dy="0" font-size="11.5" fill="#62686d" font-weight="600">kit_barcode</tspan></text>
+<text x="175" y="560.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="175" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="760" y="328.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11" fill="#62686d">0 or 1</tspan></text>
+<path d="M890.0,132 L890.0,260" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="900.0" y="196.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="900.0" dy="0" font-size="11.5" fill="#62686d" font-weight="600">chart_id</tspan></text>
+<text x="900" y="125.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="900" dy="0" font-size="11" fill="#62686d">1</tspan></text>
+<text x="900" y="252.0" text-anchor="start" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="900" dy="0" font-size="11" fill="#62686d">many</tspan></text>
+</svg>

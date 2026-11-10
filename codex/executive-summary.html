@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Executive summary of the Lumen Health customer identity case study recommendation.">
+  <title>Executive Summary | Lumen Health Identity Case Study</title>
+  <style>
+    :root {
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --neutral-code: #737373;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000; --ink:#202427; --muted:#62686d;  --line:#dedede; --paper:#f5f5f5; --pale:#fbeaea; }
+    * { box-sizing:border-box; }
+    html { background:var(--paper); }
+    body { margin:0; color:var(--ink); font:15px/1.48 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .page { width:min(8.5in,calc(100% - 32px)); min-height:11in; margin:28px auto; padding:.58in .62in .5in; background:#fff; box-shadow:0 12px 38px rgba(0,0,0,.08); }
+    .topline { display:flex; justify-content:space-between; gap:16px; padding-bottom:12px; border-bottom:2px solid var(--brand-red); color:var(--muted); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; }
+    .eyebrow { margin:30px 0 9px; color:var(--brand-red); font-size:11px; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { max-width:640px; margin:0; font-size:37px; font-weight:580; line-height:1.06; letter-spacing:-.045em; }
+    .dek { max-width:650px; margin:13px 0 24px; color:var(--muted); font-size:17px; line-height:1.4; }
+    .recommendation { margin:22px 0 25px; padding:17px 20px; border-left:4px solid var(--brand-red); background:var(--pale); font-size:19px; font-weight:650; line-height:1.38; }
+    h2 { margin:0 0 8px; color:#292d31; font-size:16px; font-weight:580; line-height:1.25; letter-spacing:-.018em; }
+    p { margin:0 0 10px; }
+    .section { padding:17px 0 15px; border-top:1px solid var(--line); }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+    .muted { color:var(--muted); }
+    .roles { display:flex; align-items:center; gap:7px; margin:15px 0 9px; padding:12px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+    .role { padding:7px 10px; border:1px solid #e5b8b8; border-radius:3px; background:#fff7f7; color:#980000; font-size:12px; font-weight:700; }
+    .arrow { color:#737373; font-size:17px; }
+    .role-note { margin:0 0 5px; color:var(--muted); font-size:12px; }
+    .effects { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:11px; }
+    .effect { padding-top:9px; border-top:3px solid var(--brand-red); }
+    .effect strong { display:block; margin-bottom:4px; font-size:13px; }
+    .effect span { color:var(--muted); font-size:12px; }
+    .steps { display:flex; gap:0; margin:13px 0 8px; padding:0; list-style:none; }
+    .steps li { flex:1; padding:9px 10px 8px 0; border-top:2px solid var(--brand-red); font-size:12px; }
+    .steps b { display:block; margin-bottom:3px; color:var(--brand-red); font-size:10px; letter-spacing:.07em; text-transform:uppercase; }
+    .measures { color:var(--muted); font-size:12px; }
+    .foot { margin-top:15px; padding-top:10px; border-top:1px solid var(--line); color:#62686d; font-size:10px; }
+    .foot a { color:#980000; }
+    @media(max-width:640px) {
+      .page { width:100%; min-height:0; margin:0; padding:26px 22px; box-shadow:none; }
+      h1 { font-size:32px; }
+      .two-col,.effects { grid-template-columns:1fr; gap:13px; }
+      .roles { flex-wrap:wrap; }
+      .steps { flex-direction:column; }
+    }
+    @media print {
+      @page { size:letter; margin:0; }
+      html,body { width:8.5in; height:11in; background:#fff; }
+      .page { width:8.5in; height:11in; min-height:11in; margin:0; padding:.5in .58in .42in; box-shadow:none; }
+      .eyebrow { margin-top:22px; }
+      a { color:inherit; text-decoration:none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topline"><span>Lumen Health · Solution Architect Case Study</span><span>Executive summary</span></div>
+    <p class="eyebrow">The business problem</p>
+    <h1>One person, many records, avoidable customer failures</h1>
+    <p class="dek">Purchases, kit registrations and lab results move through separate commerce, CRM, portal and clinical systems. The current sync can attach an order to the wrong household account, overwrite contact details, block registrations and lose text opt-outs during account merges.</p>
+
+    <div class="recommendation">Create a small identity registry that links source records with evidence and confidence while each system remains responsible for its own data.</div>
+
+    <section class="section two-col">
+      <div>
+        <h2>What we recommend</h2>
+        <p>Give each person a stable internal ID. Keep source IDs, link evidence and correction history so uncertain matches can be reviewed and reversed.</p>
+        <p>Accept a kit registration immediately. Resolve identity in the background; keep clinical results and identity-dependent messages on hold until the patient link is reliable.</p>
+      </div>
+      <div>
+        <h2>Separate the roles</h2>
+        <p>A purchase can involve different people. The order, kit, registration and result should retain their own relationships instead of being forced onto one CRM account.</p>
+        <div class="roles" aria-label="Roles may be different people">
+          <span class="role">Buyer</span><span class="arrow">→</span><span class="role">Recipient</span><span class="arrow">→</span><span class="role">Registrant</span><span class="arrow">→</span><span class="role">Patient</span>
+        </div>
+        <p class="role-note">These roles can be the same person or several people, especially for gifts.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>What changes for the business</h2>
+      <div class="effects">
+        <div class="effect"><strong>Fewer service failures</strong><span>Fewer orders sent to the wrong account and fewer registrations rejected by household-level duplicate rules.</span></div>
+        <div class="effect"><strong>Safer customer communication</strong><span>Marketing sees an accurate lifecycle state and channel consent, not clinical result details. Opt-outs survive identity changes.</span></div>
+        <div class="effect"><strong>Steadier modernization</strong><span>Systems can move to the new identity links in stages while orders and registrations continue to flow.</span></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Introduce it without interrupting service</h2>
+      <ol class="steps">
+        <li><b>1 · Shadow</b>Suggest links without changing production records.</li>
+        <li><b>2 · Review</b>Check uncertain and conflicting cases with operations.</li>
+        <li><b>3 · Pilot</b>Use confirmed links for selected workflows, with rollback.</li>
+        <li><b>4 · Expand</b>Move consumers over as accuracy and operations support it.</li>
+      </ol>
+      <p class="measures"><strong>Track:</strong> incorrect merges, unresolved-match age, registration completion and delay, marketing-stage errors and opt-out preservation.</p>
+    </section>
+
+    <p class="foot">The case data is fictional and should be treated as protected health information for the design. Real deployment requires review of privacy, consent, vendor terms and the production integration paths. See the <a href="current-system-diagnosis.html">current-system diagnosis</a> for code evidence, data checks and known unknowns.</p>
+  </main>
+</body>
+</html>

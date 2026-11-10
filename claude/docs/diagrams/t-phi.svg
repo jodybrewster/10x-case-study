@@ -1,0 +1,41 @@
+<svg viewBox="0 0 1100 420" role="img" aria-label="Protected health information: the clinical zone and the identity store sit inside the boundary; the commercial zone receives the person key, contact details and consent, never results or test names" xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="arrow-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-system" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker><marker id="arrow-code" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="arrow-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker><marker id="arrow-risk" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c00000"/></marker><marker id="arrow-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#202427"/></marker></defs>
+<rect x="820" y="60" width="260" height="340" rx="10" fill="none" stroke="#737373" stroke-opacity="0.6" stroke-dasharray="6 5"/>
+<text x="834" y="78" font-size="12.5" font-weight="700" fill="#62686d">Commercial zone</text>
+<rect x="390" y="60" width="320" height="340" rx="10" fill="none" stroke="#c00000" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="404" y="78" font-size="12.5" font-weight="700" fill="#c00000">Identity service, PHI, restricted access</text>
+<rect x="20" y="60" width="230" height="340" rx="10" fill="none" stroke="#c00000" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="34" y="78" font-size="12.5" font-weight="700" fill="#c00000">Clinical zone, PHI</text>
+<path d="M50,119 v58 a85.0,9 0 0 0 170,0 v-58" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="135.0" cy="119" rx="85.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="135.0" y="152.5" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="15" font-weight="700" fill="#202427">Member portal</tspan></text>
+<path d="M50,239 v58 a85.0,9 0 0 0 170,0 v-58" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<ellipse cx="135.0" cy="239" rx="85.0" ry="9" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="135.0" y="272.5" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="15" font-weight="700" fill="#202427">EHR</tspan></text>
+<rect x="60" y="345" width="150" height="36" rx="18.0" fill="#f3f3f3" stroke="#737373" stroke-width="1.5"/>
+<text x="135.0" y="363.0" text-anchor="middle" dominant-baseline="middle"><tspan x="135.0" dy="0" font-size="13.5" font-weight="600" fill="#202427">Lab partner</tspan></text>
+<path d="M420,159 v92 a130.0,9 0 0 0 260,0 v-92" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<ellipse cx="550.0" cy="159" rx="130.0" ry="9" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="550.0" y="192.5" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="15" font-weight="700" fill="#202427">Identity store</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">demographics, links, consent,</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">every access logged</tspan></text>
+<rect x="420" y="300" width="260" height="50" rx="8" fill="#f3f3f3" stroke="#202427" stroke-width="2"/>
+<text x="550.0" y="316.5" text-anchor="middle" dominant-baseline="middle"><tspan x="550.0" dy="0" font-size="15" font-weight="700" fill="#202427">Hashed match keys for blocking</tspan><tspan x="550.0" dy="17" font-size="12.5" fill="#62686d">outside the boundary</tspan></text>
+<path d="M850,99 v62 a100.0,9 0 0 0 200,0 v-62" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="950.0" cy="99" rx="100.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="950.0" y="126.0" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">CRM</tspan><tspan x="950.0" dy="17" font-size="12.5" fill="#62686d">sales and support</tspan></text>
+<rect x="850" y="215" width="200" height="56" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="950.0" y="243.0" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">Marketing platform</tspan></text>
+<path d="M850,319 v58 a100.0,9 0 0 0 200,0 v-58" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<ellipse cx="950.0" cy="319" rx="100.0" ry="9" fill="#ffffff" stroke="#202427" stroke-width="2"/>
+<text x="950.0" y="352.5" text-anchor="middle" dominant-baseline="middle"><tspan x="950.0" dy="0" font-size="15" font-weight="700" fill="#202427">E-commerce</tspan></text>
+<path d="M220,148.0 L320,148 L320,180 L420,180.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="320" y="93.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="320" dy="0" font-size="11.5" fill="#202427" font-weight="600">registration: name, email,</tspan><tspan x="320" dy="17" font-size="11.5" fill="#202427" font-weight="600">phone, birthdate, kit barcode</tspan></text>
+<path d="M220,268.0 L320,268 L320,220 L420,220.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="320" y="283.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="320" dy="0" font-size="11.5" fill="#202427" font-weight="600">chart_id and result event,</tspan><tspan x="320" dy="17" font-size="11.5" fill="#202427" font-weight="600">status only, without values</tspan></text>
+<path d="M680,175.0 L760,175 L760,130 L850,130.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="805" y="83.0" text-anchor="end" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="805" dy="0" font-size="11.5" fill="#202427" font-weight="600">person_key, preferred contact</tspan><tspan x="805" dy="17" font-size="11.5" fill="#202427" font-weight="600">details, consent flags</tspan></text>
+<path d="M680,215.0 L760,215 L760,243 L850,243.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="760" y="273.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11.5" fill="#202427" font-weight="600">person_key, kit stage,</tspan><tspan x="760" dy="17" font-size="11.5" fill="#202427" font-weight="600">channel consent</tspan></text>
+<path d="M850,348.0 L760,348 L760,330 L680,330.0" fill="none" stroke="#202427" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow-new)"/>
+<text x="760" y="363.0" text-anchor="middle" dominant-baseline="middle" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round"><tspan x="760" dy="0" font-size="11.5" fill="#202427" font-weight="600">order event in,</tspan><tspan x="760" dy="17" font-size="11.5" fill="#202427" font-weight="600">person_key back</tspan></text>
+<path d="M550.0,260 L550.0,300" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lumen Health | Build specification</title>
+<style>
+  :root {
+      --neutral-code: #737373;
+      --brand-red: #c00000;
+      --neutral-pale: #f3f3f3;
+      --brand-red-pale: #fbeaea;
+      --brand-red-dark: #980000;
+    color-scheme: light;
+    --ink: #202427; --muted: #62686d;  --line: #dedede; --paper: #f5f5f5; --pale: #fbeaea;
+    --heading: #292d31; --link: #980000; --code-bg: #f3f3f3;
+    --brand-black: #111111;  --brand-grey: #f4f4f4;
+     --amber: #b97818; --amber-ink: #94550b;
+    --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--paper); scroll-behavior: smooth; scroll-padding-top: 56px; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { margin: 0; color: var(--ink); font: 15px/1.5 var(--sans); counter-reset: fig sym; }
+  a { color: var(--link); text-underline-offset: .18em; }
+  a:focus-visible, summary:focus-visible { outline: 2px solid var(--brand-red); outline-offset: 3px; }
+  nav { position: sticky; top: 0; z-index: 5; background: var(--paper); border-bottom: 1px solid var(--line);
+    overflow-x: auto; white-space: nowrap; padding: 11px max(16px, calc((100vw - 1120px) / 2)); font-size: 13px; }
+  nav a { color: var(--muted); text-decoration: none; margin-right: 20px; }
+  nav a:hover { color: var(--ink); }
+  main { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: .58in .62in .5in; background: #fff;
+    box-shadow: 0 12px 38px rgba(0, 0, 0, .08); }
+  .topline { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding-bottom: 12px;
+    border-bottom: 3px solid var(--brand-red); color: var(--muted); font-size: 11px; font-weight: 700;
+    letter-spacing: .12em; text-transform: uppercase; }
+  .wordmark { color: var(--brand-black); font: 700 14px/1 "Helvetica Neue", Helvetica, Arial, sans-serif; letter-spacing: .04em; }
+  header { max-width: 720px; margin: 0 0 34px; }
+  .eyebrow { margin: 30px 0 9px; color: var(--brand-red); font-size: 11px; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+  h1 { margin: 0; font-size: 37px; font-weight: 580; line-height: 1.06; letter-spacing: -.045em; }
+  header p:not(.eyebrow) { margin: 13px 0 0; color: var(--muted); }
+  header h1 + p { font-size: 17px; line-height: 1.4; }
+  section { display: grid; grid-template-columns: 168px minmax(0, 1fr); column-gap: 34px; padding: 20px 0 26px;
+    border-top: 1px solid var(--line); }
+  section > h2 { grid-column: 1; grid-row: 1 / span 200; align-self: start; position: sticky; top: 60px; margin: 0;
+    color: var(--heading); font-size: 17px; font-weight: 580; line-height: 1.25; letter-spacing: -.018em; }
+  section > :not(h2) { grid-column: 2; }
+  section > .diagram { grid-column: 1 / -1; }
+  h3 { margin: 26px 0 7px; color: var(--heading); font-size: 15px; font-weight: 650; letter-spacing: -.01em; }
+  section > h2 + h3, section > h2 + p { margin-top: 0; }
+  p, li { max-width: 70ch; }
+  p { margin: 0 0 10px; }
+  ul { margin: 0 0 10px; padding-left: 20px; }
+  li { margin-bottom: 5px; }
+  code { padding: 1px 5px; border-radius: 3px; background: var(--code-bg); font: 12.5px/1.4 var(--mono); overflow-wrap: break-word; }
+  td code { white-space: nowrap; }
+  pre.cmd { max-width: 70ch; padding: 13px 15px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 var(--mono); }
+  .scroll { overflow-x: auto; margin: 10px 0 20px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { padding: 8px 14px 8px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { border-bottom: 2px solid var(--brand-red); color: var(--heading); font-size: 12.5px; font-weight: 650; white-space: nowrap; }
+  td:first-child { min-width: 9em; font-weight: 600; }
+  td.num, th.num { padding-right: 20px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 18px; margin: 16px 0 8px; }
+  .tile { padding-top: 9px; border-top: 3px solid var(--brand-red); }
+  .tile b { display: block; font-size: 22px; font-weight: 600; line-height: 1.15; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tile span { display: block; margin-top: 3px; color: var(--muted); font-size: 12.5px; line-height: 1.38; }
+  figure { margin: 0; }
+  .diagram { margin: 14px 0 8px; padding: 18px 16px 14px; overflow-x: auto; border: 1px solid var(--line); background: #fff; counter-increment: fig; }
+  .diagram svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+  .diagram pre { margin: 0; min-width: 640px; font: 12px var(--mono); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 2px 0; color: var(--muted); font-size: 12.5px; }
+  .legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 7px; border-radius: 2px; background: #fff; border: 2px solid var(--ink); vertical-align: -2px; box-sizing: border-box; }
+  .legend .code::before { background: var(--neutral-pale); border-color: var(--neutral-code); }
+  .legend .new::before { background: var(--neutral-pale); }
+  .legend .ext::before { background: #fff3dc; border-color: var(--amber); }
+  .legend .risk::before { background: var(--brand-red-pale); border-color: var(--brand-red); }
+  .legend .step::before { border-color: #737373; }
+  .legend .person::before { background: var(--neutral-pale); border-color: #737373; border-radius: 5px; }
+  .caption { max-width: 84ch; margin: 0 0 22px; color: var(--muted); font-size: 12.5px; }
+  .diagram + .caption::before { content: "Figure " counter(fig) ". "; color: var(--ink); font-weight: 650; }
+  .symptom { counter-increment: sym; display: grid; grid-template-columns: 34px 1fr; column-gap: 10px; padding: 15px 0 6px; border-top: 1px solid var(--line); }
+  .symptom::before { content: counter(sym); color: var(--brand-red); font-size: 24px; font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
+  .symptom h3 { grid-column: 2; margin: 2px 0 8px; }
+  .symptom dl { grid-column: 2; display: grid; grid-template-columns: 84px 1fr; gap: 5px 14px; margin: 0; }
+  .symptom dt { padding-top: 1px; color: var(--muted); font-size: 12.5px; }
+  .symptom dd { max-width: 74ch; margin: 0; }
+  .tag { font-weight: 650; white-space: nowrap; }
+  .tag::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 6px; border-radius: 2px; background: currentColor; }
+  .known { color: var(--ink); } .inferred { color: var(--amber-ink); } .unknown { color: var(--brand-red); }
+  .note { max-width: 70ch; margin: 16px 0; padding: 14px 18px; border-left: 4px solid var(--brand-red); background: var(--pale); }
+  details { border-bottom: 1px solid var(--line); }
+  details:first-of-type { border-top: 1px solid var(--line); }
+  summary { padding: 10px 0; font-weight: 600; cursor: pointer; }
+  details .scroll { margin: 2px 0 16px; }
+  .foot { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+  @media (max-width: 780px) {
+    main { width: 100%; margin: 0; padding: 26px 20px; box-shadow: none; }
+    h1 { font-size: 32px; }
+    section { display: block; }
+    section > h2 { position: static; margin-bottom: 12px; }
+    .tiles { grid-template-columns: 1fr 1fr; }
+    .symptom dl { grid-template-columns: 1fr; }
+  }
+  @media print {
+    @page { size: letter; margin: .5in; }
+    html, body { background: #fff; }
+    nav { display: none; }
+    main { width: 100%; margin: 0; padding: 0; box-shadow: none; }
+    section > h2 { position: static; }
+    .diagram, .symptom, tr { break-inside: avoid; }
+    .diagram { overflow: visible; }
+    details > .scroll { display: block; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="#summary">Summary</a>
+  <a href="#scope">Scope and glossary</a>
+  <a href="#boundary">Acceptance boundary</a>
+  <a href="#outbox">Outbox</a>
+  <a href="#contract">Event contract</a>
+  <a href="#idempotency">Idempotency</a>
+  <a href="#delivery">Delivery</a>
+  <a href="#handler">Identity handler</a>
+  <a href="#states">State machine</a>
+  <a href="#review-interface">Review interface</a>
+  <a href="#outages">Outages and replay</a>
+  <a href="#downstream">Downstream effects</a>
+  <a href="#api">API surface</a>
+  <a href="#phi">Health information</a>
+  <a href="#observability">Observability</a>
+  <a href="#tests">Acceptance tests</a>
+  <a href="#rollout">Rollout and backout</a>
+  <a href="#questions">Open questions</a>
+  <a href="current-system.html">Current system</a>
+  <a href="target-architecture.html">Target architecture</a>
+  <a href="rollout.html">90-day rollout</a>
+  <a href="executive-summary.html">Executive summary</a>
+  <a href="solution-design.html">Solution design</a>
+  <a href="worked-examples.html">Worked examples</a>
+</nav>
+<main>
+<div class="topline"><span class="wordmark" aria-label="Lumen Health">LUMEN HEALTH</span><span>Solution architect case study</span></div>
+<header>
+  <p class="eyebrow">Build specification</p>
+  <h1>Registration intake: accept now, resolve identity afterwards</h1>
+  <p>Lumen Health case study. The one component of the <a href="target-architecture.html">target architecture</a> specified here in full: the path that takes a kit registration from the member portal, accepts it immediately and hands identity resolution to a background process.</p>
+  <p>A developer or a coding agent should be able to build it from this page without asking questions. Where the page makes an assumption it says so and the last section lists them.</p>
+</header>
+
+<section id="summary">
+<h2>Summary</h2>
+<p>Today <code>register_kit</code> resolves a CRM account inside the customer's request. It can raise <code>IdentityConflict</code> (<code>legacy-sync/legacy_sync/registration/register.py:32</code>), <code>RegistrationBlocked</code> (<code>register.py:43</code>, from the duplicate rule at <code>crm/client.py:40</code>) and <code>InactiveOwner</code> (<code>crm/client.py:60</code>, reached through the gift move at <code>register.py:45-46</code>). Each one fails a customer's registration for a reason the customer cannot see or fix.</p>
+<p>The replacement has two halves with a durable hand-off between them. The portal validates the form, writes the registration and an outbox event in one local database transaction and answers. A relay then delivers the event to the identity service at least once. The identity service creates a provisional person at once, resolves it against existing people and tells the portal the outcome. The portal owns the event until the identity service has stored it, so a registration cannot be lost between the two.</p>
+<div class="tiles">
+  <div class="tile"><b>One transaction</b><span>the registration and its outbox event commit together or not at all</span></div>
+  <div class="tile"><b>Four rejections</b><span>the only reasons the portal refuses a registration, all about the form or the kit</span></div>
+  <div class="tile"><b>Ten attempts</b><span>over about fourteen hours before an event is parked, never deleted</span></div>
+  <div class="tile"><b>Two keys</b><span><code>registration_id</code> and <code>kit_barcode</code> make every repeat harmless</span></div>
+  <div class="tile"><b>Nightly proof</b><span>a reconciliation job compares portal and identity records and repairs gaps</span></div>
+  <div class="tile"><b>Zero CRM calls</b><span>nothing on the customer path or in the handler touches the CRM</span></div>
+</div>
+<p class="note">Production transport and vendor capabilities are assumptions in this document, not known facts. The supplied repository is a local CSV replay with an in-memory CRM stand-in, so it shows the behaviour being replaced and says nothing about queues, databases or the real CRM's API. The contract below is written so that the transport can change without changing the behaviour.</p>
+</section>
+
+<section id="scope">
+<h2>Scope, non-goals and glossary</h2>
+<h3>In scope</h3>
+<ul>
+  <li>The portal's registration endpoint and what it validates.</li>
+  <li>The portal tables for registrations and the outbox and the relay that drains the outbox.</li>
+  <li>The <code>registration.accepted</code> event and the <code>identity.registration_resolved</code> event that returns the outcome.</li>
+  <li>The identity service's ingest endpoint, inbox and handler for this one event type.</li>
+  <li>The registration state machine, outage behaviour, replay, nightly reconciliation, metrics and alerts.</li>
+  <li>The feature flag and backout for this component.</li>
+</ul>
+<h3>Non-goals</h3>
+<ul>
+  <li>The matcher's field weights and calibration. The handler calls the matcher with the thresholds from the target architecture and treats its score as an input.</li>
+  <li>The review screen. This page defines the review item the handler creates, not the screen that works it.</li>
+  <li>Order events from e-commerce, EHR chart creation and the lab flow. They continue as today and do not wait for identity.</li>
+  <li>Editing a registration after it is accepted. Corrections go through support and arrive as separate events.</li>
+  <li>The CRM sync internals. This page fixes only the rule that it is asynchronous and cannot affect a registration.</li>
+</ul>
+<h3>Glossary</h3>
+<div class="scroll"><table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Registration</td><td>A customer's submission that a physical kit, identified by its barcode, belongs to them for testing. Once accepted it is immutable.</td></tr>
+<tr><td>Provisional person</td><td>A person record the identity service creates for a registration before matching runs. It exists so the kit, the chart and the result always have a registrant to attach to. It is either merged into an existing person or kept as a new one.</td></tr>
+<tr><td><code>person_key</code></td><td>The opaque identifier of one real person in the identity service. A provisional person has one from the moment it is created. If it is merged, the surviving person's key replaces it and the old key keeps resolving to the survivor.</td></tr>
+<tr><td><code>kit_role</code></td><td>The record that ties a kit to its buyer, registrant and patient, with a stage. This component writes the registrant and moves the stage to <code>registered</code>.</td></tr>
+<tr><td>Review item</td><td>A queued pair of records the matcher scored between 0.60 and 0.90. A person decides it. Until then both records stay separate people.</td></tr>
+<tr><td>Outbox</td><td>A table in the portal's own database holding events that have been committed but not yet acknowledged by the identity service.</td></tr>
+<tr><td>Acknowledgement</td><td>The identity service's confirmation that it has durably stored an event. It does not mean the event has been resolved.</td></tr>
+<tr><td>Dead letter</td><td>An outbox row the relay has stopped retrying. It is kept in place with its reason and waits for an operator to replay it.</td></tr>
+</table></div>
+</section>
+
+<section id="boundary">
+<h2>Acceptance boundary</h2>
+<p>The portal accepts a registration if and only if the checks in the first table pass. They read only the portal's own database and the request. Nothing else can reject a registration.</p>
+<h3>What the portal checks, in order</h3>
+<div class="scroll"><table>
+<tr><th>Check</th><th>Rule</th><th>Failure</th></tr>
+<tr><td>Required fields present</td><td><code>kit_barcode</code>, <code>first_name</code>, <code>last_name</code>, <code>email</code> and <code>birthdate</code> are all non-empty after trimming</td><td><code>422 field_required</code> with the field name</td></tr>
+<tr><td>Fields well-formed</td><td>Names 1 to 100 characters with no control characters. Email has exactly one <code>@</code>, a domain containing a dot and at most 254 characters. Birthdate is a calendar date from 1900-01-01 up to today. Phone is optional but when present holds 7 to 15 digits once spaces, dots, dashes and brackets are removed</td><td><code>422 field_invalid</code> with the field name and a reason code</td></tr>
+<tr><td>Kit exists</td><td>The barcode matches <code>^KT[0-9]{7}$</code> and a row exists in the portal's <code>kit</code> table</td><td><code>404 kit_not_found</code></td></tr>
+<tr><td>Kit is unregistered</td><td>No registration holds this barcode. The unique constraint on <code>registration.kit_barcode</code> is the final arbiter, so two simultaneous submissions cannot both pass</td><td><code>409 kit_already_registered</code>, unless the repeat rules in the idempotency section turn it into a replay</td></tr>
+</table></div>
+<p>Phone numbers in the sample data arrive as <code>4915193076</code>, <code>681.558.8218</code> and other shapes, so the portal stores the value as typed and normalises it into digits only for the check. A phone that fails the length check is a form error, so the form tells the customer which field to fix. Email and name comparison for the repeat rules uses the same normalisation the identity service uses (lowercase, trimmed, no dot or plus-tag folding at this stage).</p>
+<h3>What the customer can see and what they never see</h3>
+<div class="scroll"><table>
+<tr><th>Outcome</th><th>Visible to the customer</th><th>Reason</th></tr>
+<tr><td>Missing or malformed field</td><td>Yes, naming the field</td><td>The customer can fix it in seconds</td></tr>
+<tr><td>Unknown kit barcode</td><td>Yes, asking them to check the code on the box</td><td>Usually a typo. The message does not say whether the code is valid for another account</td></tr>
+<tr><td>Kit already registered to a different email</td><td>Yes, with a support reference and no detail about who registered it</td><td>The kit is taken. The portal reveals nothing about the other registrant</td></tr>
+<tr><td>Portal's own database unavailable</td><td>Yes, as a generic "try again" with <code>503</code></td><td>The portal cannot store anything, so it cannot promise anything. This is the portal's availability, not identity</td></tr>
+<tr><td>Email already belongs to another person</td><td>Never</td><td>Was <code>IdentityConflict</code>. Now the matcher's problem, after acceptance</td></tr>
+<tr><td>Possible duplicate in the CRM</td><td>Never</td><td>Was <code>RegistrationBlocked</code>. The CRM is not consulted</td></tr>
+<tr><td>CRM account owned by an inactive user</td><td>Never</td><td>Was <code>InactiveOwner</code>. Account ownership is never checked</td></tr>
+<tr><td>Identity service down, slow or in review</td><td>Never</td><td>The customer sees the same confirmation either way</td></tr>
+<tr><td>Outbox or relay failure</td><td>Never</td><td>The row is already committed. Delivery is the portal's job from then on</td></tr>
+</table></div>
+<p>The success response says the kit is registered and what happens next (the sample is returned to the lab, results arrive in the portal). It never says anything about accounts, matches or review, because at that moment none of that is known.</p>
+</section>
+
+<section id="outbox">
+<h2>Transactional outbox</h2>
+<p>The registration row and its outbox row are inserted in one local transaction in the portal's own database. If the transaction commits, both exist. If it fails, neither does and the customer gets the portal's own <code>503</code>. There is no second system in the transaction, which is the whole point: the identity service being down cannot make the commit fail.</p>
+<p>From the commit onward the portal owns the event. It stays the owner until the identity service acknowledges it and ownership comes back to the portal if a dead letter is replayed. The identity service owns it from the acknowledgement onward and must have stored it durably before it answers.</p>
+<h3>Table <code>registration</code> (portal database)</h3>
+<div class="scroll"><table>
+<tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr>
+<tr><td><code>registration_id</code></td><td><code>text</code></td><td>primary key, check <code>~ '^R[0-9]{6,}$'</code></td><td><code>'R'</code> plus a zero-padded value from <code>registration_seq</code>. Gaps are allowed</td></tr>
+<tr><td><code>kit_barcode</code></td><td><code>text</code></td><td>not null, unique, foreign key to <code>kit</code></td><td>The uniqueness is what makes a kit registrable once</td></tr>
+<tr><td><code>client_request_id</code></td><td><code>uuid</code></td><td>not null, unique</td><td>From the <code>Idempotency-Key</code> header</td></tr>
+<tr><td><code>state</code></td><td><code>text</code></td><td>not null, default <code>'accepted'</code>, check in the seven state names</td><td>See the state machine</td></tr>
+<tr><td><code>first_name_enc</code>, <code>last_name_enc</code></td><td><code>bytea</code></td><td>not null</td><td>Field-level encrypted</td></tr>
+<tr><td><code>email_enc</code></td><td><code>bytea</code></td><td>not null</td><td>Field-level encrypted</td></tr>
+<tr><td><code>email_hash</code></td><td><code>bytea</code></td><td>not null</td><td>HMAC-SHA-256 of the normalised email under a portal-held key. Used only for the repeat rules</td></tr>
+<tr><td><code>phone_enc</code></td><td><code>bytea</code></td><td>null allowed</td><td>Field-level encrypted</td></tr>
+<tr><td><code>birthdate_enc</code></td><td><code>bytea</code></td><td>not null</td><td>Field-level encrypted</td></tr>
+<tr><td><code>payload_hash</code></td><td><code>bytea</code></td><td>not null</td><td>SHA-256 of the canonical JSON of the registrant fields and kit barcode</td></tr>
+<tr><td><code>registered_at</code></td><td><code>timestamptz</code></td><td>not null, default <code>now()</code></td><td>The portal's clock, never the browser's</td></tr>
+<tr><td><code>person_key</code></td><td><code>text</code></td><td>null allowed</td><td>Set by the resolution callback</td></tr>
+<tr><td><code>resolution_seq</code></td><td><code>integer</code></td><td>not null, default 0</td><td>Highest resolution sequence applied</td></tr>
+<tr><td><code>resolved_at</code></td><td><code>timestamptz</code></td><td>null allowed</td><td>Time of the latest applied resolution</td></tr>
+<tr><td><code>updated_at</code></td><td><code>timestamptz</code></td><td>not null</td><td>Set on every state change</td></tr>
+</table></div>
+<h3>Table <code>registration_outbox</code> (portal database)</h3>
+<div class="scroll"><table>
+<tr><th>Column</th><th>Type</th><th>Constraints</th><th>Notes</th></tr>
+<tr><td><code>outbox_id</code></td><td><code>bigint</code></td><td>primary key, generated always as identity</td><td>Used for relay paging only. It is not an ordering guarantee</td></tr>
+<tr><td><code>event_id</code></td><td><code>uuid</code></td><td>not null, unique</td><td>Fixed at insert and kept on every replay</td></tr>
+<tr><td><code>registration_id</code></td><td><code>text</code></td><td>not null, unique, foreign key to <code>registration</code></td><td>One <code>registration.accepted</code> per registration, ever</td></tr>
+<tr><td><code>event_type</code></td><td><code>text</code></td><td>not null, check <code>= 'registration.accepted'</code></td><td></td></tr>
+<tr><td><code>schema_version</code></td><td><code>text</code></td><td>not null</td><td>For example <code>'1.0'</code></td></tr>
+<tr><td><code>payload_enc</code></td><td><code>bytea</code></td><td>null allowed</td><td>The encrypted event body. Set to null by the scrub job after the retention period</td></tr>
+<tr><td><code>status</code></td><td><code>text</code></td><td>not null, check in <code>pending</code>, <code>in_flight</code>, <code>delivered</code>, <code>dead</code></td><td></td></tr>
+<tr><td><code>attempts</code></td><td><code>smallint</code></td><td>not null, default 0, check <code>between 0 and 10</code></td><td>Incremented when a relay claims the row, before the send. The circuit breaker stops claims while it is open, so an outage does not use attempts up</td></tr>
+<tr><td><code>lease_expiries</code></td><td><code>smallint</code></td><td>not null, default 0</td><td>Times a claim ended with no recorded result. Three raise an alert</td></tr>
+<tr><td><code>next_attempt_at</code></td><td><code>timestamptz</code></td><td>not null, default <code>now()</code></td><td></td></tr>
+<tr><td><code>lease_owner</code>, <code>lease_until</code></td><td><code>text</code>, <code>timestamptz</code></td><td>null allowed</td><td>A relay instance claims a row for 30 seconds</td></tr>
+<tr><td><code>last_error_code</code></td><td><code>text</code></td><td>null allowed</td><td>A reason code such as <code>timeout</code> or <code>http_503</code>. Never a response body</td></tr>
+<tr><td><code>replay_count</code></td><td><code>smallint</code></td><td>not null, default 0</td><td>Incremented by each replay</td></tr>
+<tr><td><code>created_at</code>, <code>delivered_at</code></td><td><code>timestamptz</code></td><td><code>created_at</code> not null</td><td></td></tr>
+</table></div>
+<p>An index on <code>(next_attempt_at)</code> where <code>status = 'pending'</code> serves the relay. An index on <code>(status, created_at)</code> serves the metrics and the reconciliation job.</p>
+<h3>The write path</h3>
+<pre class="cmd">BEGIN;
+  -- 1. the kit must exist; the unique constraint on registration.kit_barcode decides the race
+  INSERT INTO registration (registration_id, kit_barcode, client_request_id, state,
+                            first_name_enc, last_name_enc, email_enc, email_hash,
+                            phone_enc, birthdate_enc, payload_hash)
+  VALUES ('R' || lpad(nextval('registration_seq')::text, 6, '0'), $kit, $key, 'accepted',
+          $fn, $ln, $em, $emh, $ph, $dob, $hash)
+  RETURNING registration_id;
+
+  -- 2. the event, built from the same values, in the same transaction
+  INSERT INTO registration_outbox (event_id, registration_id, event_type, schema_version,
+                                   payload_enc, status)
+  VALUES (gen_random_uuid(), $registration_id, 'registration.accepted', '1.0', $payload, 'pending');
+COMMIT;
+-- 3. after commit only: NOTIFY the relay so the first attempt happens within a second.
+--    A lost notification costs at most one poll interval (1 second).</pre>
+<p>Nothing is sent to the identity service inside the transaction or in the request thread. The notification in step 3 is an optimisation. If it is lost the relay's one-second poll picks the row up.</p>
+</section>
+
+<section id="contract">
+<h2>Event contract</h2>
+<p>The event body is a JSON object that validates against the schema below (JSON Schema draft 2020-12). Both sides validate it. The body is encrypted at rest in the outbox and travels over an authenticated, encrypted channel.</p>
+<pre class="cmd">{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.example.com/lumen/registration.accepted/1.0.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id", "event_type", "schema_version", "occurred_at",
+               "registration", "registrant", "source"],
+  "properties": {
+    "event_id":       { "type": "string", "format": "uuid" },
+    "event_type":     { "const": "registration.accepted" },
+    "schema_version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+$" },
+    "occurred_at":    { "type": "string", "format": "date-time",
+                        "description": "Portal commit time, UTC" },
+    "trace_id":       { "type": "string", "maxLength": 64 },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registration_id", "kit_barcode", "registered_at", "payload_hash"],
+      "properties": {
+        "registration_id": { "type": "string", "pattern": "^R[0-9]{6,}$" },
+        "kit_barcode":     { "type": "string", "pattern": "^KT[0-9]{7}$" },
+        "registered_at":   { "type": "string", "format": "date-time" },
+        "payload_hash":    { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "registrant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["first_name", "last_name", "email", "birthdate"],
+      "properties": {
+        "first_name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "last_name":  { "type": "string", "minLength": 1, "maxLength": 100 },
+        "email":      { "type": "string", "maxLength": 254 },
+        "phone":      { "type": ["string", "null"], "maxLength": 40 },
+        "birthdate":  { "type": "string", "format": "date" }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system"],
+      "properties": {
+        "system":      { "const": "member_portal" },
+        "environment": { "enum": ["production", "staging"] }
+      }
+    }
+  }
+}</pre>
+<p>The event deliberately carries no address, no order contents, no test name and no result. The portal does not hold the order. The identity service already receives the order from e-commerce and joins it to the kit by barcode.</p>
+<h3>Example</h3>
+<p>All values are fictional.</p>
+<pre class="cmd">{
+  "event_id": "0b7c2a52-6f1d-4c1e-9a53-3e8d5b0c7a11",
+  "event_type": "registration.accepted",
+  "schema_version": "1.0",
+  "occurred_at": "2026-11-09T14:03:21Z",
+  "trace_id": "4f2a9c10d7e84b3a",
+  "registration": {
+    "registration_id": "R000424",
+    "kit_barcode": "KT0000481",
+    "registered_at": "2026-11-09T14:03:21Z",
+    "payload_hash": "9f2c4e7a1b6d3085c4a17e2f9d0b8a63517c2e4f8a9d6b1035e7c4a2f1b8d690"
+  },
+  "registrant": {
+    "first_name": "Jane",
+    "last_name": "Example",
+    "email": "jane.example@example.com",
+    "phone": "555-0142",
+    "birthdate": "1984-03-09"
+  },
+  "source": { "system": "member_portal", "environment": "production" }
+}</pre>
+<h3>The return event</h3>
+<p>When the handler finishes, the identity service sends <code>identity.registration_resolved</code> to the portal. It carries no personal data.</p>
+<pre class="cmd">{
+  "event_id": "c41e8a07-92b3-4d56-b0f1-7a6e3d2c9b48",
+  "event_type": "identity.registration_resolved",
+  "schema_version": "1.0",
+  "registration_id": "R000424",
+  "person_key": "p_7Kq2Xw9mTa",
+  "outcome": "merged",
+  "resolution_seq": 1,
+  "reason_codes": ["email_exact", "birthdate_match", "name_match"],
+  "resolved_at": "2026-11-09T14:03:29Z"
+}</pre>
+<p><code>outcome</code> is one of <code>merged</code>, <code>new</code> or <code>review</code>. <code>resolution_seq</code> starts at 1 for each registration and rises by one on every later change, such as a review decision or a split.</p>
+<h3>Versioning rule</h3>
+<ul>
+  <li>The version is <code>major.minor</code> in the body and is also sent as the message attribute <code>schema-version</code> so a consumer can route before parsing.</li>
+  <li>A minor change only adds optional fields. Each published version of the schema is closed, so a producer raises the minor version whenever it adds a field. A consumer that receives a higher minor than it knows strips the fields it does not recognise, then validates against the highest minor it knows within the same major.</li>
+  <li>A major change removes or retypes a field or changes its meaning. The producer then sends both versions for at least 90 days, rendering each body from the same outbox row and every consumer must accept the current major and the one before it.</li>
+  <li>An event the consumer cannot validate is answered with <code>422</code> and a reason code. It is never silently dropped.</li>
+</ul>
+</section>
+
+<section id="idempotency">
+<h2>Idempotency</h2>
+<p>The key is <code>registration_id</code>. The kit barcode is a second unique key on the portal side. Everything on this page is built so that doing any step twice leaves the same result as doing it once.</p>
+<h3>Customer-side repeats</h3>
+<div class="scroll"><table>
+<tr><th>Situation</th><th>Detected by</th><th>Result</th></tr>
+<tr><td>Double click or browser retry</td><td>The form generates a UUID when it loads and sends it as <code>Idempotency-Key</code>. The unique index on <code>client_request_id</code> catches the second request</td><td><code>200</code> with the original <code>registration_id</code> and <code>replayed: true</code>. No second row, no second event</td></tr>
+<tr><td>Same kit submitted again by the same customer (new page load, same normalised email)</td><td>Unique violation on <code>kit_barcode</code>, then a comparison of <code>email_hash</code> with the stored row</td><td><code>200</code> with the original <code>registration_id</code>, <code>replayed: true</code>. The new field values are not stored</td></tr>
+<tr><td>Same kit by a different email</td><td>Unique violation on <code>kit_barcode</code>, <code>email_hash</code> differs</td><td><code>409 kit_already_registered</code> with a support reference. A support case is opened with the two registration attempts so a person can decide. The first registration stands</td></tr>
+<tr><td>Two different people submit the same kit at the same moment</td><td>The unique constraint. One insert wins</td><td>The winner gets <code>201</code>. The other follows the rules above as if it had arrived second</td></tr>
+<tr><td>Different kits, same person</td><td>Not a duplicate</td><td>Both accepted. The identity service links them to one person</td></tr>
+</table></div>
+<p>Comparing <code>email_hash</code> values is a string comparison inside the portal. It is not identity resolution and it calls nothing.</p>
+<h3>Delivery-side repeats</h3>
+<ul>
+  <li>The relay can send the same event many times: after a timeout whose request actually succeeded, after a lease expiry, after a replay. Each send carries the same <code>event_id</code>.</li>
+  <li>The identity service inserts into <code>inbox_event</code> with <code>event_id</code> as primary key and <code>registration_id</code> unique. A conflict on <code>event_id</code> returns <code>200 duplicate</code> without reprocessing.</li>
+  <li>A different <code>event_id</code> for a known <code>registration_id</code> with the same <code>payload_hash</code> is treated as a duplicate as well (<code>200 duplicate</code>).</li>
+  <li>A known <code>registration_id</code> with a different <code>payload_hash</code> is a producer bug, since an accepted registration is immutable. The service answers <code>409 registration_payload_mismatch</code>, stores nothing and raises an alert. The relay does not retry a <code>409</code>.</li>
+  <li>The handler's own steps are idempotent too: the provisional person is keyed by the portal <code>source_record</code> (<code>system = 'portal'</code>, <code>record_id = registration_id</code>), so a handler that crashes and reruns finds the person it already created.</li>
+</ul>
+<h3>Return-event repeats</h3>
+<p>The portal applies a resolution only if its <code>resolution_seq</code> is higher than the stored one. A repeat or an out-of-order older event changes nothing.</p>
+</section>
+
+<section id="delivery">
+<h2>Delivery</h2>
+<p>Delivery is at least once. The relay is a small process in the portal's deployment, running as two or more instances over the same table.</p>
+<h3>Relay behaviour</h3>
+<ul>
+  <li>It claims up to 50 rows at a time with <code>SELECT ... WHERE status = 'pending' AND next_attempt_at &lt;= now() ORDER BY next_attempt_at FOR UPDATE SKIP LOCKED</code>, sets <code>status = 'in_flight'</code> and a 30-second lease, then sends them.</li>
+  <li>Claiming a row is what counts as an attempt: the claim increments <code>attempts</code> and sets the lease in the same statement, before anything is sent. A row whose lease expires without a result returns to <code>pending</code> with its attempt already counted, so a relay that keeps crashing or losing responses still reaches the ten-attempt limit and the row goes to <code>dead</code>. The send may have succeeded, which the identity service's idempotency absorbs. Expiries are also counted in <code>lease_expiries</code>. Three on one row raise an alert, because repeated expiry points at the relay and not at the event.</li>
+  <li>It polls every second and also wakes on the notification after commit.</li>
+  <li>Each send has a connect timeout of 2 seconds and a total timeout of 5 seconds.</li>
+</ul>
+<h3>Retry schedule</h3>
+<div class="scroll"><table>
+<tr><th>Attempt</th><th>Delay after the previous failure</th><th>Elapsed since the first attempt</th></tr>
+<tr><td>1</td><td>None, within one second of commit</td><td>0</td></tr>
+<tr><td>2</td><td>5 seconds</td><td>5 s</td></tr>
+<tr><td>3</td><td>30 seconds</td><td>35 s</td></tr>
+<tr><td>4</td><td>2 minutes</td><td>2 min 35 s</td></tr>
+<tr><td>5</td><td>10 minutes</td><td>12 min 35 s</td></tr>
+<tr><td>6</td><td>30 minutes</td><td>42 min 35 s</td></tr>
+<tr><td>7</td><td>1 hour</td><td>1 h 43 min</td></tr>
+<tr><td>8</td><td>2 hours</td><td>3 h 43 min</td></tr>
+<tr><td>9</td><td>4 hours</td><td>7 h 43 min</td></tr>
+<tr><td>10</td><td>6 hours</td><td>13 h 43 min</td></tr>
+</table></div>
+<p>Each delay is randomised by plus or minus 20 percent so a recovering service is not hit by every event at once. After the tenth failed attempt the row becomes <code>dead</code>.</p>
+<h3>Errors and what they cause</h3>
+<div class="scroll"><table>
+<tr><th>Response</th><th>Relay action</th></tr>
+<tr><td>2xx (<code>202 accepted</code> or <code>200 duplicate</code>)</td><td>Mark <code>delivered</code>, set <code>delivered_at</code></td></tr>
+<tr><td>Timeout, connection error, 500, 502, 503, 504</td><td>Retry on the schedule. Counts toward the breaker</td></tr>
+<tr><td>429</td><td>Retry after the <code>Retry-After</code> value if it is longer than the schedule. Does not count as a failure</td></tr>
+<tr><td>401, 403</td><td>Retry on the schedule and page. A credential problem is an operations fault, not the event's</td></tr>
+<tr><td>400, 422</td><td>Dead letter at once. The body does not validate, so retrying cannot help</td></tr>
+<tr><td>409 <code>registration_payload_mismatch</code></td><td>Dead letter at once and page</td></tr>
+</table></div>
+<h3>Circuit breaker</h3>
+<p>If 5 consecutive attempts across any events fail with a timeout or a 5xx, the breaker opens. While it is open the relay claims nothing except one probe event every 30 seconds. A probe is exempt from the attempt count, so the breaker does not increment <code>attempts</code> on any row and does not push <code>next_attempt_at</code> further out. When a probe succeeds the breaker closes and the backlog drains at up to 50 events per second. This keeps a long outage from sending thousands of healthy events to the dead letter state.</p>
+<h3>Ordering</h3>
+<ul>
+  <li>Not needed between registrations. Two registrations can be delivered and resolved in any order. The handler's locking (see below) handles the case where they concern the same person.</li>
+  <li>Not needed within a registration for the accepted event, since there is exactly one per registration.</li>
+  <li>Needed on the return path only as a sequence number: <code>resolution_seq</code> per registration, applied only when higher.</li>
+</ul>
+<h3>Dead-letter queue</h3>
+<p>The dead letter queue is the set of outbox rows with <code>status = 'dead'</code>, exposed by a view. Nothing is moved or deleted, so the registration, its payload and its history stay in one place. A dead row keeps <code>last_error_code</code>, <code>attempts</code> and the time it died. Dead rows are never scrubbed. The portal registration state becomes <code>dead_lettered</code>.</p>
+<h3>Alert thresholds</h3>
+<div class="scroll"><table>
+<tr><th>Condition</th><th>Severity</th></tr>
+<tr><td>Oldest pending outbox row older than 5 minutes</td><td>Warning to the team channel</td></tr>
+<tr><td>Oldest pending outbox row older than 15 minutes</td><td>Page</td></tr>
+<tr><td>Pending count above 500</td><td>Warning</td></tr>
+<tr><td>Any row dead</td><td>Ticket the same day</td></tr>
+<tr><td>10 or more dead rows, or one dead for over 1 hour with the identity service healthy</td><td>Page</td></tr>
+<tr><td>Breaker open for more than 10 minutes</td><td>Page</td></tr>
+<tr><td>Any <code>registration_payload_mismatch</code></td><td>Page</td></tr>
+</table></div>
+</section>
+
+<section id="handler">
+<h2>Identity service handler</h2>
+<p>The ingest endpoint and the handler are separate. The endpoint's only job is to store the event and answer. The handler runs afterwards from the inbox with its own retries. That split is what lets the service acknowledge quickly and keeps a slow matcher from causing timeouts at the relay.</p>
+<h3>Ingest</h3>
+<ol>
+  <li>Authenticate the caller and check the scope <code>events:write</code>.</li>
+  <li>Validate the body against the schema for its <code>schema_version</code>. On failure answer <code>422</code>.</li>
+  <li>Apply the duplicate rules from the idempotency section.</li>
+  <li>Insert the row into <code>inbox_event</code> and commit.</li>
+  <li>Answer <code>202</code>. The answer is sent only after the commit. If the commit fails the service answers <code>503</code> so the portal keeps ownership.</li>
+</ol>
+<h3>Handler, in this order</h3>
+<ol>
+  <li>Take the next unhandled inbox row. Take advisory locks on every blocking key the matcher uses for this registration: the hashed normalised email, the hashed normalised phone and the hash of surname plus birthdate, in sorted order. Any two registrations that could be candidates for each other share at least one of these keys, so they cannot match in parallel and both end up as new people. Household evidence is not a blocking key in this handler. Locks are a first defence only. A sweep runs every 15 minutes over provisional people created in the last hour and scores each against the others with the same matcher, so a duplicate that slipped through is merged or sent to review by the same rules. The nightly reconciliation repeats the sweep over the whole day.</li>
+  <li>Create the provisional person with <code>provisional = true</code> and <code>status = 'active'</code> if the portal <code>source_record</code> for this <code>registration_id</code> does not exist. Add its identifiers (name, email, phone, birthdate) with <code>source_system = 'member_portal'</code> and <code>observed_at</code> from the event. Create the <code>source_record</code> with confidence 1.0, method <code>rule</code> and evidence <code>{"basis": "registration_created"}</code>.</li>
+  <li>Upsert the <code>kit_role</code> row for the kit barcode: set <code>registrant_person</code> to the provisional person and <code>stage</code> to <code>registered</code>. Stage never moves backwards: if the row already says <code>resulted</code> it stays there. If the order event has not arrived yet, create the row with the buyer empty. The order event fills it later.</li>
+  <li>Commit steps 2 and 3. From here the kit has a registrant whatever happens next, even if matching fails or is delayed.</li>
+  <li>Run the matcher for the provisional person against all other active persons. Exclude the provisional person itself. Apply the birthdate veto: where both birthdates are known and different, the candidate is dropped. A birthdate equal to the placeholder <code>1920-01-01</code> (<code>legacy-sync/legacy_sync/config.py:15</code>) counts as unknown, not as a value to compare.</li>
+  <li>Take the best-scoring remaining candidate and decide:
+    <ul>
+      <li>Score 0.90 or above and no second candidate at 0.90 or above: merge the provisional person into the candidate. Repoint the portal <code>source_record</code>, set <code>merged_into</code> on the provisional person, move <code>kit_role.registrant_person</code> to the survivor, apply the strictest consent and write one <code>identity_event</code> of type <code>merge</code> with the actor <code>system:matcher</code>, the score and the reason codes. If the merge would break a clustering constraint from the target architecture (two birthdates in one person, two EHR charts), create a review item instead.</li>
+      <li>Score 0.90 or above for two or more candidates: do not merge. Create one review item per candidate with the reason code <code>multiple_strong_candidates</code> and keep the provisional person.</li>
+      <li>Score from 0.60 up to but not including 0.90: create a <code>review_item</code> naming the portal <code>source_record</code> and the candidate's best record, with the score and reason codes and no names. Keep the provisional person as it is.</li>
+      <li>Score below 0.60 or no candidate: set <code>provisional = false</code>. The provisional person is now a new person.</li>
+    </ul>
+  </li>
+  <li>Write the <code>registration_resolution</code> row (outcome, <code>person_key</code>, score, reason codes, <code>resolution_seq</code> 1) in the same transaction as the decision.</li>
+  <li>Write the outgoing <code>identity.registration_resolved</code> event and the CRM and marketing sync tasks to the identity service's own outbox in that same transaction.</li>
+  <li>Mark the inbox row handled and release the locks.</li>
+</ol>
+<h3>Rules the handler never breaks</h3>
+<ul>
+  <li>It never checks CRM account ownership, never reads a CRM owner field and never calls the CRM. The identity store and the matcher are its only inputs.</li>
+  <li>It never fails an event for a matching reason. A matcher error is retried on the handler's own schedule (10 seconds, 1 minute, 5 minutes, 30 minutes, then every 2 hours up to 20 attempts). Meanwhile the kit already has its provisional registrant from step 4, so nothing the customer sees is waiting.</li>
+  <li>It never moves a purchase between accounts. It writes roles.</li>
+  <li>It never deletes a person. A merge sets <code>merged_into</code> and is reversible by a split.</li>
+</ul>
+<h3>Handler tables (identity service)</h3>
+<div class="scroll"><table>
+<tr><th>Table</th><th>Columns</th><th>Constraints</th></tr>
+<tr><td><code>inbox_event</code></td><td><code>event_id uuid</code>, <code>registration_id text</code>, <code>payload_hash bytea</code>, <code>payload_enc bytea</code>, <code>received_at timestamptz</code>, <code>handled_at timestamptz</code>, <code>attempts smallint</code>, <code>last_error_code text</code></td><td>primary key <code>event_id</code>, unique <code>registration_id</code>. <code>payload_enc</code> is nulled 7 days after <code>handled_at</code></td></tr>
+<tr><td><code>registration_resolution</code></td><td><code>registration_id text</code>, <code>person_key text</code>, <code>outcome text</code>, <code>score numeric(4,3)</code>, <code>reason_codes text[]</code>, <code>resolution_seq integer</code>, <code>resolved_at timestamptz</code></td><td>primary key <code>registration_id</code>. Check <code>outcome in ('merged','new','review')</code>. <code>person_key</code> foreign key to <code>person</code></td></tr>
+<tr><td><code>person</code> (existing)</td><td>adds <code>provisional boolean not null default false</code></td><td>A provisional person always has at least one <code>source_record</code></td></tr>
+</table></div>
+</section>
+
+<section id="states">
+<h2>Registration state machine</h2>
+<p>The state lives on the portal's <code>registration</code> row. It is a projection for operators and for the portal's own screens. The identity service remains the authority on who a person is. The state tells you where the hand-off stands.</p>
+<figure class="diagram">
+<svg viewBox="0 0 1100 330" role="img" aria-label="Registration states: accepted, event_pending, delivered, then resolved_merged, resolved_new or in_review. A failed event goes from event_pending to dead_lettered and back on replay." xmlns="http://www.w3.org/2000/svg" style="max-width:100%;height:auto;display:block;margin:0 auto;font-family:inherit">
+<defs><marker id="a-step" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="a-new" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#737373"/></marker><marker id="a-ext" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#b97818"/></marker></defs>
+<rect x="20" y="115" width="170" height="56" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="105" y="143" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">accepted</text>
+<rect x="260" y="115" width="170" height="56" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="345" y="143" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">event_pending</text>
+<rect x="500" y="115" width="170" height="56" rx="8" fill="#f3f3f3" stroke="#737373" stroke-width="2"/>
+<text x="585" y="143" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">delivered</text>
+<rect x="800" y="25" width="190" height="56" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="895" y="53" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">resolved_merged</text>
+<rect x="800" y="115" width="190" height="56" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="895" y="143" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">resolved_new</text>
+<rect x="800" y="235" width="190" height="56" rx="8" fill="#fff3dc" stroke="#b97818" stroke-width="2"/>
+<text x="895" y="263" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">in_review</text>
+<rect x="260" y="235" width="170" height="56" rx="8" fill="#fbeaea" stroke="#c00000" stroke-width="2"/>
+<text x="345" y="263" text-anchor="middle" dominant-baseline="middle" font-size="15" font-weight="700" fill="#202427">dead_lettered</text>
+<path d="M190,143 L260,143" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" marker-end="url(#a-step)"/>
+<path d="M430,143 L500,143" fill="none" stroke="#737373" stroke-width="2.4" stroke-linecap="round" marker-end="url(#a-new)"/>
+<path d="M670,143 L735,143 L735,53 L800,53" fill="none" stroke="#c00000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#a-step)"/>
+<path d="M670,143 L800,143" fill="none" stroke="#c00000" stroke-width="2" stroke-linecap="round" marker-end="url(#a-step)"/>
+<path d="M670,143 L735,143 L735,263 L800,263" fill="none" stroke="#b97818" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#a-ext)"/>
+<path d="M895,235 L895,171" fill="none" stroke="#b97818" stroke-width="2" stroke-linecap="round" marker-end="url(#a-ext)"/>
+<path d="M320,171 L320,235" fill="none" stroke="#c00000" stroke-width="2" stroke-linecap="round" marker-end="url(#a-step)"/>
+<path d="M370,235 L370,171" fill="none" stroke="#737373" stroke-width="2" stroke-linecap="round" marker-end="url(#a-new)"/>
+<path d="M345,115 C345,80 400,80 400,115" fill="none" stroke="#737373" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#a-step)"/>
+<text x="372" y="72" text-anchor="middle" font-size="11.5" font-weight="600" fill="#62686d" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">retry</text>
+<text x="225" y="133" text-anchor="middle" font-size="11.5" font-weight="600" fill="#62686d" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">relay claims</text>
+<text x="465" y="133" text-anchor="middle" font-size="11.5" font-weight="600" fill="#737373" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">acknowledged</text>
+<text x="312" y="205" text-anchor="end" font-size="11.5" font-weight="600" fill="#c00000" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">attempt 10 or invalid</text>
+<text x="378" y="205" text-anchor="start" font-size="11.5" font-weight="600" fill="#737373" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">replay</text>
+<text x="905" y="205" text-anchor="start" font-size="11.5" font-weight="600" fill="#94550b" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">review decision</text>
+<text x="735" y="190" text-anchor="middle" font-size="11.5" font-weight="600" fill="#62686d" style="paint-order:stroke;stroke:#ffffff;stroke-width:4px;stroke-linejoin:round">resolution event</text>
+</svg>
+<div class="legend"><span class="system">Normal path</span><span class="new">Delivery</span><span class="ext">Needs a person</span><span class="risk">Failed delivery</span></div></figure>
+<p class="caption">The seven states of a registration on the portal. A callback that proves the identity service has the event moves a row to a resolved state even from <code>event_pending</code> or <code>dead_lettered</code>, which is left out of the picture for clarity.</p>
+<h3>Allowed transitions</h3>
+<div class="scroll"><table>
+<tr><th>From</th><th>To</th><th>Trigger</th><th>Effect</th></tr>
+<tr><td>(none)</td><td><code>accepted</code></td><td>Portal transaction commits</td><td>Registration and outbox row exist</td></tr>
+<tr><td><code>accepted</code></td><td><code>event_pending</code></td><td>Relay claims the row for its first attempt</td><td>Outbox <code>in_flight</code></td></tr>
+<tr><td><code>event_pending</code></td><td><code>event_pending</code></td><td>Attempt fails with a retryable error</td><td><code>attempts</code> plus one, <code>next_attempt_at</code> set from the schedule</td></tr>
+<tr><td><code>event_pending</code></td><td><code>delivered</code></td><td>Ingest answers 202 or 200 duplicate</td><td>Outbox <code>delivered</code></td></tr>
+<tr><td><code>event_pending</code></td><td><code>dead_lettered</code></td><td>Tenth failed attempt or a 400, 422 or 409 answer</td><td>Outbox <code>dead</code>, page if over threshold</td></tr>
+<tr><td><code>dead_lettered</code></td><td><code>event_pending</code></td><td>Operator replay or reconciliation repair</td><td><code>attempts</code> reset to 0, <code>replay_count</code> plus one</td></tr>
+<tr><td><code>delivered</code></td><td><code>resolved_merged</code>, <code>resolved_new</code> or <code>in_review</code></td><td><code>identity.registration_resolved</code> with a higher <code>resolution_seq</code></td><td><code>person_key</code> and <code>resolved_at</code> stored</td></tr>
+<tr><td><code>event_pending</code>, <code>dead_lettered</code></td><td><code>resolved_merged</code>, <code>resolved_new</code> or <code>in_review</code></td><td>The same callback arrives although the acknowledgement was lost</td><td>Outbox row marked <code>delivered</code> as well. The callback proves delivery</td></tr>
+<tr><td><code>in_review</code></td><td><code>resolved_merged</code> or <code>resolved_new</code></td><td>A reviewer decides</td><td>New <code>resolution_seq</code></td></tr>
+<tr><td><code>resolved_new</code></td><td><code>resolved_merged</code></td><td>A later automatic or human merge</td><td>New <code>resolution_seq</code></td></tr>
+<tr><td><code>resolved_merged</code></td><td><code>resolved_new</code> or <code>in_review</code></td><td>Support splits the person or a new review item opens</td><td>New <code>resolution_seq</code></td></tr>
+</table></div>
+<p>Every other transition is rejected and logged with the reason code <code>illegal_transition</code>. In particular nothing returns to <code>accepted</code> and nothing resolved goes back to <code>event_pending</code> or <code>dead_lettered</code>.</p>
+</section>
+
+<section id="review-interface">
+<h2>Interface to human review</h2>
+<p>This component hands uncertain matches to human review and takes the answer back. The review workflow itself, its queue, screens, service levels and safeguards, is a separate component described under <a href="target-architecture.html#review">human review in the target architecture</a>. What follows is the contract between the two, which is everything a builder of registration intake needs.</p>
+<h3>What this component guarantees to review</h3>
+<ul>
+  <li>A registration whose best candidate scores from 0.60 up to but not including 0.90, or scores higher but is blocked by a cluster rule or an unmeasured rule, produces exactly one <code>review_item</code> per pair of persons. A second registration raising the same question attaches its record pair to the open item instead of opening another.</li>
+  <li>The item is written in the same transaction as the provisional person and the <code>kit_role</code> row, so an item never refers to a person that does not exist.</li>
+  <li>The item carries person keys, record IDs, score, reason codes and an <code>evidence_version</code>: a hash of the identifier and link rows the matcher read. It carries no names, birthdates or contact details.</li>
+  <li>Priority is set here: 1 when either person has a result, 2 when the kit belongs to a gift order, 3 otherwise.</li>
+</ul>
+<h3>What happens to the registration while the item is open</h3>
+<ul>
+  <li>The registration is in state <code>in_review</code>. To the customer it is identical to a resolved one: the kit is registered, the chart and lab flow continue and results are shown to the registrant.</li>
+  <li>The provisional person is a full person. Its key is sent to the portal, the EHR and the CRM in the normal way and remains valid whatever the reviewer decides.</li>
+  <li><code>identity.registration_resolved</code> is emitted with <code>resolution = "in_review"</code>, so consumers know the key may later merge into another.</li>
+  <li>No timer moves a registration out of <code>in_review</code>. Only a decision or new evidence does.</li>
+</ul>
+<h3>What this component accepts back</h3>
+<div class="scroll"><table>
+<tr><th>Input from review</th><th>Handling in this component</th><th>Registration state after</th></tr>
+<tr><td><code>review.decided</code> with <code>same</code></td><td>Compare the item's <code>evidence_version</code> with the current one. If equal, merge the provisional person into the other in one transaction with the consent rules, the <code>identity_event</code> and the outbox rows. If different, apply nothing and answer <code>409 evidence_changed</code>, which supersedes the item</td><td><code>resolved_merged</code>, with a new <code>resolution_seq</code></td></tr>
+<tr><td><code>review.decided</code> with <code>different</code></td><td>Store a keep-apart rule for the pair, which the matcher treats as a veto. The provisional person becomes permanent</td><td><code>resolved_new</code></td></tr>
+<tr><td><code>review.decided</code> with <code>cannot_tell</code></td><td>Nothing changes here. Review escalates on its side</td><td><code>in_review</code></td></tr>
+<tr><td>New evidence arrives for either person before a decision</td><td>Re-run the matcher. At 0.90 or above with no blocking rule, merge and close the item as superseded. Below 0.60, close it as moot. Otherwise update the item's evidence and <code>evidence_version</code></td><td>Whatever the re-run gives</td></tr>
+<tr><td>A split of a person that includes this registration</td><td>Re-point the registration's <code>source_record</code> and <code>kit_role</code> rows to the person named in the split and emit a new resolution</td><td><code>resolved_new</code> or <code>resolved_merged</code></td></tr>
+</table></div>
+<h3>Errors on this interface</h3>
+<div class="scroll"><table>
+<tr><th>Failure</th><th>Behaviour</th></tr>
+<tr><td>The same decision is delivered twice</td><td>Decisions carry a <code>decision_id</code>. A repeat returns the first outcome and changes nothing</td></tr>
+<tr><td>A decision arrives for an item already superseded or closed</td><td><code>409 item_not_open</code>. Nothing is applied</td></tr>
+<tr><td>A <code>same</code> decision would put two known birthdates or two EHR charts merged by code on one person</td><td><code>422 constraint_violation</code> with the rule name. The item returns to review for a lead</td></tr>
+<tr><td>The merge transaction fails</td><td>Rolled back whole, retried three times with backoff, then the item is marked <code>apply_failed</code> and the on-call engineer is paged. The registration stays <code>in_review</code></td></tr>
+<tr><td>Review is unavailable</td><td>Items accumulate. Registration acceptance, resolution of confident matches and results are unaffected</td></tr>
+<tr><td>A consumer misses the new resolution</td><td>Retried from the identity outbox under the delivery rules in this document. <code>resolution_seq</code> lets a consumer discard an older resolution that arrives late</td></tr>
+</table></div>
+<h3>Acceptance tests for this interface</h3>
+<ol>
+  <li>Given a registration in <code>in_review</code>, when a <code>same</code> decision arrives with a matching <code>evidence_version</code>, then the provisional person merges, the registration is <code>resolved_merged</code> and one <code>identity_event</code> of kind merge exists.</li>
+  <li>Given the same item, when a new order event adds an email to either person before the decision, then the decision is answered <code>409 evidence_changed</code> and no merge happens.</li>
+  <li>Given two registrations that raise the same question, then one open <code>review_item</code> exists with two supporting record pairs.</li>
+  <li>Given an item open for 30 days with no decision, then the registration is still <code>in_review</code>, the customer can see results and no merge has happened.</li>
+  <li>Given a <code>different</code> decision, when the matcher later scores the same pair with unchanged evidence, then no new item opens.</li>
+  <li>Given a <code>same</code> decision delivered twice, then exactly one merge event exists.</li>
+  <li>Given a <code>same</code> decision that would join two persons with different known birthdates, then the answer is <code>422 constraint_violation</code> and both persons are unchanged.</li>
+</ol>
+</section>
+
+<section id="outages">
+<h2>Outage behaviour, replay and reconciliation</h2>
+<h3>Identity service down for minutes</h3>
+<p>The portal keeps accepting. Every row is committed with its outbox event. The relay retries on the schedule, usually succeeding on attempt 2 to 4 once the service is back. Customers notice nothing. The only visible effects are a delayed <code>person_key</code> on the registration and a delayed CRM and marketing update.</p>
+<h3>Identity service down for days</h3>
+<p>The breaker opens after 5 consecutive failures, usually within a minute. From then on events accumulate as <code>pending</code> without using up their attempts. The portal database grows by one small row per registration, which at the volume in the sample data is trivial. The oldest-pending alert pages within 15 minutes. When the service returns, a probe closes the breaker and the backlog drains at up to 50 events per second.</p>
+<p>If the outage began before the breaker was introduced or the breaker was disabled, rows that reach 10 attempts become <code>dead</code>. That is safe, because nothing is deleted and the replay procedure below recovers them.</p>
+<h3>Identity store unavailable after the portal has accepted</h3>
+<p>The ingest endpoint cannot commit to <code>inbox_event</code>, so it answers <code>503</code> and does not acknowledge. The portal therefore still owns the event and keeps retrying. The identity service never reports an event as received before the inbox commit. If the store fails after the inbox commit but before the handler finishes, the handler retries from the inbox on its own schedule and the nightly reconciliation catches anything that is still missing. In none of these cases is the customer's registration affected, because the portal's row was committed first and sits in a database the identity store does not share.</p>
+<h3>Replay procedure</h3>
+<ol>
+  <li>Confirm the cause is fixed. Check the identity service health endpoint and send one synthetic <code>registration.accepted</code> event for a test kit. It must come back <code>202</code> and then <code>200 duplicate</code> on a second send.</li>
+  <li>Count what is waiting: <code>GET /internal/v1/outbox/stats</code> returns counts by status and by <code>last_error_code</code>.</li>
+  <li>Run the replay as a dry run: <code>POST /internal/v1/outbox/replay</code> with <code>{"status": "dead", "since": "...", "dry_run": true}</code>. It returns the registration IDs it would requeue and no personal data.</li>
+  <li>For rows that died with <code>schema_invalid</code>, deploy the producer fix first and add <code>"rebuild_payload": true</code>. The payload is regenerated from the registration row with the same <code>event_id</code>.</li>
+  <li>Run it for real with <code>"rate_limit_per_second": 20</code> and <code>"batch_size": 500</code>. Each row goes back to <code>pending</code> with <code>attempts = 0</code> and <code>replay_count</code> plus one. The state returns to <code>event_pending</code>.</li>
+  <li>Watch <code>portal_outbox_pending_total</code> and <code>identity_inbox_to_resolution_seconds</code>. Raise the rate to 50 per second only if both stay flat.</li>
+  <li>Run the reconciliation job by hand (below). It must report zero gaps.</li>
+  <li>Record the replay in the operations log: who, why, how many, the time range and the reconciliation result.</li>
+</ol>
+<p>Replay is safe to repeat, because the same <code>event_id</code> and <code>registration_id</code> make the identity service answer <code>200 duplicate</code> for anything it already holds.</p>
+<h3>Nightly reconciliation</h3>
+<p>A scheduled job runs at 02:00 local time. It compares the portal's registrations with the identity service's portal <code>source_record</code> rows for a window that starts 36 hours before the run and ends 15 minutes before it, so events still in flight are not counted.</p>
+<ol>
+  <li>The job pages through <code>GET /internal/v1/registrations/ids</code> on the portal, which returns <code>registration_id</code>, <code>kit_barcode</code>, <code>payload_hash</code> and <code>state</code> and nothing personal.</li>
+  <li>It asks the identity service for the matching <code>registration_resolution</code> and <code>inbox_event</code> data through <code>GET /v1/registrations/{registration_id}/resolution</code> in batches of 200.</li>
+  <li>It classifies each difference.</li>
+</ol>
+<div class="scroll"><table>
+<tr><th>Gap</th><th>Meaning</th><th>Action</th></tr>
+<tr><td><code>missing_in_identity</code></td><td>The portal has the registration and the identity service has no inbox row</td><td>Requeue the outbox row with the same <code>event_id</code> (a replay with reason <code>recon</code>). Count it</td></tr>
+<tr><td><code>unresolved_after_24h</code></td><td>In the inbox for over 24 hours with no resolution</td><td>Open a ticket and re-run the handler for that inbox row</td></tr>
+<tr><td><code>state_stale</code></td><td>The identity service has a resolution that the portal row does not show</td><td>Resend the <code>identity.registration_resolved</code> event</td></tr>
+<tr><td><code>hash_mismatch</code></td><td>Both have the registration but the <code>payload_hash</code> values differ</td><td>No automatic fix. Page. This should be impossible</td></tr>
+<tr><td><code>extra_in_identity</code></td><td>The identity service has a portal <code>source_record</code> with no portal registration</td><td>No automatic fix and never a deletion. Ticket for investigation</td></tr>
+</table></div>
+<p>If the number of automatic repairs in one run exceeds 1,000 or 5 percent of the window, the job repairs nothing further and pages, since that shape means a systemic fault rather than stray losses. The job reports its counts as metrics every run, including zero.</p>
+</section>
+
+<section id="downstream">
+<h2>Downstream effects</h2>
+<h3>CRM</h3>
+<p>The identity service writes to the CRM only from its own outbox, after the handler has committed. The CRM task carries <code>person_key</code>, the registration ID and the preferred contact details. It has its own retry schedule and dead-letter handling. A CRM failure, a duplicate-rule hit or an inactive owner marks the task failed and raises a CRM sync alert. It never changes the registration's state or the identity result and it never reaches the customer.</p>
+<p>The duplicate rule is set to alert, as in the target architecture, so a CRM-side duplicate becomes a signal for the matcher and not a gate.</p>
+<h3>Gift orders</h3>
+<p>The legacy code moves the opportunity to the registrant's account for a gift (<code>register.py:45-46</code>) and fails when the new owner is inactive (<code>crm/client.py:57-60</code>). The new handler never moves a purchase. The buyer comes from the order event and stays on the opportunity. The recipient is recorded as <code>kit_role.registrant_person</code>. The CRM task writes the recipient as a role field on the opportunity for sales and support to read. If the buyer and the registrant resolve to the same person, the role simply has the same person in both places.</p>
+<h3>Marketing</h3>
+<p>The stage that marketing receives comes from <code>kit_role.stage</code> and not from a CRM account. Setting it to <code>registered</code> in step 3 of the handler is what stops the "please register" message for that kit. The stage feed is batched every 15 minutes and carries <code>person_key</code>, kit barcode, stage and channel consent only.</p>
+<h3>Chart and lab</h3>
+<p>The portal's existing chart and lab flow runs on the registration row. It does not wait for the resolution event.</p>
+</section>
+
+<section id="api">
+<h2>API surface</h2>
+<p>Paths are an assumption about a conventional HTTPS and JSON deployment. A managed queue between the relay and the ingest endpoint would carry the same bodies and the same acknowledgement semantics. All endpoints require TLS 1.2 or higher.</p>
+<div class="scroll"><table>
+<tr><th>Endpoint</th><th>Caller</th><th>Request</th><th>Success</th></tr>
+<tr><td><code>POST /v1/registrations</code> (portal)</td><td>The portal front end</td><td>Header <code>Idempotency-Key</code> (UUID). Body: <code>kit_barcode</code>, <code>first_name</code>, <code>last_name</code>, <code>email</code>, <code>phone</code> optional, <code>birthdate</code></td><td><code>201</code> <code>{"registration_id", "kit_barcode", "status": "registered"}</code>, or <code>200</code> with <code>"replayed": true</code></td></tr>
+<tr><td><code>GET /v1/registrations/{registration_id}</code> (portal)</td><td>The signed-in customer</td><td>None</td><td><code>200</code> <code>{"registration_id", "kit_barcode", "status": "registered"}</code>. No identity state is shown</td></tr>
+<tr><td><code>POST /v1/events</code> (identity ingest)</td><td>Portal relay</td><td>The event body from the contract. Headers <code>Authorization</code>, <code>schema-version</code></td><td><code>202</code> <code>{"event_id", "status": "accepted"}</code> or <code>200</code> <code>{"event_id", "status": "duplicate"}</code></td></tr>
+<tr><td><code>GET /v1/registrations/{registration_id}/resolution</code> (identity)</td><td>Reconciliation job</td><td>None</td><td><code>200</code> with the <code>registration_resolution</code> row, or <code>404 not_received</code></td></tr>
+<tr><td><code>POST /internal/v1/identity-results</code> (portal)</td><td>Identity service</td><td>The <code>identity.registration_resolved</code> body</td><td><code>204</code>. A stale <code>resolution_seq</code> also answers <code>204</code></td></tr>
+<tr><td><code>GET /internal/v1/registrations/ids</code> (portal)</td><td>Reconciliation job</td><td>Query <code>from</code>, <code>to</code>, <code>cursor</code>, <code>limit</code> up to 1000</td><td><code>200</code> with IDs, hashes and states</td></tr>
+<tr><td><code>GET /internal/v1/outbox/stats</code>, <code>POST /internal/v1/outbox/replay</code> (portal)</td><td>Operators</td><td>See the replay procedure</td><td><code>200</code></td></tr>
+</table></div>
+<h3>Error codes</h3>
+<p>Every error body is <code>{"error": "<code>", "message": "<text for people>", "request_id": "..."}</code> with a field name added for form errors. The message never repeats personal data from the request.</p>
+<div class="scroll"><table>
+<tr><th>Status</th><th>Code</th><th>Endpoint</th><th>Retry</th></tr>
+<tr><td>422</td><td><code>field_required</code>, <code>field_invalid</code></td><td>Portal registration</td><td>Customer fixes the field</td></tr>
+<tr><td>404</td><td><code>kit_not_found</code></td><td>Portal registration</td><td>Customer checks the code</td></tr>
+<tr><td>409</td><td><code>kit_already_registered</code></td><td>Portal registration</td><td>No</td></tr>
+<tr><td>503</td><td><code>portal_unavailable</code></td><td>Portal registration</td><td>Yes, with the same <code>Idempotency-Key</code></td></tr>
+<tr><td>401, 403</td><td><code>unauthorized</code>, <code>forbidden</code></td><td>Ingest, internal</td><td>Relay retries and pages</td></tr>
+<tr><td>422</td><td><code>schema_invalid</code>, <code>schema_version_unsupported</code></td><td>Ingest</td><td>No. Dead letter</td></tr>
+<tr><td>409</td><td><code>registration_payload_mismatch</code></td><td>Ingest</td><td>No. Dead letter and page</td></tr>
+<tr><td>429</td><td><code>rate_limited</code></td><td>Ingest</td><td>Yes, after <code>Retry-After</code></td></tr>
+<tr><td>503</td><td><code>store_unavailable</code></td><td>Ingest</td><td>Yes, on the schedule</td></tr>
+</table></div>
+</section>
+
+<section id="phi">
+<h2>Health information handling</h2>
+<p>The data in this repository is synthetic and is treated as protected health information for the design, as the brief instructs. A registration links a named person to a diagnostic kit, so the portal tables, the outbox and the identity inbox are all inside the health-data boundary.</p>
+<div class="scroll"><table>
+<tr><th>Topic</th><th>Rule</th></tr>
+<tr><td>What the event carries</td><td>Registrant name, email, phone and birthdate, the kit barcode and the registration ID. No address, no test name, no order contents, no result</td></tr>
+<tr><td>Return event</td><td>IDs, outcome and reason codes only</td></tr>
+<tr><td>In transit</td><td>TLS 1.2 or higher. Mutual authentication between relay and ingest endpoint with short-lived credentials is assumed</td></tr>
+<tr><td>At rest</td><td>Database encryption plus field-level encryption of name, email, phone and birthdate in <code>registration</code> and of the whole body in <code>payload_enc</code>. Keys are held outside the database. The relay decrypts in memory only</td></tr>
+<tr><td>Logs and errors</td><td>Registration ID, event ID, kit barcode, outbox ID, status codes and reason codes only. Never names, emails, phones, birthdates, request bodies or response bodies. A log line that would need a personal value uses the registration ID instead</td></tr>
+<tr><td>Metrics and traces</td><td>Labels are outcomes and reason codes. No label ever holds a personal value or a registration ID</td></tr>
+<tr><td>Access</td><td>The relay can read the outbox. The reconciliation job sees IDs and hashes only. Operators see counts and IDs. Reading a decrypted payload needs a break-glass role and is logged</td></tr>
+<tr><td>Retention</td><td>Registration rows follow the retention of the clinical record, the period to be set by compliance. The outbox payload is nulled 30 days after the row is delivered and the registration resolved. Dead rows keep their payload until replayed or closed. The identity inbox payload is nulled 7 days after handling. Event IDs, hashes and the audit trail are kept</td></tr>
+<tr><td>Test and development</td><td>Synthetic data only. Nothing from production is copied into tickets, chats or AI tools. The examples on this page are fictional</td></tr>
+</table></div>
+<p>Whether the hosting provider, the queue and the monitoring tools sit under a business associate agreement is a production question this page cannot answer. It is listed as an open question.</p>
+</section>
+
+<section id="observability">
+<h2>Observability</h2>
+<h3>Service levels</h3>
+<div class="scroll"><table>
+<tr><th>Measure</th><th>Target</th></tr>
+<tr><td>Portal acceptance latency, server side, valid submissions</td><td>p50 under 80 ms, p99 under 300 ms, p99.9 under 1 s</td></tr>
+<tr><td>Portal acceptance availability, valid submissions</td><td>99.9 percent per month. Identity and CRM health are excluded from the calculation because they cannot affect it</td></tr>
+<tr><td>Acceptance to acknowledged, normal operation</td><td>p99 under 60 seconds</td></tr>
+<tr><td>Acceptance to resolved (merged, new or in review)</td><td>p95 under 5 minutes, p99 under 15 minutes</td></tr>
+<tr><td>Reviewed items decided</td><td>Within 2 working days, as in the target architecture. Nothing customer-facing waits on it</td></tr>
+<tr><td>Registrations lost</td><td>Zero. Any nonzero reconciliation count after repair is an incident</td></tr>
+</table></div>
+<h3>Metrics</h3>
+<div class="scroll"><table>
+<tr><th>Metric</th><th>Type and labels</th></tr>
+<tr><td><code>portal_registration_accept_total</code></td><td>Counter by <code>result</code>: <code>created</code>, <code>replayed</code>, <code>field_error</code>, <code>kit_not_found</code>, <code>kit_taken</code>, <code>portal_error</code></td></tr>
+<tr><td><code>portal_registration_accept_duration_seconds</code></td><td>Histogram</td></tr>
+<tr><td><code>portal_outbox_pending_total</code></td><td>Gauge</td></tr>
+<tr><td><code>portal_outbox_oldest_pending_age_seconds</code></td><td>Gauge</td></tr>
+<tr><td><code>portal_outbox_attempt_total</code></td><td>Counter by <code>outcome</code>: <code>ok</code>, <code>duplicate</code>, <code>timeout</code>, <code>http_5xx</code>, <code>http_4xx</code></td></tr>
+<tr><td><code>portal_outbox_dead_total</code></td><td>Gauge of rows currently dead, by <code>last_error_code</code></td></tr>
+<tr><td><code>portal_relay_breaker_state</code></td><td>Gauge, 0 closed, 1 open</td></tr>
+<tr><td><code>identity_ingest_total</code></td><td>Counter by <code>result</code>: <code>accepted</code>, <code>duplicate</code>, <code>invalid</code>, <code>mismatch</code>, <code>store_error</code></td></tr>
+<tr><td><code>identity_inbox_to_resolution_seconds</code></td><td>Histogram</td></tr>
+<tr><td><code>identity_resolution_total</code></td><td>Counter by <code>outcome</code>: <code>merged</code>, <code>new</code>, <code>review</code></td></tr>
+<tr><td><code>identity_handler_failure_total</code></td><td>Counter by <code>reason</code></td></tr>
+<tr><td><code>identity_review_items_open</code></td><td>Gauge, plus the age of the oldest</td></tr>
+<tr><td><code>recon_gap_total</code></td><td>Gauge by <code>kind</code>, set every nightly run</td></tr>
+<tr><td><code>crm_sync_failure_total</code></td><td>Counter by <code>reason</code>. Kept separate so a CRM problem is never mistaken for a registration problem</td></tr>
+</table></div>
+<h3>Alerts beyond those under delivery</h3>
+<div class="scroll"><table>
+<tr><th>Condition</th><th>Severity</th></tr>
+<tr><td>Acceptance <code>portal_error</code> above 1 percent of submissions over 5 minutes</td><td>Page</td></tr>
+<tr><td>Acceptance p99 above 500 ms for 10 minutes</td><td>Warning</td></tr>
+<tr><td>Inbox rows older than 15 minutes and unhandled</td><td>Warning. Page at 60 minutes</td></tr>
+<tr><td>Handler failures for one inbox row beyond 20 attempts</td><td>Ticket</td></tr>
+<tr><td><code>recon_gap_total</code> above zero after repair, or the job did not run</td><td>Page</td></tr>
+<tr><td>Review item older than 2 working days</td><td>Ticket to the support lead</td></tr>
+<tr><td>Share of <code>review</code> outcomes above 15 percent of a day's resolutions, which would suggest a matcher fault or a bad batch</td><td>Warning</td></tr>
+</table></div>
+</section>
+
+<section id="tests">
+<h2>Acceptance tests</h2>
+<p>All data below is fictional. Each case is written to run against the portal, a relay and an identity service double, with a fake clock for retries.</p>
+<h3>The three legacy failures, now succeeding</h3>
+<ol>
+  <li>Duplicate rule. Given a CRM already holding an account that the duplicate rule would flag against a new registrant and <code>DUPLICATE_RULE_ACTION</code> set to block. When the customer registers kit KT0000481 as Jane Example. Then the portal answers <code>201</code>, the registration is stored, the CRM is called zero times during the request and the identity service later records a provisional person. The legacy path raised <code>RegistrationBlocked</code> here (<code>register.py:43</code>).</li>
+  <li>Identity conflict. Given a CRM account whose primary email is <code>jane.example@example.com</code> and whose last name and birthdate differ from the registrant's. When Jane Example registers with that email. Then the portal answers <code>201</code>. The handler finds the person, the birthdate veto or a low score applies and the result is a new person or a review item. No error reaches the customer. The legacy path raised <code>IdentityConflict</code> (<code>register.py:32</code>).</li>
+  <li>Inactive owner. Given a gift order whose recipient resolves to a CRM account owned by an inactive user. When the recipient registers the kit. Then the portal answers <code>201</code>, the opportunity stays on the buyer, the recipient is recorded as <code>registrant_person</code>, <code>move_opportunity</code> is never called and the stage becomes <code>registered</code>. The legacy path raised <code>InactiveOwner</code> (<code>crm/client.py:60</code>).</li>
+</ol>
+<h3>Acceptance boundary</h3>
+<ol start="4">
+  <li>Given a valid request. When it is submitted. Then one <code>registration</code> row and one <code>registration_outbox</code> row exist, both with the same <code>registration_id</code>, state <code>accepted</code> and outbox <code>pending</code>.</li>
+  <li>Given the outbox insert fails inside the transaction. When the request is processed. Then the registration row does not exist, the response is <code>503</code> and nothing is sent.</li>
+  <li>Given a missing birthdate. When submitted. Then the response is <code>422 field_required</code> naming <code>birthdate</code> and nothing is stored.</li>
+  <li>Given the phone <code>681.558.8218</code>. When submitted. Then it is accepted and stored as typed.</li>
+  <li>Given kit barcode KT9999999 that is not in the kit table. When submitted. Then the response is <code>404 kit_not_found</code>.</li>
+  <li>Given the identity service, the CRM and the matcher all unreachable. When a valid registration is submitted. Then it is accepted with <code>201</code> and the latency stays inside the target.</li>
+</ol>
+<h3>Duplicates</h3>
+<ol start="10">
+  <li>Same kit twice, same person. Given R000424 exists for KT0000481 and <code>jane.example@example.com</code>. When the same email submits KT0000481 again with a new idempotency key. Then the response is <code>200</code> with <code>registration_id R000424</code>, no new row and no new event.</li>
+  <li>Double click. Given two requests with the same <code>Idempotency-Key</code> sent 50 ms apart. Then exactly one row and one event exist and both responses name the same registration.</li>
+  <li>Same kit, different person. Given R000424 exists. When <code>sam.sample@example.com</code> submits KT0000481. Then the response is <code>409 kit_already_registered</code>, no row is created and a support case is opened.</li>
+  <li>Simultaneous submissions. Given two different emails submit KT0000481 within the same millisecond. Then exactly one gets <code>201</code> and the other gets <code>409</code>.</li>
+  <li>Duplicate delivery. Given the relay sends the same event three times. Then the identity service creates one provisional person, one <code>source_record</code> and one resolution and the second and third answers are <code>200 duplicate</code>.</li>
+  <li>Payload mismatch. Given an event with a known <code>registration_id</code> and a different <code>payload_hash</code>. Then the answer is <code>409</code>, nothing is changed and an alert fires.</li>
+</ol>
+<h3>Delivery and outages</h3>
+<ol start="16">
+  <li>Identity service down. Given the ingest endpoint returns 503 for 20 minutes. When 40 registrations arrive. Then all 40 are accepted, none is dead, attempts follow the schedule or the breaker holds them and after recovery all 40 are delivered and resolved.</li>
+  <li>Long outage. Given the endpoint is down for 3 days with the breaker working. Then no row is dead, the oldest-pending alert fired within 15 minutes of the first failure and the backlog drains at the configured rate on recovery.</li>
+  <li>Poison event. Given a payload that fails validation. Then it answers 422, the row is <code>dead</code> at once, the state is <code>dead_lettered</code> and other events continue.</li>
+  <li>Lost acknowledgement. Given the identity service stores an event but the response never arrives. Then the relay retries, the answer is <code>200 duplicate</code> and the row ends <code>delivered</code>.</li>
+  <li>Identity store unavailable after acceptance. Given the portal has accepted R000425 and the identity store rejects the inbox write. Then the endpoint answers <code>503</code>, the outbox row stays <code>pending</code> and the portal still owns it.</li>
+  <li>Crash between ingest and handler. Given the service restarts after the inbox commit. Then the handler picks up the inbox row and completes it once.</li>
+  <li>Replay. Given 12 dead rows and a working service. When an operator runs the replay with a rate of 20 per second. Then all 12 end delivered, <code>replay_count</code> is 1 and the reconciliation reports zero gaps.</li>
+  <li>Reconciliation. Given a registration present in the portal and absent from the identity service. When the nightly job runs. Then it requeues the event with the same <code>event_id</code> and reports one <code>missing_in_identity</code>.</li>
+  <li>Reconciliation limit. Given 2,000 gaps in one run. Then the job repairs none beyond the threshold and pages.</li>
+</ol>
+<h3>Handler</h3>
+<ol start="25">
+  <li>Given no existing person. Then a provisional person is created with confidence 1.0, <code>kit_role.registrant_person</code> is set, the stage is <code>registered</code> and the outcome is <code>new</code>.</li>
+  <li>Given a candidate scoring 0.95 with matching birthdates. Then the provisional person is merged into it, one <code>merge</code> identity event is logged and the outcome is <code>merged</code>.</li>
+  <li>Given a candidate scoring exactly 0.90. Then it merges. Given a candidate scoring exactly 0.60. Then a review item is created.</li>
+  <li>Given a candidate scoring 0.75. Then a review item is created, the provisional person remains and <code>kit_role.registrant_person</code> still points to it.</li>
+  <li>Given a candidate scoring 0.45. Then <code>provisional</code> becomes false and the outcome is <code>new</code>.</li>
+  <li>Given a candidate with a high score whose birthdate differs from the registrant's. Then the candidate is dropped by the veto and no merge happens.</li>
+  <li>Given two candidates both scoring 0.93. Then there is no merge and two review items carry <code>multiple_strong_candidates</code>.</li>
+  <li>Given a kit whose stage is already <code>resulted</code>. When the registration is handled. Then the stage stays <code>resulted</code>.</li>
+  <li>Given a gift order where buyer and registrant differ. Then the opportunity remains on the buyer and the recipient is recorded as registrant.</li>
+  <li>Given the CRM write task fails 5 times. Then the registration state, the identity result and the customer's view are unchanged.</li>
+  <li>Given two registrations from the same email arriving together. Then they are matched one after the other and end up as one person, not two.</li>
+</ol>
+<h3>Privacy</h3>
+<ol start="36">
+  <li>Given a full run of tests 1 to 35 with logging captured. Then no log line, metric label or error body contains any name, email, phone or birthdate used in the test data.</li>
+</ol>
+</section>
+
+<section id="rollout">
+<h2>Rollout flag and backout</h2>
+<h3>Flag</h3>
+<p>The portal reads <code>registration_intake_mode</code> on every request. The last known value is cached for 60 seconds. If the flag service cannot be read and there is no cached value, the mode is <code>off</code>.</p>
+<div class="scroll"><table>
+<tr><th>Mode</th><th>Customer path</th><th>Identity effect</th></tr>
+<tr><td><code>off</code></td><td>The legacy <code>register_kit</code> path, unchanged</td><td>None</td></tr>
+<tr><td><code>shadow</code></td><td>The legacy path decides the customer's answer. After it succeeds the portal also writes the registration and outbox rows</td><td>The identity service processes the events with CRM and marketing tasks switched off. Its decisions are compared with what the legacy path did</td></tr>
+<tr><td><code>on</code></td><td>The new acceptance path. No CRM call in the request</td><td>Full, including the CRM and marketing tasks</td></tr>
+</table></div>
+<p>The ramp for <code>on</code> uses a percentage of kit barcodes by hash: 1, 10, 50, then 100 percent, with at least a day at each step. A given kit always takes the same path. The step moves on only if the targets in the observability section hold.</p>
+<p>The first change to ship is the decoupling: the mode <code>on</code> with the identity service only storing and resolving events. That removes the blocking behaviour from the customer path. Systems consuming the resulting <code>person_key</code> follow in later phases of the rollout plan.</p>
+<h3>Backout</h3>
+<ol>
+  <li>Pause the relay. A kill switch stops the sends and leaves the outbox filling. Customers are unaffected. Use this first for any fault on the identity side.</li>
+  <li>Drop the percentage or set the mode to <code>shadow</code>. Use this when the fault is on the acceptance path itself.</li>
+  <li>Set the mode to <code>off</code> as a last resort. New registrations go back to the legacy path, which brings the old blocking failures back, so this is a regression of the fixed constraint and needs a named approver.</li>
+</ol>
+<p>Whatever step is taken, rows already accepted stay in place and the relay keeps owning them. The tables are never dropped during a backout. Registrations accepted under <code>on</code> are not in the legacy CRM sync, so their CRM updates come from the identity service's tasks and those must keep running or be run by hand from the outbox once the fault is fixed.</p>
+<p>Back out when any of these holds:</p>
+<ul>
+  <li>The acceptance error rate is above 1 percent over 5 minutes.</li>
+  <li>Acceptance p99 is above 1 second for 15 minutes.</li>
+  <li>The reconciliation job finds a registration missing after its repair.</li>
+  <li>The oldest pending row is older than 60 minutes while the identity service is healthy.</li>
+</ul>
+</section>
+
+<section id="questions">
+<h2>Open questions and the assumptions made</h2>
+<div class="scroll"><table>
+<tr><th>Question</th><th>Assumed here</th></tr>
+<tr><td>What is the production transport between the portal and the identity service?</td><td>Not known. HTTPS and JSON with the semantics above. A managed queue with the same acknowledgement rule works unchanged</td></tr>
+<tr><td>What database does the portal use and does it support row locking with skip-locked reads?</td><td>A relational database with transactions and <code>FOR UPDATE SKIP LOCKED</code>. If not, a single relay instance with a lease column gives the same behaviour more slowly</td></tr>
+<tr><td>Does the portal know every kit barcode before the customer receives the kit?</td><td>Yes, loaded at fulfilment. If not, a kit shipped moments ago would be refused with <code>kit_not_found</code>. The fix is to load barcodes earlier, not to weaken the check</td></tr>
+<tr><td>Is the birthdate always collected on the portal form?</td><td>Yes, as a required field. Without it the veto cannot work. The sample's registration file always has one</td></tr>
+<tr><td>May a registrant be different from the patient?</td><td>Yes. The event describes the registrant. The patient role comes later from the result</td></tr>
+<tr><td>Which vendors sit in the path (queue, hosting, monitoring) and are they covered by a business associate agreement?</td><td>Unknown. The design keeps personal data out of metrics, labels and logs so that monitoring does not need to be covered</td></tr>
+<tr><td>What retention period applies to registration rows?</td><td>The clinical record's, set by compliance. The 30 and 7 day scrub periods for payloads are proposals</td></tr>
+<tr><td>Who is on call for the pages in this document?</td><td>The portal team for acceptance and the relay, the identity team for ingest and the handler. A shared channel receives all warnings</td></tr>
+<tr><td>Do customers get an email on registering?</td><td>Out of scope. If one exists it is sent by the portal from the registration row and never waits for identity</td></tr>
+<tr><td>Is a single-digit birthdate typo a veto?</td><td>Yes in this component. Any different pair of known birthdates drops the candidate. Typo tolerance belongs to the matcher specification</td></tr>
+<tr><td>Is the 36-hour reconciliation window enough?</td><td>Assumed so. A weekly full comparison of IDs and hashes is a cheap addition if the nightly job misses anything</td></tr>
+</table></div>
+</section>
+<p class="foot">The company, systems and records in this case study are fictional. The names, addresses and identifiers in the examples are invented. The data is treated as protected health information for the design. Production transports, vendor contracts and privacy terms need confirming before any of this is built.</p>
+</main>
+</body>
+</html>
